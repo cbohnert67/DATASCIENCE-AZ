@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 35: L'Analyse en Composantes Principales (ACP)</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 35. L'Analyse en Composantes Principales (ACP) - Réduire le bruit pour mieux voir
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Quand vous avez un jeu de données avec 3, 4, ou même 10 variables, il est encore possible de les visualiser et de les comprendre. Mais que faire quand vous en avez des centaines, comme en génomique ou en traitement d'images ? Comment "voir" les tendances dans un espace à 500 dimensions ? L'Analyse en Composantes Principales (ACP ou PCA en anglais) est une technique de réduction de dimensionnalité. Elle permet de "compresser" l'information contenue dans un grand nombre de variables en quelques nouvelles "super-variables" (les composantes principales) qui capturent l'essentiel de l'histoire, en perdant le moins d'information possible.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'art de la synthèse</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">L'intuition de la réduction de dimensionnalité</h3>
+                        <p class="mb-4 text-justify">Imaginez que vous deviez résumer le profil d'un élève qui a 20 notes dans différentes matières (Maths, Physique, Histoire, Anglais, etc.). Comparer deux élèves en regardant leurs 20 notes est compliqué. Intuitivement, vous pourriez créer deux "super-notes" : une "Moyenne Scientifique" (basée sur les maths, la physique...) et une "Moyenne Littéraire" (basée sur l'histoire, l'anglais...). Vous venez de réduire 20 dimensions à seulement 2, rendant la comparaison beaucoup plus simple.</p>
+                        <p class="mb-4 text-justify">L'ACP fait exactement cela, mais de manière rigoureuse et optimale. Elle ne se contente pas de regrouper les variables de façon arbitraire. Elle trouve mathématiquement les meilleurs "axes de synthèse" possibles pour résumer les données. Elle ne supprime pas des variables, elle en crée de nouvelles, plus puissantes, qui sont des combinaisons pondérées de toutes les variables originales.</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Que représente chaque composante principale ?</h3>
+                        <p class="mb-4 text-justify">Imaginez un nuage de points représentant la taille et le poids de 1000 personnes. Ces deux variables sont corrélées : le nuage de points formera une ellipse étirée.</p>
+                        <ul class="list-disc list-inside space-y-3 mb-4 pl-4">
+                            <li>La <strong>première composante principale (PC1)</strong> sera l'axe qui traverse l'ellipse dans sa plus grande longueur. C'est la direction où les données sont le plus étalées, où il y a le plus de "variance". PC1 capture l'information la plus importante : la tendance générale qui lie la taille et le poids. On pourrait l'interpréter comme un axe de "corpulence" ou de "gabarit".</li>
+                            <li>La <strong>deuxième composante principale (PC2)</strong> sera perpendiculaire à PC1 et suivra la deuxième plus grande direction de variance (la largeur de l'ellipse). Elle capture l'information résiduelle : pour un même "gabarit" (même valeur sur PC1), il existe encore des variations (certaines personnes sont plus minces ou plus trapues).</li>
+                        </ul>
+                         <div class="text-center my-4">[Image d'un nuage de points en 2D avec les axes PC1 et PC2 superposés]</div>
+                        <p class="text-justify">Chaque composante est une combinaison linéaire des variables de départ. Par exemple, on pourrait trouver que <code>PC1 = 0.7 * Taille + 0.7 * Poids</code>. Les poids (0.7 et 0.7, appelés "loadings") nous indiquent que la taille et le poids contribuent de manière égale à cette nouvelle super-variable "gabarit".</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le concept de "variance expliquée"</h3>
+                        <p class="mb-4 text-justify">La "variance expliquée" est un score qui nous dit à quel point chaque composante principale est importante pour résumer les données. C'est le pourcentage de l'information totale du jeu de données qui est capturé par cette composante.</p>
+                        <p class="mb-4 text-justify">Reprenons l'analogie du verre d'eau : si toute l'information de votre dataset (100 variables) remplit un verre d'eau, la variance expliquée vous dit :</p>
+                        <ul class="list-disc list-inside space-y-2 mb-4 pl-4">
+                            <li>PC1 capture 70% de cette eau dans un nouveau verre.</li>
+                            <li>PC2 capture 15% de l'eau restante dans un deuxième verre.</li>
+                        </ul>
+                        <p class="text-justify">En ne gardant que ces deux premiers verres (PC1 et PC2), vous avez déjà 85% de l'information originale. Vous pouvez peut-être jeter les 15% restants, qui sont souvent considérés comme du "bruit". On utilise souvent un "graphique des éboulis" (scree plot) qui montre la variance expliquée par chaque composante. On ne garde alors que les composantes situées avant le "coude", là où le gain d'information devient négligeable.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'ACP avec Scikit-Learn : Le pas à pas</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-lg text-justify">Utilisons l'ACP pour visualiser un jeu de données complexe : des images de chiffres manuscrits. Chaque image fait 8x8 pixels, ce qui donne 64 features (dimensions) par image. Notre but est de voir si nous pouvons "aplatir" ces 64 dimensions en seulement 2 tout en conservant la structure des données.</p>
+                    
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Imports et chargement des données</h3>
+                        <p class="mb-4">On commence par importer les librairies nécessaires et charger le jeu de données `digits` inclus dans Scikit-Learn. Chaque ligne de `X` est une image "déroulée" en un vecteur de 64 pixels.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.preprocessing</span> <span class="code-keyword">import</span> <span class="code-variable">StandardScaler</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.decomposition</span> <span class="code-keyword">import</span> <span class="code-variable">PCA</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.datasets</span> <span class="code-keyword">import</span> <span class="code-variable">load_digits</span>
+
+<span class="code-comment"># X contient 1797 images, chacune avec 64 valeurs de pixels (features)</span>
+<span class="code-comment"># y contient le chiffre correspondant (de 0 à 9) pour chaque image</span>
+<span class="code-variable">digits</span> <span class="code-operator">=</span> <span class="code-function">load_digits</span>()
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-variable">digits</span>.<span class="code-variable">data</span>
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">digits</span>.<span class="code-variable">target</span></code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 1 : Mise à l'échelle (Standardisation)</h3>
+                        <p class="mb-4 text-justify">C'est l'étape la plus importante et souvent oubliée. L'ACP cherche les axes de plus grande variance. Si une variable varie de 0 à 1000 (ex: un salaire) et une autre de 0 à 1 (ex: un ratio), la première va écraser la seconde. L'ACP ne verra que la variance du salaire. La standardisation remet toutes les variables sur un pied d'égalité : une moyenne de 0 et un écart-type de 1.</p>
+                        <pre><code><span class="code-comment"># L'ACP est basée sur la variance, donc les variables à grande échelle domineraient.</span>
+<span class="code-variable">scaler</span> <span class="code-operator">=</span> <span class="code-function">StandardScaler</span>()
+<span class="code-variable">X_scaled</span> <span class="code-operator">=</span> <span class="code-variable">scaler</span>.<span class="code-function">fit_transform</span>(<span class="code-variable">X</span>)</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 2 : Application de l'ACP</h3>
+                        <p class="mb-4 text-justify">On crée un objet `PCA` en lui demandant de trouver les 2 meilleures composantes (`n_components=2`). Ensuite, `fit_transform` fait deux choses : il apprend les axes de transformation à partir des données (`fit`) puis il projette les données sur ces nouveaux axes pour créer notre nouveau dataset à 2 dimensions (`transform`).</p>
+                        <pre><code><span class="code-comment"># On demande à réduire 64 dimensions à 2 composantes pour la visualisation</span>
+<span class="code-variable">pca</span> <span class="code-operator">=</span> <span class="code-function">PCA</span>(<span class="code-variable">n_components</span><span class="code-operator">=</span><span class="code-number">2</span>)
+<span class="code-variable">X_pca</span> <span class="code-operator">=</span> <span class="code-variable">pca</span>.<span class="code-function">fit_transform</span>(<span class="code-variable">X_scaled</span>)</code></pre>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 3 : Analyse de la variance expliquée</h3>
+                        <p class="mb-4 text-justify">Avant de visualiser, vérifions combien d'information nous avons conservée. `explained_variance_ratio_` nous donne le pourcentage de variance capturée par chaque composante.</p>
+                        <pre><code><span class="code-builtin">print</span>(<span class="code-string">f"Variance expliquée par PC1 : {pca.explained_variance_ratio_[0]:.2%}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Variance expliquée par PC2 : {pca.explained_variance_ratio_[1]:.2%}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Variance totale expliquée par les 2 composantes : {np.sum(pca.explained_variance_ratio_):.2%}"</span>)</code></pre>
+                        <p class="mt-4 bg-gray-900/50 p-3 rounded-md">Avec seulement 2 composantes, nous avons capturé une part significative de l'information totale. Nous avons "compressé" les données tout en gardant l'essentiel de leur structure.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 4 : Visualisation</h3>
+                        <p class="mb-4 text-justify">Maintenant, nous pouvons créer un graphique de nos données à 2 dimensions. Chaque point représente une image, positionnée selon ses coordonnées sur PC1 et PC2. La couleur (`hue=y`) indique le vrai chiffre. Si l'ACP a bien fonctionné, les points de même couleur devraient se regrouper.</p>
+                        <pre><code><span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">12</span>, <span class="code-number">9</span>))
+<span class="code-variable">sns</span>.<span class="code-function">scatterplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-variable">X_pca</span>[:, <span class="code-number">0</span>], <span class="code-variable">y</span><span class="code-operator">=</span><span class="code-variable">X_pca</span>[:, <span class="code-number">1</span>], <span class="code-variable">hue</span><span class="code-operator">=</span><span class="code-variable">y</span>, <span class="code-variable">palette</span><span class="code-operator">=</span><span class="code-string">'viridis'</span>, <span class="code-variable">s</span><span class="code-operator">=</span><span class="code-number">60</span>, <span class="code-variable">alpha</span><span class="code-operator">=</span><span class="code-number">0.8</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Projection des "Digits" sur les 2 premières composantes principales'</span>, <span class="code-variable">fontsize</span><span class="code-operator">=</span><span class="code-number">16</span>)
+<span class="code-variable">plt</span>.<span class="code-function">xlabel</span>(<span class="code-string">'Première Composante Principale (PC1)'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">ylabel</span>(<span class="code-string">'Deuxième Composante Principale (PC2)'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">legend</span>(<span class="code-variable">title</span><span class="code-operator">=</span><span class="code-string">'Chiffre'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">grid</span>(<span class="code-builtin">True</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="mt-4 text-lg text-justify">Le résultat est stupéfiant : en ne gardant que 2 "super-variables" sur 64, on peut déjà voir des groupes (clusters) distincts se former pour les différents chiffres. L'ACP a réussi à trouver et à extraire la structure cachée dans les 64 dimensions originales, la rendant visible à l'œil nu.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-cyan-500/50 shadow-lg">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous !</h2>
+                <p class="text-lg text-justify mb-4">
+                    L'ACP n'est pas seulement un outil de visualisation, elle peut aussi être une étape de pré-traitement pour améliorer la performance ou la vitesse d'un modèle. Votre mission :
+                </p>
+                <div class="bg-gray-900/50 p-4 rounded-md">
+                    <ol class="list-decimal list-inside space-y-3">
+                        <li>Appliquez l'ACP sur le dataset Iris pour réduire ses 4 dimensions à 2.</li>
+                        <li>Entraînez un classifieur (<code>LogisticRegression</code>) sur ces 2 composantes principales. Évaluez son score.</li>
+                        <li>Entraînez le même classifieur sur les 4 features originales du dataset (n'oubliez pas de les mettre à l'échelle aussi !). Évaluez son score.</li>
+                        <li>Comparez les performances. Dans ce cas précis, l'ACP a-t-elle aidé ou nui à la performance du modèle ? Pourquoi, à votre avis ?</li>
+                    </ol>
+                </div>
+                 <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-6">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                    <pre class="mt-4"><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.datasets</span> <span class="code-keyword">import</span> <span class="code-variable">load_iris</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.linear_model</span> <span class="code-keyword">import</span> <span class="code-variable">LogisticRegression</span>
+
+<span class="code-comment"># Charger les données Iris</span>
+<span class="code-variable">iris</span> <span class="code-operator">=</span> <span class="code-function">load_iris</span>()
+<span class="code-variable">X_iris</span> <span class="code-operator">=</span> <span class="code-variable">iris</span>.<span class="code-variable">data</span>
+<span class="code-variable">y_iris</span> <span class="code-operator">=</span> <span class="code-variable">iris</span>.<span class="code-variable">target</span>
+
+<span class="code-comment"># 1. Modèle avec ACP</span>
+<span class="code-variable">X_iris_scaled</span> <span class="code-operator">=</span> <span class="code-function">StandardScaler</span>().<span class="code-function">fit_transform</span>(<span class="code-variable">X_iris</span>)
+<span class="code-variable">X_iris_pca</span> <span class="code-operator">=</span> <span class="code-function">PCA</span>(<span class="code-variable">n_components</span><span class="code-operator">=</span><span class="code-number">2</span>).<span class="code-function">fit_transform</span>(<span class="code-variable">X_iris_scaled</span>)
+<span class="code-variable">X_train_pca</span>, <span class="code-variable">X_test_pca</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X_iris_pca</span>, <span class="code-variable">y_iris</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+
+<span class="code-variable">model_pca</span> <span class="code-operator">=</span> <span class="code-function">LogisticRegression</span>()
+<span class="code-variable">model_pca</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train_pca</span>, <span class="code-variable">y_train</span>)
+<span class="code-variable">score_pca</span> <span class="code-operator">=</span> <span class="code-variable">model_pca</span>.<span class="code-function">score</span>(<span class="code-variable">X_test_pca</span>, <span class="code-variable">y_test</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Score du modèle avec ACP (2 composantes) : {score_pca:.2%}"</span>)
+
+<span class="code-comment"># 2. Modèle sans ACP (sur les 4 features originales)</span>
+<span class="code-variable">X_train_orig</span>, <span class="code-variable">X_test_orig</span>, _, _ <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X_iris_scaled</span>, <span class="code-variable">y_iris</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+
+<span class="code-variable">model_orig</span> <span class="code-operator">=</span> <span class="code-function">LogisticRegression</span>()
+<span class="code-variable">model_orig</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train_orig</span>, <span class="code-variable">y_train</span>)
+<span class="code-variable">score_orig</span> <span class="code-operator">=</span> <span class="code-variable">model_orig</span>.<span class="code-function">score</span>(<span class="code-variable">X_test_orig</span>, <span class="code-variable">y_test</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Score du modèle sans ACP (4 features) : {score_orig:.2%}"</span>)
+                    </code></pre>
+                    <p class="mt-4 text-justify"><strong>Interprétation :</strong> Dans ce cas précis, le modèle entraîné sur les 4 features originales est légèrement plus performant. C'est normal : le dataset Iris est très simple et ne contient que peu d'information "bruyante". En réduisant la dimensionnalité, nous avons perdu un peu d'information utile. L'ACP est surtout puissante sur des datasets avec beaucoup plus de dimensions où le "bruit" est plus important que le "signal".</p>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est l'objectif principal de l'Analyse en Composantes Principales (ACP) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Entraîner des modèles plus rapidement</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Augmenter le nombre de variables dans un dataset</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Réduire le nombre de variables en conservant le maximum d'information</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Prédire des valeurs numériques</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Que représente la première composante principale (PC1) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une variable choisie au hasard</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) L'axe qui capture la plus grande variance des données</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La moyenne de toutes les variables</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) L'axe qui capture le moins de variance</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Pourquoi est-il crucial de mettre les données à l'échelle (standardiser) avant d'appliquer une ACP ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Pour que le code s'exécute plus vite</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Ce n'est pas nécessaire pour l'ACP</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour supprimer les valeurs manquantes</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Pour éviter que les variables avec de grandes échelles ne dominent l'analyse de la variance</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Si PC1 explique 60% de la variance et PC2 en explique 25%, que peut-on conclure ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une visualisation en 2D avec PC1 et PC2 capture 85% de l'information totale</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Il faut au moins 3 composantes pour comprendre les données</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le modèle sera précis à 85%</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) PC2 est plus importante que PC1</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Dans quels cas l'ACP est-elle le plus susceptible d'améliorer les performances d'un modèle de classification ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Quand le dataset a très peu de variables (moins de 5)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Quand les variables ne sont pas du tout corrélées entre elles</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Quand on veut interpréter facilement l'impact de chaque variable originale</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Quand le dataset a un très grand nombre de variables (haute dimensionnalité) qui peuvent être redondantes ou bruitées</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. La perte d'information :</strong> L'ACP, par définition, perd de l'information. Dans quel type de scénario cette perte, même minime, pourrait-elle être inacceptable ? (Indice : pensez à des domaines où la précision extrême de chaque mesure est vitale).</p>
+                    <p><strong>2. L'interprétabilité :</strong> L'ACP crée de nouvelles "super-variables" qui sont des mélanges des variables originales. Quel est le principal inconvénient de cette approche si vous devez expliquer à un non-expert pourquoi votre modèle a pris une décision spécifique ?</p>
+                    <p><strong>3. Au-delà de la visualisation :</strong> Outre la visualisation et le pré-traitement pour les modèles, pouvez-vous imaginer une autre application de l'ACP ? (Indice : comment pourriez-vous "compresser" un grand nombre de photos pour qu'elles prennent moins de place ?).</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let answered = false;
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (answered) return;
+                        answered = true;
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                            opt.classList.add('cursor-not-allowed');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

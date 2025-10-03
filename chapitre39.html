@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 39: Construire son portfolio</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code simples (pas de coloration syntaxique) */
+        pre {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 39. Construire son portfolio de Data Scientist - 3 projets pour convaincre un recruteur
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Votre portfolio est plus important que votre CV. Un CV liste ce que vous dites savoir faire ; un portfolio prouve ce que vous savez faire. C'est la preuve tangible de vos compétences, de votre curiosité et de votre capacité à mener un projet de A à Z. Apprenons à construire un portfolio qui raconte une histoire et qui impressionne les recruteurs, en le structurant autour de trois projets clés.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Les ingrédients d'un portfolio réussi</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="mb-4 text-justify">Un projet mémorable n'est pas forcément le plus complexe. Il doit combiner quatre éléments qui racontent l'histoire de votre compétence.</p>
+                    
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">1. Une question claire et pertinente</h3>
+                        <p class="text-justify">Un projet doit partir d'un "pourquoi". Cela montre que vous ne vous contentez pas d'appliquer des algorithmes, mais que vous réfléchissez à l'impact de votre travail.</p>
+                        <ul class="list-disc list-inside space-y-2 mt-3 pl-4">
+                            <li><strong>Mauvais exemple :</strong> "Analyse du dataset Iris".</li>
+                            <li><strong>Bon exemple :</strong> "Peut-on identifier une espèce de fleur à partir de ses dimensions ? Application à la classification automatisée pour les botanistes."</li>
+                            <li><strong>Pourquoi c'est mieux :</strong> La deuxième approche montre un objectif, une application potentielle et une compréhension du problème métier ou scientifique.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">2. Des données qui suscitent l'intérêt</h3>
+                        <p class="text-justify">Les recruteurs ont vu des centaines de projets sur le Titanic ou le dataset Iris. Pour vous démarquer, montrez votre curiosité et votre capacité à trouver et à manipuler des données uniques.</p>
+                        <ul class="list-disc list-inside space-y-2 mt-3 pl-4">
+                           <li><strong>Où trouver des données ?</strong> Explorez les portails de données ouvertes (ex: data.gouv.fr), utilisez les API de services que vous aimez (Spotify, Twitter/X, jeux vidéo), ou apprenez les bases du web scraping (avec des librairies comme BeautifulSoup ou Scrapy) pour collecter vos propres données (toujours en respectant les conditions d'utilisation des sites !).</li>
+                           <li><strong>L'impact :</strong> Un projet sur l'analyse des paroles de votre artiste préféré ou sur les statistiques de votre jeu vidéo fétiche montrera non seulement vos compétences techniques, mais aussi votre passion et votre créativité.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">3. Une analyse solide et justifiée</h3>
+                        <p class="text-justify">C'est le cœur de votre projet. Chaque choix technique doit être intentionnel et expliqué. Un recruteur ne veut pas seulement voir le résultat, il veut comprendre votre raisonnement.</p>
+                         <ul class="list-disc list-inside space-y-2 mt-3 pl-4">
+                            <li><strong>Justifiez vos choix :</strong> "Les données de fraude étant très déséquilibrées (99% de transactions non frauduleuses), l'accuracy n'est pas une bonne métrique. J'ai donc choisi d'optimiser l'AUC-PR (Area Under the Precision-Recall Curve) qui est plus robuste dans ce cas."</li>
+                            <li><strong>Montrez votre rigueur :</strong> Expliquez comment vous avez géré les valeurs manquantes, pourquoi vous avez créé telle ou telle nouvelle feature, et comment vous avez validé votre modèle (validation croisée, etc.).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">4. Une communication efficace (le Storytelling)</h3>
+                        <p class="text-justify">Votre projet peut être techniquement parfait, s'il n'est pas bien communiqué, son impact sera nul. Le README de votre projet sur GitHub est votre scène.</p>
+                         <ul class="list-disc list-inside space-y-2 mt-3 pl-4">
+                            <li><strong>Structurez votre pensée :</strong> Commencez par le problème, présentez votre solution, montrez les résultats clés (avec des visualisations claires et bien légendées), et terminez par une conclusion actionnable.</li>
+                            <li><strong>Un graphique vaut mille mots :</strong> Ne noyez pas le lecteur sous des lignes de code. Mettez en avant les 2 ou 3 visualisations qui racontent l'essentiel de votre histoire. Le titre d'un graphique doit être une conclusion ("Le prix au m² est 30% plus élevé dans le centre-ville"), pas une description ("Graphique du prix en fonction du quartier").</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <h3 class="text-2xl font-bold text-blue-400 mb-3">Où héberger et présenter votre travail ?</h3>
+                    <p class="text-justify mb-4">La réponse unanime est <strong>GitHub</strong>. C'est bien plus qu'un simple espace de stockage de code. C'est la vitrine de votre savoir-faire technique.</p>
+                    <ul class="list-disc list-inside space-y-2 pl-4">
+                        <li><strong>Un profil professionnel :</strong> Utilisez une photo claire, rédigez une biographie concise qui mentionne vos compétences clés ("Data Scientist passionné par le NLP et les séries temporelles") et ajoutez un lien vers votre profil LinkedIn.</li>
+                        <li><strong>Épinglez vos meilleurs projets :</strong> GitHub vous permet de mettre en avant jusqu'à six dépôts sur votre page de profil. Choisissez vos 2 ou 3 projets les plus aboutis pour qu'ils soient immédiatement visibles.</li>
+                        <li><strong>Le README est roi :</strong> Comme mentionné ci-dessus, le fichier `README.md` de chaque projet est crucial. C'est la première chose qu'un recruteur lira. Soignez-le !</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Anatomie de 3 projets convaincants</h2>
+                <p class="mb-6 text-justify">Voici la structure de trois types de projets qui, ensemble, forment un portfolio complet et impressionnant.</p>
+                <div class="space-y-8">
+                    <!-- Projet 1 -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Le projet d'analyse exploratoire et de storytelling</h3>
+                        <p class="mb-4 text-justify">Ce projet montre que vous savez transformer des données brutes en insights clairs et actionnables.</p>
+                        <pre>
+Exemple : Analyser les données des Airbnb d'une ville pour comprendre les facteurs qui influencent le prix et la popularité.
+
+Compétences démontrées : Manipulation de données (Pandas), visualisation (Seaborn), storytelling, capacité à tirer des conclusions business.
+
+Structure du README.md :
+- Contexte : Pourquoi cette analyse est-elle intéressante pour un hôte ou un voyageur ?
+- Questions Clés : Listez 3-4 questions précises (ex: "Quel quartier offre le meilleur rapport qualité/prix ?", "Quels sont les équipements qui influencent le plus le prix ?").
+- Découvertes Principales : Présentez vos 3-4 graphiques les plus parlants, chacun avec un titre qui est une conclusion, pas une description.
+- Conclusion et Recommandations : Résumez vos découvertes et donnez des conseils concrets.
+                        </pre>
+                    </div>
+                    <!-- Projet 2 -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. Le projet de Machine Learning de A à Z</h3>
+                        <p class="mb-4 text-justify">Ce projet prouve que vous maîtrisez tout le workflow technique de la data science.</p>
+                         <pre>
+Exemple : Prédire le taux de désabonnement ("churn") d'un service en ligne.
+
+Compétences démontrées : Nettoyage, feature engineering, modélisation (tester plusieurs algorithmes), évaluation rigoureuse, interprétation du modèle.
+
+Structure du README.md :
+- Objectif Business : Quel problème concret cherchez-vous à résoudre ? (ex: "Réduire la perte de clients en identifiant les clients à risque en amont").
+- Méthodologie : Décrivez brièvement les étapes : nettoyage, features créées, modèles testés, métrique d'évaluation choisie (et pourquoi, ex: "J'ai choisi le Rappel car il est plus grave de manquer un client sur le point de partir").
+- Résultats : Quel score final avez-vous obtenu ? Présentez une matrice de confusion et, surtout, un graphique d'importance des features.
+- Conclusion : Quels sont les 3 facteurs qui influencent le plus le churn ? Comment l'entreprise peut-elle agir sur ces facteurs ?
+                        </pre>
+                    </div>
+                    <!-- Projet 3 -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">3. Le projet "produit" : API ou Application Web</h3>
+                        <p class="mb-4 text-justify">Ce projet montre que vous pensez au-delà du notebook et que vous savez rendre votre travail utilisable par d'autres.</p>
+                         <pre>
+Exemple : L'application Flask que nous avons construite pour prédire l'espèce d'une fleur d'iris.
+
+Compétences démontrées : Déploiement, ingénierie logicielle (Flask, Docker), capacité à transformer un modèle en un produit.
+
+Structure du README.md :
+- Description : Que fait cette API/application ?
+- Technologies utilisées : Listez les outils (Python, Flask, Scikit-learn, Docker...).
+- Instructions d'installation et d'utilisation : Expliquez très clairement comment un utilisateur peut lancer votre application localement. Avec Docker, cela peut se résumer à deux lignes de commande !
+- Exemple d'appel à l'API : Montrez un exemple de requête (avec curl ou un script Python) et la réponse attendue.
+                        </pre>
+                    </div>
+                </div>
+                 [Image d'un profil GitHub bien organisé]
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-cyan-500/50 shadow-lg">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Posez votre première brique !</h2>
+                 <p class="text-lg text-justify mb-4">
+                    Il est temps de poser la première brique de votre portfolio professionnel.
+                </p>
+                <div class="bg-gray-900/50 p-4 rounded-md">
+                   <p>Votre mission :</p>
+                    <ul class="list-disc list-inside space-y-2 mt-2">
+                        <li>Choisissez UN des projets que vous avez réalisés au cours de cette série (le Titanic, la prédiction des prix, le classifieur de spam...).</li>
+                        <li>Créez un nouveau dépôt sur GitHub pour ce projet.</li>
+                        <li>Nettoyez votre notebook : supprimez les cellules de code inutiles, ajoutez des cellules Markdown pour expliquer votre démarche, et assurez-vous qu'il peut être exécuté de haut en bas sans erreur.</li>
+                        <li>Rédigez un nouveau fichier README.md pour celui-ci en suivant la structure la plus appropriée parmi les trois exemples ci-dessus. Soyez clair, concis et professionnel.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est l'élément le plus important d'un portfolio de data scientist ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Un CV parfaitement formaté.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Des projets qui prouvent vos compétences.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Une liste de tous les cours que vous avez suivis.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) L'utilisation des algorithmes les plus complexes possibles.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Quel type de projet démontre le mieux votre capacité à communiquer des résultats ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le projet d'analyse exploratoire et de storytelling.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le projet de Machine Learning de A à Z.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le projet "produit" (API ou App).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Un projet utilisant des données très complexes.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Pourquoi est-il recommandé d'utiliser des données originales ou de niche pour un projet ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) C'est plus facile car personne ne peut vérifier votre travail.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les datasets classiques contiennent des erreurs.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Cela montre votre curiosité et vous démarque des autres candidats.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) C'est la seule façon d'utiliser des modèles complexes.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Un projet "produit" (API/App) est précieux car il montre que vous pouvez...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Transformer un modèle en un outil utilisable.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Écrire un rapport très détaillé.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Créer les meilleures visualisations de données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Répondre à une question business complexe.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Quelle est la plateforme standard pour héberger un portfolio de code ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Kaggle</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) LinkedIn</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Un site web personnel</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) GitHub</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Qualité vs Quantité :</strong> Vaut-il mieux avoir 10 projets moyens ou 3 projets exceptionnels et très bien documentés dans son portfolio ? Pourquoi ?</p>
+                    <p><strong>2. Raconter une histoire :</strong> Comment pourriez-vous lier vos trois projets pour qu'ils racontent une histoire cohérente sur vous en tant que data scientist (par exemple, en montrant une progression dans la complexité ou en se concentrant sur un domaine que vous aimez) ?</p>
+                    <p><strong>3. L'échec est une option :</strong> Un projet qui aboutit à la conclusion que les données ne permettent pas de prédire la cible peut-il être un bon projet de portfolio ? À quelles conditions ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let answered = false;
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (answered) return;
+                        answered = true;
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                            opt.classList.add('cursor-not-allowed');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

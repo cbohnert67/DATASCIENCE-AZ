@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 4: Pandas pour la Data Science</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 4. Pandas : Transformer les données brutes en informations précieuses
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Jusqu'à présent, nous avons découvert l'état d'esprit de la data science et appris à manipuler des nombres à grande vitesse avec NumPy. Mais la réalité de tout projet commence rarement avec des données propres. Elle commence avec un fichier CSV désordonné ou un export Excel confus. C'est ici qu'intervient Pandas. Si NumPy est la Formule 1, Pandas est votre couteau suisse multifonction pour nettoyer, transformer et analyser n'importe quel jeu de données tabulaires.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Les deux structures de données clés : Series et DataFrame</h2>
+                <p class="text-lg text-justify mb-6">
+                    Pandas repose sur deux piliers que vous devez absolument connaître. Pensez-y comme les briques Lego fondamentales de l'analyse de données.
+                </p>
+            
+                <!-- Detailed explanation of Series -->
+                <div class="bg-gray-800 p-6 rounded-lg mb-8 border border-gray-700">
+                    <h3 class="text-2xl font-bold text-blue-400 mb-3">La Series : Une colonne intelligente</h3>
+                    <p class="mb-4 text-justify">
+                        Une <strong>Series</strong> est la structure de données la plus simple de Pandas. Imaginez-la comme une seule colonne dans un tableur Excel ou une liste Python, mais avec des super-pouvoirs. Elle est composée de deux parties :
+                    </p>
+                    <ul class="list-disc list-inside mb-4 pl-4 space-y-2">
+                        <li><strong>Les données (values) :</strong> Une séquence de valeurs, un peu comme un tableau NumPy.</li>
+                        <li><strong>L'index (index) :</strong> Une étiquette associée à chaque valeur. C'est ce qui la rend si puissante. Au lieu d'accéder à un élément par sa position (0, 1, 2...), vous pouvez utiliser une étiquette personnalisée (comme 'Paris', 'Lyon', etc.).</li>
+                    </ul>
+                    <p class="mb-4 text-justify">
+                        Une Series est donc idéale pour représenter une seule variable ou caractéristique.
+                    </p>
+                    <pre><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+
+<span class="code-comment"># Exemple de création d'une Series pour les ventes par ville</span>
+<span class="code-variable">ventes_villes</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">Series</span>([<span class="code-number">250</span>, <span class="code-number">430</span>, <span class="code-number">320</span>], <span class="code-variable">index</span><span class="code-operator">=</span>[<span class="code-string">'Paris'</span>, <span class="code-string">'Lyon'</span>, <span class="code-string">'Marseille'</span>])
+
+<span class="code-builtin">print</span>(<span class="code-string">"--- Notre Series ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">ventes_villes</span>)
+
+<span class="code-comment"># Accéder aux ventes de Lyon par son étiquette d'index</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"\\nVentes à Lyon: {</span><span class="code-variable">ventes_villes</span>[<span class="code-string">'Lyon'</span>]<span class="code-string">}"</span>)</code></pre>
+                </div>
+            
+                <!-- Detailed explanation of DataFrame -->
+                <div class="bg-gray-800 p-6 rounded-lg mb-8 border border-gray-700">
+                    <h3 class="text-2xl font-bold text-blue-400 mb-3">Le DataFrame : Le tableau complet</h3>
+                    <p class="mb-4 text-justify">
+                        Le <strong>DataFrame</strong> est le cœur de Pandas et l'objet que vous utiliserez 95% du temps. C'est un tableau à deux dimensions, comme une feuille de calcul complète ou une table dans une base de données.
+                    </p>
+                    <p class="mb-4 text-justify">
+                        La meilleure façon de le concevoir est comme une <strong>collection de Series qui partagent le même index</strong>. Chaque colonne d'un DataFrame est en fait une Series.
+                    </p>
+                    <pre><code><span class="code-comment"># Création d'un DataFrame à partir d'un dictionnaire de listes</span>
+<span class="code-variable">donnees</span> <span class="code-operator">=</span> {
+    <span class="code-string">'Population'</span>: [<span class="code-number">2143000</span>, <span class="code-number">513000</span>, <span class="code-number">861000</span>],
+    <span class="code-string">'Superficie_km2'</span>: [<span class="code-number">105</span>, <span class="code-number">48</span>, <span class="code-number">241</span>]
+}
+<span class="code-variable">villes_df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">DataFrame</span>(<span class="code-variable">donnees</span>, <span class="code-variable">index</span><span class="code-operator">=</span>[<span class="code-string">'Paris'</span>, <span class="code-string">'Lyon'</span>, <span class="code-string">'Marseille'</span>])
+
+<span class="code-builtin">print</span>(<span class="code-string">"--- Notre DataFrame ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">villes_df</span>)
+
+<span class="code-comment"># Chaque colonne est une Series</span>
+<span class="code-builtin">print</span>(<span class="code-string">"\\nType de la colonne 'Population' :"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">type</span>(<span class="code-variable">villes_df</span>[<span class="code-string">'Population'</span>]))</code></pre>
+                </div>
+                
+                <!-- Comparison -->
+                <div>
+                    <h3 class="text-2xl font-bold text-cyan-400 mb-3">Series vs. DataFrame : La comparaison</h3>
+                    <p class="mb-4 text-justify">
+                        L'analogie la plus simple est celle du tableur :
+                    </p>
+                    <ul class="list-disc list-inside mb-4 pl-4 space-y-2">
+                        <li>Un <strong>DataFrame</strong> est la feuille de calcul entière, avec ses lignes et ses colonnes.</li>
+                        <li>Une <strong>Series</strong> est une seule colonne de cette feuille de calcul.</li>
+                    </ul>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border border-gray-700 rounded-lg">
+                            <thead class="bg-gray-800">
+                                <tr>
+                                    <th class="p-4">Caractéristique</th>
+                                    <th class="p-4">Series</th>
+                                    <th class="p-4">DataFrame</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700">
+                                <tr class="bg-gray-800/50">
+                                    <td class="p-4 font-semibold">Dimensions</td>
+                                    <td class="p-4">1D (unidimensionnel)</td>
+                                    <td class="p-4">2D (bidimensionnel)</td>
+                                </tr>
+                                <tr class="bg-gray-800/50">
+                                    <td class="p-4 font-semibold">Composition</td>
+                                    <td class="p-4">Données + Index</td>
+                                    <td class="p-4">Collection de Series partageant un Index</td>
+                                </tr>
+                                 <tr class="bg-gray-800/50">
+                                    <td class="p-4 font-semibold">Analogie</td>
+                                    <td class="p-4">Une colonne de tableur</td>
+                                    <td class="p-4">Un tableur complet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La boîte à outils essentielle de Pandas</h2>
+                <p class="text-lg text-justify mb-6">Pour illustrer, nous utiliserons le DataFrame suivant :</p>
+                <pre><code><span class="code-variable">data_dict</span> <span class="code-operator">=</span> {<span class="code-string">'Nom'</span>: [<span class="code-string">'Alice'</span>, <span class="code-string">'Bob'</span>, <span class="code-string">'Claire'</span>, <span class="code-string">'David'</span>, <span class="code-string">'Elsa'</span>],
+             <span class="code-string">'Age'</span>: [<span class="code-number">25</span>, <span class="code-number">32</span>, <span class="code-number">22</span>, <span class="code-variable">np</span>.<span class="code-variable">nan</span>, <span class="code-number">32</span>],
+             <span class="code-string">'Ville'</span>: [<span class="code-string">'Paris'</span>, <span class="code-string">'Lyon'</span>, <span class="code-string">'Paris'</span>, <span class="code-string">'Lyon'</span>, <span class="code-string">'Lille'</span>],
+             <span class="code-string">'Score'</span>: [<span class="code-number">8.5</span>, <span class="code-number">9.1</span>, <span class="code-number">7.8</span>, <span class="code-number">6.4</span>, <span class="code-number">9.1</span>]}
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">DataFrame</span>(<span class="code-variable">data_dict</span>)</code></pre>
+                
+                <div class="mt-8 space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Lire et écrire des données</h3>
+                        <p class="mb-4">C'est le point de départ de la plupart des analyses. Pandas peut lire une multitude de formats.</p>
+                        <pre><code><span class="code-comment"># Lire un fichier CSV (le plus courant)</span>
+<span class="code-comment"># df = pd.read_csv('mon_fichier.csv')</span>
+
+<span class="code-comment"># Lire un fichier Excel</span>
+<span class="code-comment"># df_excel = pd.read_excel('mon_fichier.xlsx')</span>
+
+<span class="code-comment"># Écrire notre DataFrame dans un fichier CSV</span>
+<span class="code-comment"># L'option index=False évite d'écrire l'index du DataFrame dans une colonne du fichier.</span>
+<span class="code-variable">df</span>.<span class="code-function">to_csv</span>(<span class="code-string">'personnes.csv'</span>, <span class="code-variable">index</span><span class="code-operator">=</span><span class="code-keyword">False</span>)</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. Inspecter les données</h3>
+                        <p class="mb-4">Une fois les données chargées, ces commandes sont des réflexes essentiels pour comprendre à quoi vous avez affaire.</p>
+                        <pre><code><span class="code-comment"># Afficher les 5 premières lignes</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">head</span>())
+
+<span class="code-comment"># Obtenir les dimensions (lignes, colonnes)</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"Dimensions : {</span><span class="code-variable">df</span>.<span class="code-variable">shape</span><span class="code-string">}"</span>)
+
+<span class="code-comment"># Obtenir un résumé technique (types de données, valeurs non nulles)</span>
+<span class="code-variable">df</span>.<span class="code-function">info</span>()
+
+<span class="code-comment"># Obtenir des statistiques descriptives pour les colonnes numériques</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">describe</span>())
+
+<span class="code-comment"># Compter les occurrences uniques dans la colonne 'Ville'</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>[<span class="code-string">'Ville'</span>].<span class="code-function">value_counts</span>())</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">3. Sélectionner des données</h3>
+                        <p class="mb-4">Pandas offre une syntaxe flexible pour extraire les morceaux de données qui vous intéressent.</p>
+                        <pre><code><span class="code-comment"># Sélectionner une seule colonne (retourne une Series)</span>
+<span class="code-variable">ages</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Age'</span>]
+
+<span class="code-comment"># Sélectionner plusieurs colonnes (retourne un DataFrame)</span>
+<span class="code-variable">infos_perso</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[[<span class="code-string">'Nom'</span>, <span class="code-string">'Ville'</span>]]
+
+<span class="code-comment"># Sélectionner par position entière avec .iloc (la première ligne)</span>
+<span class="code-variable">premiere_ligne</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">iloc</span>[<span class="code-number">0</span>]
+
+<span class="code-comment"># Sélectionner par étiquette d'index avec .loc</span>
+<span class="code-variable">df_indexed</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">set_index</span>(<span class="code-string">'Nom'</span>)
+<span class="code-variable">ligne_alice</span> <span class="code-operator">=</span> <span class="code-variable">df_indexed</span>.<span class="code-function">loc</span>[<span class="code-string">'Alice'</span>]</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">4. Filtrer selon des conditions</h3>
+                        <p class="mb-4">C'est le cœur de l'analyse : ne garder que les lignes qui correspondent à certains critères.</p>
+                        <pre><code><span class="code-comment"># Personnes de plus de 30 ans</span>
+<span class="code-variable">plus_de_30_ans</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-variable">df</span>[<span class="code-string">'Age'</span>] <span class="code-operator">></span> <span class="code-number">30</span>]
+
+<span class="code-comment"># Personnes de Paris ET dont le score est supérieur à 8</span>
+<span class="code-comment"># Notez les parenthèses obligatoires autour de chaque condition</span>
+<span class="code-variable">parisiens_bon_score</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[(<span class="code-variable">df</span>[<span class="code-string">'Ville'</span>] <span class="code-operator">==</span> <span class="code-string">'Paris'</span>) <span class="code-operator">&</span> (<span class="code-variable">df</span>[<span class="code-string">'Score'</span>] <span class="code-operator">></span> <span class="code-number">8</span>)]</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">5. Créer ou modifier des colonnes</h3>
+                        <p class="mb-4">Souvent, vous créerez de nouvelles informations à partir de celles que vous possédez déjà.</p>
+                        <pre><code><span class="code-comment"># Créer une nouvelle colonne 'Score_Final'</span>
+<span class="code-variable">df</span>[<span class="code-string">'Score_Final'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Score'</span>] <span class="code-operator">*</span> <span class="code-number">10</span>
+
+<span class="code-comment"># Créer une colonne booléenne</span>
+<span class="code-variable">df</span>[<span class="code-string">'Est_Majeur'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Age'</span>] <span class="code-operator">>=</span> <span class="code-number">18</span></code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">6. Gérer les valeurs manquantes</h3>
+                        <p class="mb-4">Les données du monde réel sont incomplètes. Pandas représente les valeurs manquantes par `NaN` (Not a Number).</p>
+                        <pre><code><span class="code-comment"># Compter les valeurs manquantes par colonne</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">isnull</span>().<span class="code-function">sum</span>())
+
+<span class="code-comment"># Supprimer les lignes avec des valeurs manquantes</span>
+<span class="code-variable">df_sans_nan</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">dropna</span>()
+
+<span class="code-comment"># Remplacer les âges manquants par la moyenne des âges</span>
+<span class="code-variable">moyenne_age</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">mean</span>()
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">moyenne_age</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">7. Grouper et agréger</h3>
+                        <p class="mb-4">L'une des fonctionnalités les plus puissantes. Elle suit le principe "Diviser-Appliquer-Combiner" pour calculer des statistiques par groupe.</p>
+                        <pre><code><span class="code-comment"># Calculer le score moyen par ville</span>
+<span class="code-variable">score_moyen_par_ville</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">groupby</span>(<span class="code-string">'Ville'</span>)[<span class="code-string">'Score'</span>].<span class="code-function">mean</span>()
+<span class="code-builtin">print</span>(<span class="code-variable">score_moyen_par_ville</span>)
+
+<span class="code-comment"># Appliquer plusieurs agrégations en même temps</span>
+<span class="code-variable">stats_par_ville</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">groupby</span>(<span class="code-string">'Ville'</span>).<span class="code-function">agg</span>(
+    {
+        <span class="code-string">'Age'</span>: [<span class="code-string">'mean'</span>, <span class="code-string">'min'</span>, <span class="code-string">'max'</span>],
+        <span class="code-string">'Score'</span>: <span class="code-string">'mean'</span>
+    }
+)
+<span class="code-builtin">print</span>(<span class="code-variable">stats_par_ville</span>)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Le naufrage du Titanic</h2>
+                <p class="text-lg text-justify mb-4">
+                    Mettez vos compétences en pratique avec le célèbre jeu de données du Titanic. Votre mission : chargez le fichier `train.csv`, inspectez-le, trouvez les valeurs manquantes, filtrez les passagers ayant payé plus de 100 pour leur ticket, calculez leur âge moyen, et sauvegardez ce sous-ensemble.
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution</summary>
+                    <pre class="mt-4"><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">try</span>:
+    <span class="code-variable">titanic_df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+
+    <span class="code-builtin">print</span>(<span class="code-string">"--- Informations sur le DataFrame ---"</span>)
+    <span class="code-variable">titanic_df</span>.<span class="code-function">info</span>()
+
+    <span class="code-variable">passagers_fortunes</span> <span class="code-operator">=</span> <span class="code-variable">titanic_df</span>[<span class="code-variable">titanic_df</span>[<span class="code-string">'Fare'</span>] <span class="code-operator">></span> <span class="code-number">100</span>]
+    
+    <span class="code-variable">age_moyen_riches</span> <span class="code-operator">=</span> <span class="code-variable">passagers_fortunes</span>[<span class="code-string">'Age'</span>].<span class="code-function">mean</span>()
+    <span class="code-builtin">print</span>(<span class="code-string">f"\\nÂge moyen des passagers fortunés : {</span><span class="code-variable">age_moyen_riches</span><span class="code-string">:.2f} ans"</span>)
+
+    <span class="code-variable">passagers_fortunes</span>.<span class="code-function">to_csv</span>(<span class="code-string">'titanic_riches.csv'</span>, <span class="code-variable">index</span><span class="code-operator">=</span><span class="code-keyword">False</span>)
+    <span class="code-builtin">print</span>(<span class="code-string">"\\nFichier 'titanic_riches.csv' sauvegardé."</span>)
+<span class="code-keyword">except</span> <span class="code-variable">FileNotFoundError</span>:
+    <span class="code-builtin">print</span>(<span class="code-string">"Erreur : Le fichier 'train.csv' n'a pas été trouvé."</span>)
+</code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quelle est la structure de données principale de Pandas pour représenter un tableau de données à 2 dimensions ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une Series</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Un DataFrame</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Un tableau NumPy</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Une liste Python</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Quelle méthode permet d'obtenir un résumé statistique rapide (moyenne, min, max, etc.) des colonnes numériques d'un DataFrame `df` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) <code>df.info()</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) <code>df.head()</code></button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) <code>df.describe()</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) <code>df.shape</code></button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Comment sélectionneriez-vous toutes les lignes où la valeur de la colonne 'Ville' est 'Paris' dans un DataFrame `df` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) <code>df.loc['Paris']</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) <code>df.iloc['Paris']</code></button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) <code>df[df['Ville'] == 'Paris']</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) <code>df.get('Paris')</code></button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Quelle est la fonction de <code>df.isnull().sum()</code> ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Compter le nombre de valeurs manquantes par colonne.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Supprimer toutes les valeurs nulles.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Calculer la somme de toutes les colonnes.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Remplacer les valeurs nulles par la somme de la colonne.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. La méthode <code>.groupby()</code> est utilisée pour...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Trier le DataFrame selon une colonne.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Sélectionner un groupe de colonnes.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Diviser les données en groupes, appliquer une fonction et combiner les résultats.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Lire un groupe de fichiers CSV en même temps.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. L'importance des types de données (dtypes) :</strong> Pourquoi est-il si important de vérifier les types de données avec <code>.info()</code> juste après avoir chargé un fichier ? Donnez un exemple de problème qui pourrait survenir si une colonne de prix était incorrectement lue comme du texte (type `object`).</p>
+                    <p><strong>2. <code>.loc</code> vs <code>.iloc</code> :</strong> Imaginez que vous ayez un DataFrame et que vous le triiez par ordre alphabétique des noms. Pourquoi l'utilisation de <code>.iloc[0]</code> pour sélectionner le premier enregistrement pourrait maintenant donner un résultat différent, alors que <code>.loc['Alice']</code> (si Alice est un index) donnerait toujours le même ?</p>
+                    <p><strong>3. La puissance de <code>.groupby()</code> :</strong> Pensez à un jeu de données sur les résultats sportifs d'une équipe. Quelle question pourriez-vous poser et à laquelle vous pourriez répondre en utilisant <code>.groupby()</code> ? (Par exemple, en groupant par adversaire, par stade, etc.).</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

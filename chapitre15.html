@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 15: La Régression Logistique</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour les formules mathématiques -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E2D3B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 15. La Régression Logistique - Classifier le monde en "Oui" ou "Non"
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Avec la régression linéaire, nous avons appris à prédire une valeur continue, comme un salaire. Mais que se passe-t-il si nous voulons prédire une catégorie ? "Spam" ou "Non Spam" ? "Malade" ou "Sain" ? "Survivant" ou "Non-survivant" ? Une ligne droite qui peut aller de -∞ à +∞ ne peut pas nous donner une réponse "Oui" ou "Non" de manière fiable. Pour cela, nous avons besoin d'un nouvel outil. Au lieu de tracer une ligne, la régression logistique dessine une courbe en forme de "S", appelée la fonction sigmoïde. Cette fonction magique prend n'importe quel score et le transforme élégamment en une probabilité, toujours comprise entre 0 et 1.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">De la probabilité à la décision</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Étape 1 : Le Score Linéaire (Logit)</h3>
+                        <p class="mb-4 text-justify">Tout commence comme une régression linéaire. Le modèle calcule un score, souvent appelé \(z\) ou "logit", en faisant une somme pondérée des features. Chaque feature \(x_i\) a un poids (ou coefficient) \(m_i\) qui a été appris durant l'entraînement. Le modèle additionne tout cela avec une constante \(b\) (le biais).</p>
+                        <div class="bg-gray-900/50 p-4 rounded-md text-center">
+                            <p class="text-2xl font-bold text-gray-200">
+                                $$ z = b + m_1x_1 + m_2x_2 + \dots + m_nx_n $$
+                            </p>
+                        </div>
+                        <p class="mt-4 text-justify">Ce score \(z\) peut être n'importe quel nombre réel, de -∞ à +∞. Un score élevé suggère une forte probabilité pour la classe "Oui" (1), tandis qu'un score très bas suggère une forte probabilité pour la classe "Non" (0).</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Étape 2 : La transformation en Probabilité avec la Sigmoïde</h3>
+                        <p class="mb-4 text-justify">Pour transformer ce score \(z\) en une probabilité compréhensible (entre 0 et 1), on le passe à travers la fonction sigmoïde, notée \(\sigma(z)\).</p>
+                         <div class="bg-gray-900/50 p-4 rounded-md text-center">
+                            <p class="text-2xl font-bold text-gray-200">
+                                $$ P(\text{y}=1) = \sigma(z) = \frac{1}{1 + e^{-z}} $$
+                            </p>
+                        </div>
+                        <div class="text-center my-4 p-4 border border-dashed border-gray-600 rounded-lg">
+                            <p class="text-gray-400 italic"></p>
+                        </div>
+                        <p class="text-justify">Cette fonction est magnifique : si le score \(z\) est très grand (ex: 10), \(e^{-z}\) devient minuscule, et la probabilité se rapproche de 1. Si \(z\) est très négatif (ex: -10), \(e^{-z}\) devient énorme, et la probabilité se rapproche de 0. Si \(z\) est exactement 0, la probabilité est de 0.5. Le résultat est une belle courbe en "S".</p>
+                         <div class="mt-6 bg-gray-700/70 p-4 rounded-lg">
+                            <h4 class="text-xl font-bold text-white mb-2">Exemple concret :</h4>
+                            <p class="mb-2">Imaginons que notre modèle pour le Titanic a appris les coefficients suivants : \(b = -1.5\), \(m_{Pclass} = -0.8\), \(m_{Sex} = 2.5\). Considérons une passagère de 1ère classe (Pclass=1, Sex=1) :</p>
+                            <p class="text-left font-mono text-lg bg-gray-800 p-3 rounded-md">
+                                $$ z = -1.5 + (-0.8 \times 1) + (2.5 \times 1) = -1.5 - 0.8 + 2.5 = 0.2 $$
+                                $$ P(\text{survie}) = \frac{1}{1 + e^{-0.2}} \approx \frac{1}{1 + 0.8187} \approx 0.55 $$
+                            </p>
+                            <p class="mt-2">Le modèle estime que cette passagère avait environ 55% de chances de survivre.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Étape 3 : Le seuil de décision</h3>
+                        <p class="mb-4 text-justify">Maintenant que nous avons une probabilité, nous avons besoin d'une décision finale. C'est le rôle du seuil de décision. Par défaut, il est fixé à 0.5.</p>
+                        <div class="bg-gray-900/50 p-4 rounded-md text-center">
+                            <p>Si \(P(\text{y}=1) > 0.5\), alors la prédiction est 1 ("Oui").</p>
+                            <p>Si \(P(\text{y}=1) \leq 0.5\), alors la prédiction est 0 ("Non").</p>
+                        </div>
+                        <p class="mt-4 text-justify">Dans notre exemple, 55% > 50%, donc notre modèle prédirait que la passagère a survécu (prédiction = 1). Ce seuil est un paramètre crucial que l'on peut ajuster. Pour un test de dépistage médical, on pourrait le baisser à 0.2 pour être sûr de ne manquer aucun malade potentiel (minimiser les faux négatifs), même si cela augmente le nombre de fausses alertes (faux positifs).</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La Régression Logistique avec Scikit-Learn</h2>
+                <p class="text-lg mb-6">Mettons la théorie en pratique ! Nous allons utiliser la bibliothèque Scikit-Learn pour construire notre propre modèle de prédiction de survie sur le Titanic. Voici les étapes clés.</p>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Étape 1 : Préparation des Données</h3>
+                        <p class="mb-4 text-justify">La première étape, et l'une des plus importantes, est de nettoyer nos données. Un modèle de machine learning est comme un chef cuisinier : il a besoin d'ingrédients de qualité pour préparer un bon plat. Pour nos données, cela signifie gérer les valeurs manquantes et s'assurer que tout est au format numérique.</p>
+                        <pre><code><span class="code-comment"># Importer les bibliothèques nécessaires</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.linear_model</span> <span class="code-keyword">import</span> <span class="code-variable">LogisticRegression</span>
+
+<span class="code-comment"># Charger les données</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+
+<span class="code-comment"># Remplacer les âges manquants par l'âge médian</span>
+<span class="code-variable">age_median</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>()
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">age_median</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-literal">True</span>)
+
+<span class="code-comment"># Supprimer la colonne 'Cabin' car elle a trop de valeurs manquantes</span>
+<span class="code-variable">df</span>.<span class="code-function">drop</span>(<span class="code-string">'Cabin'</span>, <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-literal">True</span>)
+
+<span class="code-comment"># Remplacer les ports d'embarquement manquants par le plus fréquent</span>
+<span class="code-variable">embarked_mode</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">mode</span>()[<span class="code-number">0</span>]
+<span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">fillna</span>(<span class="code-variable">embarked_mode</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-literal">True</span>)
+
+<span class="code-comment"># Transformer la colonne 'Sex' en valeurs numériques (0 pour homme, 1 for femme)</span>
+<span class="code-variable">df</span>[<span class="code-string">'Sex'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Sex'</span>].<span class="code-function">map</span>({<span class="code-string">'male'</span>: <span class="code-number">0</span>, <span class="code-string">'female'</span>: <span class="code-number">1</span>})</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Étape 2 : Entraînement du Modèle</h3>
+                        <p class="mb-4 text-justify">Maintenant que nos données sont prêtes, nous pouvons les utiliser pour entraîner notre modèle. Nous allons d'abord sélectionner les "indices" (features) que nous pensons utiles, puis nous diviserons nos données en un ensemble d'entraînement et un ensemble de test.</p>
+                        <pre><code><span class="code-comment"># 1. Sélectionner les features (X) et la cible (y)</span>
+<span class="code-variable">features</span> <span class="code-operator">=</span> [<span class="code-string">'Pclass'</span>, <span class="code-string">'Sex'</span>, <span class="code-string">'Age'</span>, <span class="code-string">'Fare'</span>]
+<span class="code-variable">target</span> <span class="code-operator">=</span> <span class="code-string">'Survived'</span>
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-variable">features</span>]
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-variable">target</span>]
+
+<span class="code-comment"># 2. Diviser les données : 70% pour l'entraînement, 30% pour le test</span>
+<span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">test_size</span><span class="code-operator">=</span><span class="code-number">0.3</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+
+<span class="code-comment"># 3. Créer une instance du modèle de Régression Logistique</span>
+<span class="code-comment"># max_iter est augmenté pour donner à l'algorithme assez de temps pour converger</span>
+<span class="code-variable">model</span> <span class="code-operator">=</span> <span class="code-function">LogisticRegression</span>(<span class="code-variable">max_iter</span><span class="code-operator">=</span><span class="code-number">200</span>)
+
+<span class="code-comment"># 4. Entraîner le modèle avec les données d'entraînement</span>
+<span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)</code></pre>
+                    </div>
+                    <div>
+                         <h3 class="text-2xl font-bold text-blue-400 mb-3">Étape 3 : Faire et Interpréter les Prédictions</h3>
+                         <p class="mb-4 text-justify">Le modèle est maintenant entraîné ! Utilisons-le sur notre ensemble de test (les données qu'il n'a jamais vues) pour voir ce qu'il a appris.</p>
+                         <pre><code><span class="code-comment"># Utiliser .predict_proba() pour voir les probabilités brutes</span>
+<span class="code-comment"># La première colonne est P(Non-survivant), la seconde est P(Survivant)</span>
+<span class="code-variable">probabilities</span> <span class="code-operator">=</span> <span class="code-variable">model</span>.<span class="code-function">predict_proba</span>(<span class="code-variable">X_test</span>)
+<span class="code-builtin">print</span>(<span class="code-string">"Probabilités pour les 5 premiers passagers :"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">probabilities</span>[:<span class="code-number">5</span>].<span class="code-function">round</span>(<span class="code-number">2</span>))
+
+<span class="code-comment"># Utiliser .predict() pour obtenir la décision finale (seuil de 0.5 appliqué)</span>
+<span class="code-variable">predictions</span> <span class="code-operator">=</span> <span class="code-variable">model</span>.<span class="code-function">predict</span>(<span class="code-variable">X_test</span>)
+<span class="code-builtin">print</span>(<span class="code-string">"\\nPrédictions finales (0=Mort, 1=Survivant) pour les 5 premiers passagers :"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">predictions</span>[:<span class="code-number">5</span>])</code></pre>
+                         <p class="mt-4 text-justify">En observant les sorties, vous pouvez voir comment une probabilité de survie supérieure à 0.5 (comme 0.64 pour le deuxième passager) se traduit par une prédiction finale de 1 (Survivant), tandis qu'une probabilité inférieure (comme 0.13 pour le premier passager) donne une prédiction de 0 (Mort).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Évaluer la performance du modèle</h2>
+                <p class="text-lg text-justify mb-4">
+                    Nous avons des prédictions, mais sont-elles bonnes ? Il est temps d'évaluer notre premier modèle de classification.
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Votre mission et la solution</summary>
+                    <div class="mt-4 space-y-4">
+                        <p class="font-semibold">Votre mission :</p>
+                        <ul class="list-disc list-inside">
+                            <li>Calculez l'exactitude (accuracy) de votre modèle en comparant <code>y_test</code> (les vraies réponses) et <code>predictions</code> (les réponses du modèle).</li>
+                            <li>Affichez la matrice de confusion. C'est un tableau qui nous montre en détail où le modèle a eu raison et où il s'est trompé.</li>
+                            <li>Interprétez chaque case de cette matrice.</li>
+                        </ul>
+                        <p class="font-semibold mt-4">Solution et Interprétation :</p>
+                        <pre><code><span class="code-comment"># Importer les outils d'évaluation</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.metrics</span> <span class="code-keyword">import</span> <span class="code-variable">accuracy_score</span>, <span class="code-variable">confusion_matrix</span>
+<span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+
+<span class="code-comment"># 1. Calculer l'exactitude</span>
+<span class="code-variable">accuracy</span> <span class="code-operator">=</span> <span class="code-function">accuracy_score</span>(<span class="code-variable">y_test</span>, <span class="code-variable">predictions</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"\\n--- Évaluation du Modèle ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Exactitude (Accuracy) : {accuracy:.2%}"</span>)
+
+<span class="code-comment"># 2. Calculer et afficher la matrice de confusion</span>
+<span class="code-variable">conf_matrix</span> <span class="code-operator">=</span> <span class="code-function">confusion_matrix</span>(<span class="code-variable">y_test</span>, <span class="code-variable">predictions</span>)
+
+<span class="code-comment"># Pour une meilleure visualisation</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">8</span>, <span class="code-number">6</span>))
+<span class="code-variable">sns</span>.<span class="code-function">heatmap</span>(<span class="code-variable">conf_matrix</span>, <span class="code-variable">annot</span><span class="code-operator">=</span><span class="code-literal">True</span>, <span class="code-variable">fmt</span><span class="code-operator">=</span><span class="code-string">'d'</span>, <span class="code-variable">cmap</span><span class="code-operator">=</span><span class="code-string">'Blues'</span>,
+            <span class="code-variable">xticklabels</span><span class="code-operator">=</span>[<span class="code-string">'Prédit Non-Survivant'</span>, <span class="code-string">'Prédit Survivant'</span>],
+            <span class="code-variable">yticklabels</span><span class="code-operator">=</span>[<span class="code-string">'Vrai Non-Survivant'</span>, <span class="code-string">'Vrai Survivant'</span>])
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Matrice de Confusion'</span>, <span class="code-variable">fontsize</span><span class="code-operator">=</span><span class="code-number">16</span>)
+<span class="code-variable">plt</span>.<span class="code-function">ylabel</span>(<span class="code-string">'Vraie Valeur'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">xlabel</span>(<span class="code-string">'Valeur Prédite'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                    </div>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quelle est la principale différence entre la régression linéaire et la régression logistique ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La régression logistique est plus rapide à entraîner.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La régression linéaire prédit une valeur continue, tandis que la logistique prédit une probabilité pour une classification.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La régression logistique ne peut utiliser que des features numériques.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La régression linéaire utilise une courbe en "S".</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Quelle est la plage de valeurs de sortie de la fonction sigmoïde ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) De -1 à 1</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) De 0 à l'infini</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) De 0 à 1</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) De -l'infini à +l'infini</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Si un modèle de régression logistique prédit une probabilité de 0.65 pour la classe "Survivant", quelle sera la prédiction finale avec un seuil de 0.5 ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Non-survivant (0)</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Survivant (1)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le modèle est incertain.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) 0.65</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans Scikit-Learn, quelle méthode est utilisée pour obtenir les probabilités prédites par un modèle de classification ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) <code>.predict()</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) <code>.fit()</code></button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) <code>.predict_proba()</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) <code>.score()</code></button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Que représente la "matrice de confusion" en classification ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Un tableau qui compare les vraies valeurs aux valeurs prédites par le modèle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Un graphique montrant la performance du modèle au fil du temps.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Une mesure de la vitesse d'entraînement du modèle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La liste des erreurs de code dans le modèle.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Au-delà du binaire :</strong> La régression logistique est parfaite pour les problèmes à deux classes (Oui/Non). Comment pourrait-on l'adapter pour prédire plus de deux catégories, par exemple, pour classer des images de fleurs en "Rose", "Tulipe" ou "Pâquerette" ?</p>
+                    <p><strong>2. L'importance des coefficients :</strong> Tout comme en régression linéaire, le modèle logistique apprend des coefficients pour chaque feature. Si le coefficient pour la feature "Sex" (où 1 = femme) est fortement positif, qu'est-ce que cela nous dit sur l'impact de ce facteur sur la probabilité de survie ?</p>
+                    <p><strong>3. Le coût d'une erreur :</strong> Dans la matrice de confusion, nous avons vu des erreurs. Pour un système de diagnostic médical (prédire "malade" vs "sain"), quelle erreur est la plus grave : prédire "sain" alors que le patient est "malade" (un faux négatif), ou prédire "malade" alors que le patient est "sain" (un faux positif) ? Comment cela pourrait-il influencer notre choix du seuil de décision ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        // Désactiver tous les boutons pour cette question
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

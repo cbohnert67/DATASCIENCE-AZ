@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 31: Git & GitHub pour les Data Scientists</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Terminal Syntax Highlighting */
+        .code-prompt { color: #A8A8A8; }
+        .code-command { color: #569CD6; }
+        .code-output { color: #B5CEA8; }
+        .code-comment { color: #6A9955; font-style: italic; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 31 : Git & GitHub pour les Data Scientists - Collaborez sans tout casser
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Imaginez que vous travaillez sur votre projet de prédiction. Pour sauvegarder vos progrès, vous créez des copies de votre notebook : `projet_v1.ipynb`, `projet_v2_nettoyage.ipynb`, `projet_final.ipynb`, `projet_final_VRAIMENT_final.ipynb`... C'est le chaos assuré. Et que se passe-t-il si vous voulez collaborer avec un ami ? Vous vous envoyez les fichiers par email ? Git est le système de contrôle de version professionnel conçu pour éviter ce désordre, suivre l'historique de vos modifications et collaborer efficacement.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'art de voyager dans le temps (et dans le code)</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Pourquoi le versioning est-il crucial en Data Science ?</h3>
+                        <p class="mb-4 text-justify">En Data Science, un projet n'est pas seulement du code, c'est une succession d'expériences. Le contrôle de version est la seule façon de tenir un journal de bord rigoureux de ces expériences.</p>
+                        <div class="space-y-4">
+                            <div class="bg-gray-900/50 p-4 rounded-md">
+                                <h4 class="font-semibold text-lg text-cyan-300">Garantir la reproductibilité</h4>
+                                <p><strong>Le scénario catastrophe :</strong> Six mois après avoir fini un projet, un client vous demande : "Pouvez-vous régénérer le modèle exact qui nous a donné 92.4% de précision ?". Sans Git, c'est presque impossible. Vous avez changé les versions des bibliothèques, légèrement modifié une fonction de nettoyage... Avec Git, il vous suffit de retrouver le `commit` correspondant à ce résultat pour restaurer l'intégralité de l'environnement et du code. C'est la base de la rigueur scientifique.</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-md">
+                                <h4 class="font-semibold text-lg text-cyan-300">Revenir en arrière en toute sécurité</h4>
+                                <p>Git est le "Ctrl+Z" ultime pour tout votre projet. Vous avez testé une nouvelle technique de feature engineering qui s'avère catastrophique et a cassé la moitié de votre code ? Pas de panique. Une simple commande (`git checkout` ou `git revert`) vous permet de revenir à la dernière version stable de votre projet, comme si de rien n'était.</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-md">
+                                <h4 class="font-semibold text-lg text-cyan-300">Expérimenter sans risque avec les branches</h4>
+                                <p>C'est l'une des fonctionnalités les plus puissantes. Imaginez que votre branche `main` est votre projet stable et fonctionnel. Vous voulez tester un nouvel algorithme comme XGBoost ?</p>
+                                <p class="mt-2"><code>git checkout -b experiment-xgboost</code></p>
+                                <p>Cette commande crée une "copie" de votre projet, une branche nommée `experiment-xgboost`, où vous pouvez faire toutes les modifications que vous voulez. La branche `main` reste intacte. Si votre expérience est un succès, vous pourrez fusionner (`merge`) vos changements dans `main`. Si c'est un échec, vous supprimez simplement la branche. Fini les `projet_v2_test_xgboost.ipynb` !</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La différence entre Git et GitHub</h3>
+                        <p class="mb-4 text-justify">L'analogie la plus simple est celle-ci : <strong>Git est le logiciel Word, GitHub est Google Docs.</strong></p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-cyan-300">Git : L'atelier local</h4>
+                                <p>Git est un programme qui s'exécute sur <strong>votre ordinateur</strong>. Il ne sait rien du web. Son seul travail est de suivre les modifications de vos fichiers dans un dossier (votre dépôt) et de vous permettre de créer des commits, de créer des branches, etc. Toutes les commandes comme `git add`, `git commit`, `git status` se passent à 100% sur votre machine.</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-cyan-300">GitHub : La plateforme de partage</h4>
+                                <p>GitHub est un site web qui <strong>héberge</strong> des dépôts Git. C'est une sorte de "cloud" pour votre code. Son but est de faciliter la collaboration et la sauvegarde. C'est sur GitHub que vous pouvez :</p>
+                                <ul class="list-disc list-inside ml-4 mt-2">
+                                    <li>Stocker une copie de sauvegarde de votre dépôt.</li>
+                                    <li>Partager votre code avec le monde entier (ou en privé).</li>
+                                    <li>Collaborer avec d'autres via les "Pull Requests".</li>
+                                    <li>Gérer votre projet (suivi de bugs, etc.).</li>
+                                </ul>
+                                <p class="mt-2">Les commandes `git push`, `git pull`, `git clone` sont les ponts qui connectent votre Git local à votre dépôt distant sur GitHub.</p>
+                            </div>
+                        </div>
+                         [Image d'un schéma montrant Git sur un ordinateur local avec les commandes add/commit, et GitHub dans le cloud avec les commandes push/pull]
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le workflow du Data Scientist avec Git</h2>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Les concepts de base</h3>
+                        <ul class="space-y-3">
+                            <li><strong>Dépôt (Repository) :</strong> C'est simplement le dossier de votre projet. Quand vous lancez `git init` dedans, Git commence à le surveiller.</li>
+                            <li><strong>Commit :</strong> C'est un "point de sauvegarde" intelligent. Plutôt que de copier tout le projet, il enregistre uniquement les <strong>différences</strong> par rapport au commit précédent. Chaque commit a un identifiant unique et un message descriptif, formant une chaîne d'historique. <em>Un bon message de commit est crucial : `git commit -m "Ajout du modèle RandomForest"` est bien meilleur que `git commit -m "modif"`.</em></li>
+                            <li><strong>Branche (Branch) :</strong> C'est une copie de travail de votre projet. La branche principale s'appelle `main`. Quand vous créez une nouvelle branche, vous créez un espace de travail parallèle où vous pouvez expérimenter sans affecter la version stable. C'est comme faire une photocopie d'un document pour y prendre des notes, tout en gardant l'original intact.</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le cycle de vie d'une modification (Les 3 étapes)</h3>
+                        <p class="mb-4">Le workflow pour enregistrer une modification est un processus en trois temps, comme préparer un colis :</p>
+                        [Image d'un diagramme du workflow Git : 1. Working Directory -> 2. Staging Area -> 3. Local Repository]
+<pre><code><span class="code-comment"># Vous travaillez sur vos fichiers (`analyse.ipynb`, `utils.py`...)</span>
+<span class="code-comment"># C'est votre "Bureau de travail" (Working Directory).</span>
+
+<span class="code-comment"># ÉTAPE 1 : Sélectionner ce qui va dans le colis</span>
+<span class="code-prompt">$</span> <span class="code-command">git add analyse.ipynb</span>
+<span class="code-comment"># Vous mettez `analyse.ipynb` dans le "carton" (Staging Area).</span>
+<span class="code-comment"># Le fichier `utils.py` sur lequel vous travaillez encore reste sur le bureau.</span>
+
+<span class="code-comment"># ÉTAPE 2 : Sceller et étiqueter le colis</span>
+<span class="code-prompt">$</span> <span class="code-command">git commit -m "Ajout de la visualisation des corrélations"</span>
+<span class="code-comment"># Vous fermez le carton et vous mettez une étiquette claire.</span>
+<span class="code-comment"># Le "commit" est maintenant sauvegardé dans votre dépôt local (Local Repository).</span>
+</code></pre>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mt-6 mb-3">Le workflow complet avec GitHub (Collaboration)</h3>
+                        <p class="mb-4">Voici le cycle complet quand vous travaillez en équipe :</p>
+<pre><code><span class="code-comment"># 1. Obtenir le projet (une seule fois au début)</span>
+<span class="code-prompt">$</span> <span class="code-command">git clone https://github.com/equipe/projet-titanic.git</span>
+
+<span class="code-comment"># 2. Avant de commencer à travailler, TOUJOURS se mettre à jour</span>
+<span class="code-prompt">$</span> <span class="code-command">git pull</span>
+<span class="code-output"># Récupère les modifications faites par vos collègues pendant la nuit.</span>
+
+<span class="code-comment"># 3. Vous travaillez sur votre notebook...</span>
+
+<span class="code-comment"># 4. Vérifier où vous en êtes (votre meilleur ami)</span>
+<span class="code-prompt">$</span> <span class="code-command">git status</span>
+<span class="code-output">On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  modified:   analyse.ipynb</span>
+
+<span class="code-comment"># 5. Sauvegarder votre travail localement (add + commit)</span>
+<span class="code-prompt">$</span> <span class="code-command">git add analyse.ipynb</span>
+<span class="code-prompt">$</span> <span class="code-command">git commit -m "Correction du bug dans le calcul de l'âge moyen"</span>
+
+<span class="code-comment"># 6. Partager votre travail avec l'équipe</span>
+<span class="code-prompt">$</span> <span class="code-command">git push</span>
+<span class="code-output"># Envoie votre nouveau commit sur le dépôt distant sur GitHub.</span>
+</code></pre>
+                    </div>
+                </div>
+            </section>
+
+             <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'arme secrète du Data Scientist : .gitignore</h2>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <p class="mb-4 text-justify">Imaginez que vous lancez la commande `git status` et que vous voyez une liste interminable de fichiers : vos datasets, des fichiers temporaires, des dossiers de configuration... C'est le chaos. Le fichier `.gitignore` est votre agent de nettoyage : il indique à Git "Ne t'occupe pas de ces fichiers, ignore-les". C'est un simple fichier texte nommé `.gitignore` (le point au début est crucial) que vous placez à la racine de votre projet.</p>
+                    
+                    <h3 class="text-xl font-bold text-blue-400 mt-6 mb-3">Avant / Après : L'impact d'un `.gitignore`</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-gray-900/50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-lg text-red-400">Sans `.gitignore`</h4>
+<pre><code><span class="code-prompt">$</span> <span class="code-command">git status</span>
+<span class="code-output">Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+    .DS_Store
+    .env
+    data/titanic.csv
+    venv/
+    analyse.ipynb
+    .ipynb_checkpoints/</span></code></pre>
+                            <p class="mt-2 text-sm italic">Votre statut est pollué par des fichiers inutiles ou sensibles.</p>
+                        </div>
+                        <div class="bg-gray-900/50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-lg text-green-400">Avec `.gitignore`</h4>
+<pre><code><span class="code-prompt">$</span> <span class="code-command">git status</span>
+<span class="code-output">Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+    analyse.ipynb</span></code></pre>
+                             <p class="mt-2 text-sm italic">C'est clair ! Vous ne voyez que les fichiers pertinents de votre projet.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-blue-400 mt-8 mb-3">Exemple de `.gitignore` commenté pour un projet de Data Science</h3>
+<pre><code><span class="code-comment"># Fichiers de données. Ne JAMAIS versionner les données brutes.</span>
+<span class="code-comment"># Partagez-les via un stockage cloud et décrivez-les dans le README.</span>
+*.csv
+*.json
+*.parquet
+data/
+
+<span class="code-comment"># Fichiers de configuration et secrets. Contient les clés d'API, mots de passe...</span>
+<span class="code-comment"># C'est une faille de sécurité majeure de les versionner.</span>
+.env
+*.env
+
+<span class="code-comment"># Dossiers d'environnement virtuel Python.</span>
+<span class="code-comment"># Ils sont spécifiques à votre machine et peuvent peser des centaines de Mo.</span>
+venv/
+env/
+
+<span class="code-comment"># Fichiers temporaires des notebooks Jupyter.</span>
+.ipynb_checkpoints/
+
+<span class="code-comment"># Fichiers cache de Python.</span>
+__pycache__/
+
+<span class="code-comment"># Fichiers système spécifiques à l'OS (macOS, Windows).</span>
+.DS_Store
+Thumbs.db
+</code></pre>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous !</h2>
+                <p class="text-lg text-justify mb-4">Vous venez de finir une analyse exploratoire dans `analyse.ipynb` et vous voulez sauvegarder votre travail proprement.</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                    <p>Quelles sont les <strong>trois commandes Git</strong>, dans le bon ordre, que vous devez taper dans votre terminal pour créer un commit avec le message "Fin de l'analyse exploratoire" et envoyer ce commit sur GitHub ? (Supposez que votre dépôt local est déjà connecté à GitHub).</p>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour la solution</summary>
+<pre class="mt-2"><code><span class="code-prompt">$</span> <span class="code-command">git add analyse.ipynb</span>
+<span class="code-prompt">$</span> <span class="code-command">git commit -m "Fin de l'analyse exploratoire"</span>
+<span class="code-prompt">$</span> <span class="code-command">git push</span></code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quelle est la principale différence entre Git et GitHub ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Il n'y en a aucune, ce sont deux noms pour la même chose.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Git est un service payant, GitHub est gratuit.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Git est un logiciel local de contrôle de version, GitHub est une plateforme en ligne pour héberger des dépôts Git.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Git a été créé par Microsoft, GitHub par Linus Torvalds.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. À quoi sert la commande `git commit` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À créer une sauvegarde (un "instantané") des fichiers en transit dans le dépôt local.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À envoyer les modifications sur GitHub.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À télécharger les dernières modifications depuis GitHub.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À sélectionner les fichiers que l'on veut sauvegarder.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Pourquoi est-il crucial d'utiliser un fichier `.gitignore` dans un projet de Data Science ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Pour lister les collaborateurs du projet.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour empêcher Git de versionner des fichiers volumineux (données) ou inutiles.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour écrire la documentation du projet.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Pour accélérer la vitesse de la commande `git push`.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Quelle commande utiliser pour récupérer les mises à jour d'un dépôt distant sur GitHub ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `git push`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `git clone`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `git commit`</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `git pull`</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Que fait la commande `git add .` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Elle place tous les fichiers modifiés et nouveaux dans la zone de transit (staging area).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Elle supprime tous les fichiers du projet.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Elle crée un commit avec tous les fichiers.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Elle affiche le statut de tous les fichiers.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Conflits de fusion :</strong> Que se passe-t-il si vous et un collègue modifiez la même ligne de code en même temps et que vous essayez tous les deux de "pusher" vos modifications ? Comment Git gère-t-il cette situation (recherchez "merge conflict") ?</p>
+                    <p><strong>2. Le pouvoir des branches :</strong> Vous devez tester un nouvel algorithme très expérimental. Quelle est la meilleure pratique avec Git pour le faire sans risquer de casser la version fonctionnelle de votre projet ? Décrivez les étapes.</p>
+                    <p><strong>3. Git pour la Data Science :</strong> Au-delà du code, comment Git peut-il être utilisé pour versionner autre chose dans un projet de Data Science ? Pensez aux modèles entraînés ou aux étapes de preprocessing (avec des outils comme DVC - Data Version Control).</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

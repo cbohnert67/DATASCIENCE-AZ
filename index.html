@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Data Science de A à Z pour les lycéens - Index</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Styles pour l'accordéon */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <header class="text-center pt-12 mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">
+                La Data Science de A à Z
+            </h1>
+            <p class="text-lg text-gray-400">Un panorama pour les lycéens et les curieux du monde des données</p>
+        </header>
+
+        <!-- Texte de guide pour l'utilisateur -->
+        <section class="mb-10 text-center bg-gray-800/50 p-6 rounded-lg border border-gray-700/50">
+            <p class="text-gray-400 leading-relaxed">
+                Bienvenue ! Suivez votre parcours d'apprentissage pas à pas. Cochez la case à côté de chaque chapitre une fois que vous l'avez terminé pour mettre à jour votre progression.
+                <br><br>
+                Ce projet est libre et sous licence CC BY-NC-SA. Vous pouvez soutenir le développement de ce projet en m'achetant un ou plusieurs cafés sur Buy Me a Coffee. Merci pour votre soutien !
+            </p>
+        </section>
+
+        <!-- Section de la barre de progression -->
+        <section class="sticky top-0 z-10 bg-gray-900/95 backdrop-blur-sm py-4 mb-12">
+            <div class="flex justify-between items-center mb-2">
+                 <h2 class="text-xl font-semibold text-gray-200">Votre Progression</h2>
+                 <p id="progress-text" class="text-gray-400 font-medium text-sm sm:text-base">0 / 0</p>
+            </div>
+            <div class="bg-gray-700 rounded-full h-4 overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 to-blue-500 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+            </div>
+        </section>
+
+        <main class="space-y-10" id="chapter-list">
+            <!-- Les sections de l'accordéon seront injectées ici par JavaScript -->
+        </main>
+
+        <footer class="text-center mt-12 pt-8 pb-12 border-t border-gray-700">
+            <p class="text-gray-500">
+                Un livre pour explorer le monde des données, créé par Cédric Bohnert. Version 0.1.2025 CC BY-NC-SA.
+            </p>
+        </footer>
+    </div>
+    
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="cbohnert67" data-description="Support me on Buy me a coffee!" data-message="Merci de soutenir ce projet !" data-color="#FF5F5F" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chaptersData = [
+                {
+                    part: "Introduction",
+                    chapters: [
+                        { title: "Introduction", link: "introduction.html" }
+                    ]
+                },
+                {
+                    part: "Partie 1 : Les Fondations de la Data Science",
+                    chapters: [
+                        { title: "1. Pourquoi la Data Science va changer votre façon de penser", link: "chapitre1.html" },
+                        { title: "2. Python pour la Data Science : L'installation et les 10 instructions à connaître par cœur", link: "chapitre2.html" },
+                        { title: "3. NumPy : L'arme secrète des Data Scientists pour manipuler les nombres", link: "chapitre3.html" },
+                        { title: "4. Pandas : Comment transformer des tableaux Excel moches en or pur", link: "chapitre4.html" },
+                        { title: "5. L'Algèbre Linéaire sans aspirine : Vecteurs et Matrices pour le Machine Learning", link: "chapitre5.html" },
+                        { title: "6. Le Calcul Différentiel pour les nuls : Comprendre la \"descente de gradient\"", link: "chapitre6.html" },
+                        { title: "7. Les Probabilités pour la Data Science : Plus qu'un simple jeu de dés !", link: "chapitre7.html" },
+                        { title: "8. Les Statistiques Descriptives : L'art de faire parler vos données", link: "chapitre8.html" },
+                        { title: "9. Introduction à la Visualisation de Données avec Matplotlib", link: "chapitre9.html" },
+                        { title: "10. Seaborn : Des graphiques statistiques magnifiques en une seule ligne de code", link: "chapitre10.html" },
+                        { title: "11. Votre Premier Projet de A à Z (Partie 1) : Trouver et Nettoyer les Données", link: "chapitre11.html" },
+                        { title: "12. Votre Premier Projet de A à Z (Partie 2) : Exploration et Visualisation", link: "chapitre12.html" }
+                    ]
+                },
+                {
+                    part: "Partie 2 : Le Machine Learning",
+                    chapters: [
+                        { title: "13. Machine Learning : Mon ordinateur peut-il vraiment apprendre ?", link: "chapitre13.html" },
+                        { title: "14. La Régression Linéaire : Prédire le futur avec une simple ligne droite", link: "chapitre14.html" },
+                        { title: "15. La Régression Logistique : Classifier le monde en \"Oui\" ou \"Non\"", link: "chapitre15.html" },
+                        { title: "16. Évaluer son modèle : Comment savoir si votre IA dit n'importe quoi ?", link: "chapitre16.html" },
+                        { title: "17. Overfitting : Le piège mortel du Machine Learning et comment l'éviter", link: "chapitre17.html" },
+                        { title: "18. Les Arbres de Décision : Le Machine Learning que vous pouvez expliquer à votre grand-mère", link: "chapitre18.html" },
+                        { title: "19. Les Forêts Aléatoires (Random Forests) : La puissance du collectif", link: "chapitre19.html" },
+                        { title: "20. Le K-Means : L'art de trouver des groupes cachés dans vos données", link: "chapitre20.html" },
+                        { title: "21. Scikit-Learn : La boîte à outils ultime du Data Scientist", link: "chapitre21.html" },
+                        { title: "22. Feature Engineering : L'ingrédient secret des meilleurs modèles", link: "chapitre22.html" },
+                        { title: "23. Projet Machine Learning (Partie 1) : Prédire le prix d'une maison", link: "chapitre23.html" },
+                        { title: "24. Projet Machine Learning (Partie 2) : Entraîner et évaluer 3 modèles différents", link: "chapitre24.html" },
+                        { title: "25. Les K-Plus Proches Voisins (KNN) : Simple, intuitif et étonnamment efficace", link: "chapitre25.html" },
+                        { title: "26. Les Machines à Vecteurs de Support (SVM) : Trouver la frontière parfaite", link: "chapitre26.html" }
+                    ]
+                },
+                {
+                    part: "Partie 3 : La Data Science en Pratique",
+                    chapters: [
+                        { title: "27. Le \"Data Storytelling\" : Comment transformer vos analyses en histoires captivantes", link: "chapitre27.html" },
+                        { title: "28. SQL pour la Data Science : Pourquoi vous ne pouvez pas l'ignorer", link: "chapitre28.html" },
+                        { title: "29. Introduction aux APIs : Collecter des données en temps réel sur le web", link: "chapitre29.html" },
+                        { title: "30. Web Scraping avec BeautifulSoup : Quand les données ne sont pas servies sur un plateau", link: "chapitre30.html" },
+                        { title: "31. Git & GitHub pour les Data Scientists : Collaborez sans tout casser", link: "chapitre31.html" },
+                        { title: "32. Déployer son premier modèle avec Flask : De votre ordinateur au monde entier", link: "chapitre32.html" },
+                        { title: "33. Docker pour la Data Science : \"Mais ça marchait sur ma machine !\"", link: "chapitre33.html" },
+                        { title: "34. Introduction à Kaggle : Participez à votre première compétition", link: "chapitre34.html" },
+                        { title: "35. L'Analyse en Composantes Principales (ACP) : Réduire le bruit pour mieux voir", link: "chapitre35.html" },
+                        { title: "36. Travailler avec des données textuelles : Les bases du NLP", link: "chapitre36.html" },
+                        { title: "37. Travailler avec des séries temporelles : Prédire les tendances", link: "chapitre37.html" },
+                        { title: "38. Le test A/B : Comment prendre des décisions basées sur des preuves", link: "chapitre38.html" },
+                        { title: "39. Construire son portfolio de Data Scientist : 3 projets pour convaincre un recruteur", link: "chapitre39.html" }
+                    ]
+                },
+                {
+                    part: "Partie 4 : Sujets Avancés et Culture Data",
+                    chapters: [
+                        { title: "40. Introduction aux Réseaux de Neurones : Le cerveau derrière le Deep Learning", link: "#" },
+                        { title: "41. Keras & TensorFlow : Construire son premier réseau de neurones en 10 minutes", link: "#" },
+                        { title: "42. Le Deep Learning pour les images : Reconnaître un chat d'un chien (CNN)", link: "#" },
+                        { title: "43. Le Deep Learning pour le texte : Comprendre le langage humain (RNN & Transformers)", link: "#" },
+                        { title: "44. L'Éthique en IA : Biais, équité et responsabilité des algorithmes", link: "#" },
+                        { title: "45. Les Systèmes de Recommandation : Comment Netflix sait ce que vous voulez regarder", link: "#" },
+                        { title: "46. Le Gradient Boosting (XGBoost, LightGBM) : L'algorithme qui gagne toutes les compétitions", link: "#" },
+                        { title: "47. Introduction au Cloud pour la Data Science (AWS, GCP, Azure)", link: "#" },
+                        { title: "48. Le \"MLOps\" : Industrialiser le Machine Learning", link: "#" },
+                        { title: "49. Comment lire un papier de recherche en IA sans avoir mal à la tête", link: "#" },
+                        { title: "50. Les carrières en Data : Analyst, Scientist, Engineer, quelle est la différence ?", link: "#" },
+                        { title: "51. Préparer un entretien technique en Data Science : Les questions pièges", link: "#" },
+                        { title: "52. Un an de Data Science : Bilan et prochaines étapes pour continuer à apprendre", link: "#" }
+                    ]
+                },
+                {
+                    part: "Conclusion",
+                    chapters: [
+                        { title: "Conclusion", link: "#" }
+                    ]
+                }
+            ];
+
+            // DOM Elements
+            const chapterListContainer = document.getElementById('chapter-list');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+
+            // State
+            let progress = {};
+            const trackableChapters = chaptersData.filter(part => part.part !== "Introduction" && part.part !== "Conclusion");
+            const totalChapters = trackableChapters.reduce((acc, part) => acc + part.chapters.length, 0);
+
+            // --- Functions ---
+
+            // Load progress from localStorage
+            function loadProgress() {
+                const savedProgress = localStorage.getItem('dataScienceCourseProgress');
+                if (savedProgress) {
+                    progress = JSON.parse(savedProgress);
+                }
+            }
+
+            // Save progress to localStorage
+            function saveProgress() {
+                localStorage.setItem('dataScienceCourseProgress', JSON.stringify(progress));
+            }
+
+            // Update the progress bar UI
+            function updateProgressBar() {
+                const completedChapters = Object.values(progress).filter(Boolean).length;
+                const percentage = totalChapters > 0 ? (completedChapters / totalChapters) * 100 : 0;
+                
+                progressBar.style.width = `${percentage}%`;
+                progressText.textContent = `${completedChapters} / ${totalChapters} chapitres (${Math.round(percentage)}%)`;
+            }
+
+            // --- UI Generation ---
+            function createChapterElements() {
+                chapterListContainer.innerHTML = ''; // Clear existing content
+
+                chaptersData.forEach((partData, partIndex) => {
+                    const section = document.createElement('section');
+                    
+                    const partTitle = document.createElement('h2');
+                    partTitle.className = 'text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6';
+                    partTitle.textContent = partData.part;
+                    section.appendChild(partTitle);
+
+                    const accordionContainer = document.createElement('div');
+                    accordionContainer.className = 'space-y-2';
+                    section.appendChild(accordionContainer);
+
+                    partData.chapters.forEach((chapter, chapterIndex) => {
+                        const chapterId = `chapter-${partIndex}-${chapterIndex}`;
+                        const isTrackable = partData.part !== "Introduction" && partData.part !== "Conclusion";
+
+                        const accordionItem = document.createElement('div');
+                        accordionItem.className = 'bg-gray-800 border border-gray-700 rounded-lg overflow-hidden';
+                        
+                        // Header (for toggling accordion)
+                        const header = document.createElement('div');
+                        header.className = 'accordion-button w-full flex justify-between items-center text-left p-4 font-semibold text-lg hover:bg-gray-700/50 transition-colors duration-200 cursor-pointer';
+
+                        const titleContainer = document.createElement('div');
+                        titleContainer.className = 'flex items-center mr-4';
+
+                        const title = document.createElement('span');
+                        title.textContent = chapter.title;
+                        titleContainer.appendChild(title);
+
+                        // SVG Icon
+                        const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                        svgIcon.setAttribute('class', 'w-6 h-6 text-cyan-400 transition-transform duration-300 flex-shrink-0');
+                        svgIcon.setAttribute('fill', 'none');
+                        svgIcon.setAttribute('stroke', 'currentColor');
+                        svgIcon.setAttribute('viewBox', '0 0 24 24');
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        path.setAttribute('stroke-linecap', 'round');
+                        path.setAttribute('stroke-linejoin', 'round');
+                        path.setAttribute('stroke-width', '2');
+                        path.setAttribute('d', 'M19 9l-7 7-7-7');
+                        svgIcon.appendChild(path);
+
+                        header.appendChild(titleContainer);
+                        header.appendChild(svgIcon);
+                        
+                        // Content (collapsible part)
+                        const content = document.createElement('div');
+                        content.className = 'accordion-content px-4';
+                        
+                        const contentWrapper = document.createElement('div');
+                        contentWrapper.className = 'py-4 border-t border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4';
+
+                        const actionGroup = document.createElement('div');
+                        actionGroup.className = 'flex items-center gap-4';
+
+                        if (chapter.link && chapter.link !== "#") {
+                            const link = document.createElement('a');
+                            link.href = chapter.link;
+                            link.className = 'inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition transform hover:scale-105';
+                            link.textContent = 'Lire le chapitre';
+                            actionGroup.appendChild(link);
+                        } else {
+                            const comingSoon = document.createElement('p');
+                            comingSoon.className = 'text-gray-400 font-medium';
+                            comingSoon.textContent = 'Contenu à venir...';
+                            actionGroup.appendChild(comingSoon);
+                        }
+
+                        if (isTrackable) {
+                            const checkboxWrapper = document.createElement('div');
+                            checkboxWrapper.className = 'flex items-center gap-2';
+                            
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.id = chapterId;
+                            checkbox.checked = progress[chapterId] || false;
+                            checkbox.className = 'h-5 w-5 rounded bg-gray-700 border-gray-600 text-cyan-500 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-cyan-500 cursor-pointer';
+                            
+                            checkbox.addEventListener('click', () => {
+                                progress[chapterId] = checkbox.checked;
+                                saveProgress();
+                                updateProgressBar();
+                            });
+
+                            const label = document.createElement('label');
+                            label.setAttribute('for', chapterId);
+                            label.textContent = 'Terminé';
+                            label.className = 'cursor-pointer text-gray-400';
+                            
+                            checkboxWrapper.appendChild(checkbox);
+                            checkboxWrapper.appendChild(label);
+                            actionGroup.appendChild(checkboxWrapper);
+                        }
+                        
+                        const duration = document.createElement('span');
+                        duration.className = 'text-sm font-medium text-gray-500 bg-gray-700 px-2 py-1 rounded-md whitespace-nowrap';
+                        duration.textContent = 'Durée suggérée : 1 jour';
+                        
+                        contentWrapper.appendChild(actionGroup);
+                        if (isTrackable) {
+                           contentWrapper.appendChild(duration);
+                        }
+                        content.appendChild(contentWrapper);
+                        
+                        accordionItem.appendChild(header);
+                        accordionItem.appendChild(content);
+                        accordionContainer.appendChild(accordionItem);
+
+                        // Accordion toggle logic
+                        header.addEventListener('click', () => {
+                            header.classList.toggle('open');
+                            svgIcon.classList.toggle('rotate-180');
+                            const isOpening = content.style.maxHeight === '' || content.style.maxHeight === '0px' || !content.style.maxHeight;
+                            if (isOpening) {
+                                content.style.maxHeight = content.scrollHeight + "px";
+                            } else {
+                                content.style.maxHeight = null;
+                            }
+                        });
+                    });
+
+                    chapterListContainer.appendChild(section);
+                });
+            }
+
+            // --- Initialisation ---
+            loadProgress();
+            createChapterElements();
+            updateProgressBar();
+        });
+    </script>
+</body>
+</html>
+

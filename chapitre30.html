@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 30: Web Scraping avec BeautifulSoup</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; }
+        .code-function { color: #DCDCAA; }
+        .code-string { color: #CE9178; }
+        .code-comment { color: #6A9955; font-style: italic; }
+        .code-number { color: #B5CEA8; }
+        .code-builtin { color: #569CD6; }
+        .code-variable { color: #9CDCFE; }
+        .code-html-tag { color: #569CD6; } /* Blue for tags */
+        .code-html-attr-name { color: #9CDCFE; } /* Light blue for attribute names */
+        .code-html-attr-value { color: #CE9178; } /* Orange for attribute values */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 30 : Web Scraping avec BeautifulSoup - Quand les données ne sont pas servies sur un plateau
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Parfois, les données que vous convoitez sont là, visibles sur une page web, mais il n'existe aucune API pour vous permettre de les récupérer proprement. Faut-il abandonner ? Non ! Le web scraping (ou "moissonnage web") est la technique qui permet d'écrire un programme pour naviguer sur une page web et en extraire les informations automatiquement. C'est une compétence extrêmement puissante, mais qui doit être utilisée avec précaution et éthique. C'est l'art de collecter des données quand il n'y a pas de "menu" officiel.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Comprendre la structure d'une page web</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Les bases du HTML</h3>
+                        <p class="mb-4 text-justify">Une page web est un document structuré en HTML (HyperText Markup Language). Imaginez-le comme un squelette où chaque os est une "balise" qui définit un type de contenu. Pour extraire l'information, il faut apprendre à reconnaître les os importants.</p>
+                        
+                        <p class="mb-2">Voici un exemple simple de code HTML qui représente une "citation" :</p>
+<pre><code><span class="code-html-tag">&lt;div</span> <span class="code-html-attr-name">class=</span><span class="code-html-attr-value">"quote"</span> <span class="code-html-attr-name">id=</span><span class="code-html-attr-value">"quote-1"</span><span class="code-html-tag">&gt;</span>
+    <span class="code-html-tag">&lt;p</span> <span class="code-html-attr-name">class=</span><span class="code-html-attr-value">"text"</span><span class="code-html-tag">&gt;</span>"Le monde est un livre et ceux qui ne voyagent pas n'en lisent qu'une page."<span class="code-html-tag">&lt;/p&gt;</span>
+    <span class="code-html-tag">&lt;footer&gt;</span>
+        -- <span class="code-html-tag">&lt;span</span> <span class="code-html-attr-name">class=</span><span class="code-html-attr-value">"author"</span><span class="code-html-tag">&gt;</span>Saint Augustin<span class="code-html-tag">&lt;/span&gt;</span>, 
+        <span class="code-html-tag">&lt;a</span> <span class="code-html-attr-name">href=</span><span class="code-html-attr-value">"/author/Saint-Augustin"</span><span class="code-html-tag">&gt;</span>(à propos)<span class="code-html-tag">&lt;/a&gt;</span>
+    <span class="code-html-tag">&lt;/footer&gt;</span>
+<span class="code-html-tag">&lt;/div&gt;</span>
+</code></pre>
+                        <p class="mt-4 mb-2">Décortiquons ce plan :</p>
+                        <ul class="list-disc list-inside space-y-3">
+                           <li><strong>Balises (Tags) :</strong> On voit plusieurs balises : `<div>` (un conteneur), `<p>` (un paragraphe), `<footer>` (un pied de page), `<span>` (pour styliser un bout de texte), et `<a>` (un lien hypertexte).</li>
+                           <li><strong>Attributs :</strong> La balise `<a>` a un attribut `href` qui contient l'URL `/author/Saint-Augustin`. C'est une information précieuse si on veut scraper le lien.</li>
+                           <li><strong>Classes et IDs :</strong>
+                               <ul class="list-disc list-inside ml-6 mt-2">
+                                   <li>Le conteneur `<div>` a une <strong>class</strong> `quote`. Il y aura probablement plusieurs `div` avec cette classe sur la page, une pour chaque citation. C'est parfait pour dire à notre script : "Trouve-moi tous les éléments de la classe `quote`".</li>
+                                   <li>Ce même `<div>` a aussi un <strong>id</strong> `quote-1`. Cet `id` est <strong>unique</strong> sur toute la page. Il est utile pour cibler cet élément très précisément.</li>
+                               </ul>
+                           </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Considérations éthiques et légales : La Règle d'Or</h3>
+                        <p class="mb-4 text-justify">Le web scraping n'est pas un acte anodin. La règle d'or est simple : comportez-vous comme un humain respectueux, pas comme un robot agressif. Un robot peut faire des milliers de requêtes par minute, ce qui peut être perçu comme une attaque et faire tomber le site web.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-gray-900/50 p-4 rounded-md">
+                                <h4 class="font-semibold text-lg text-cyan-300">1. Respecter le fichier `robots.txt`</h4>
+                                <p class="mb-2">C'est la première porte à laquelle il faut frapper. Ce fichier, accessible à la racine du site (ex: `https://www.lemonde.fr/robots.txt`), est un code de conduite pour les robots. Un exemple :</p>
+<pre class="text-sm"><code>User-agent: *
+# Autorise tout le monde
+
+Disallow: /admin/
+Disallow: /panier/
+# Interdit l'accès aux dossiers /admin/ et /panier/</code></pre>
+                                <p class="mt-2 text-sm">`User-agent: *` signifie que les règles s'appliquent à tous les robots. `Disallow` indique les chemins interdits. Ignorer ce fichier est très mal vu.</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-md">
+                                <h4 class="font-semibold text-lg text-cyan-300">2. Ne pas surcharger les serveurs</h4>
+                                <p>Un humain clique sur une page toutes les quelques secondes. Un robot peut le faire des centaines de fois par seconde. Pour le serveur, cela ressemble à une attaque par déni de service (DDoS). Vous risquez de ralentir le site pour tout le monde et de voir votre adresse IP bannie. La solution est simple : faites une pause d'une seconde ou deux entre chaque requête. C'est ce qu'on appelle le "throttling".</p>
+                                <pre><code><span class="code-keyword">import</span> <span class="code-variable">time</span>
+<span class="code-keyword">for</span> <span class="code-variable">page</span> <span class="code-keyword">in</span> <span class="code-variable">pages_a_scraper</span>:
+    <span class="code-comment"># ... code pour scraper la page ...</span>
+    <span class="code-variable">time</span>.<span class="code-function">sleep</span>(<span class="code-number">1</span>) <span class="code-comment"># On attend 1 seconde avant la prochaine requête</span></code></pre>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-md">
+                                <h4 class="font-semibold text-lg text-cyan-300">3. Vérifier les conditions d'utilisation et ne pas scraper de données personnelles</h4>
+                                <p>Cherchez le lien "Conditions d'Utilisation" ou "Terms of Service" en bas de page. Certains sites interdisent explicitement le scraping automatisé de leur contenu. De plus, la collecte de données personnelles (noms, emails, etc.) est strictement réglementée, notamment par le RGPD en Europe. La prudence est de mise.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Extraire des données avec BeautifulSoup</h2>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <p class="mb-4 text-justify">Le processus se fait toujours en deux temps : `requests` télécharge le plan (le code HTML), et `BeautifulSoup` nous donne les outils pour naviguer à l'intérieur de ce plan. Analysons notre code d'exemple étape par étape.</p>
+
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 1 : Télécharger le code HTML</h4>
+                            <p class="mb-2 text-justify">On utilise `requests.get()` pour agir comme un navigateur et demander le contenu de la page au serveur. L'objet `response` contient tout ce que le serveur a renvoyé. `response.text` est ce qui nous intéresse : le code HTML brut, sous forme de chaîne de caractères.</p>
+<pre><code><span class="code-variable">url</span> <span class="code-operator">=</span> <span class="code-string">'http://quotes.toscrape.com/'</span>
+<span class="code-keyword">try</span>:
+    <span class="code-variable">response</span> <span class="code-operator">=</span> <span class="code-variable">requests</span>.<span class="code-function">get</span>(<span class="code-variable">url</span>)
+    <span class="code-variable">response</span>.<span class="code-function">raise_for_status</span>()  <span class="code-comment"># On vérifie que tout s'est bien passé (code 200)</span>
+    <span class="code-comment"># ... suite ...</span>
+<span class="code-keyword">except</span> <span class="code-variable">requests</span>.<span class="code-variable">exceptions</span>.<span class="code-variable">RequestException</span> <span class="code-keyword">as</span> <span class="code-variable">e</span>:
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Erreur de connexion : {e}"</span>)</code></pre>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 2 : Créer la "Soupe"</h4>
+                            <p class="mb-2 text-justify">Le HTML dans `response.text` est juste du texte. Pour le rendre navigable, on le passe à BeautifulSoup. On crée un objet `soup` qui représente le HTML de manière structurée, comme un arbre généalogique. `'html.parser'` est simplement le moteur d'analyse intégré à Python.</p>
+<pre><code>    <span class="code-variable">soup</span> <span class="code-operator">=</span> <span class="code-function">BeautifulSoup</span>(<span class="code-variable">response</span>.<span class="code-variable">text</span>, <span class="code-string">'html.parser'</span>)</code></pre>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 3 : Naviguer et extraire</h4>
+                            <p class="mb-2 text-justify">C'est là que le "scraping" commence. On utilise les méthodes de `soup` pour trouver les éléments qui nous intéressent.</p>
+                            <ul class="list-disc list-inside space-y-3">
+                                <li>
+                                    <strong>Trouver la première occurrence : `.find()`</strong><br>
+                                    `soup.find('h1')` cherche la première balise `<h1>` qu'il trouve dans le document. `.text` permet d'extraire uniquement le contenu textuel à l'intérieur de la balise. Pour être plus précis, `soup.find('span', class_='text')` cherche la première balise `<span>` qui possède l'attribut `class="text"`. (On utilise `class_` avec un underscore car `class` est un mot-clé réservé en Python).
+                                </li>
+                                <li>
+                                    <strong>Trouver toutes les occurrences : `.find_all()`</strong><br>
+                                    `soup.find_all('a', class_='tag')` ne s'arrête pas au premier résultat. Il parcourt tout le document et renvoie une <strong>liste</strong> de toutes les balises `<a>` qui ont la classe `tag`. C'est pourquoi on peut ensuite itérer sur cette liste avec une boucle `for` pour extraire le texte de chaque tag un par un.
+                                </li>
+                            </ul>
+<pre><code>    <span class="code-comment"># Trouver le premier h1</span>
+    <span class="code-variable">premier_titre</span> <span class="code-operator">=</span> <span class="code-variable">soup</span>.<span class="code-function">find</span>(<span class="code-string">'h1'</span>).<span class="code-variable">text</span>
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Titre: {premier_titre}"</span>)
+
+    <span class="code-comment"># Trouver la première citation</span>
+    <span class="code-variable">premiere_citation</span> <span class="code-operator">=</span> <span class="code-variable">soup</span>.<span class="code-function">find</span>(<span class="code-string">'span'</span>, <span class="code-variable">class_</span><span class="code-operator">=</span><span class="code-string">'text'</span>).<span class="code-variable">text</span>
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Citation: {premiere_citation}"</span>)
+
+    <span class="code-comment"># Trouver tous les tags</span>
+    <span class="code-variable">tags</span> <span class="code-operator">=</span> <span class="code-variable">soup</span>.<span class="code-function">find_all</span>(<span class="code-string">'a'</span>, <span class="code-variable">class_</span><span class="code-operator">=</span><span class="code-string">'tag'</span>)
+    <span class="code-keyword">for</span> <span class="code-variable">tag</span> <span class="code-keyword">in</span> <span class="code-variable">tags</span>:
+        <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"- {tag.text}"</span>)
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous !</h2>
+                <p class="text-lg text-justify mb-4">Le site `quotes.toscrape.com` est spécialement conçu pour s'entraîner au scraping en toute légalité.</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                    <p>Scrapez la page d'accueil de `quotes.toscrape.com` et récupérez les trois informations suivantes pour la <strong>toute première citation</strong> de la page : le texte complet, le nom de l'auteur, et la liste de ses "tags".</p>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour la solution</summary>
+<pre class="mt-2"><code><span class="code-keyword">import</span> <span class="code-variable">requests</span>
+<span class="code-keyword">from</span> <span class="code-variable">bs4</span> <span class="code-keyword">import</span> <span class="code-variable">BeautifulSoup</span>
+
+<span class="code-variable">url</span> <span class="code-operator">=</span> <span class="code-string">'http://quotes.toscrape.com/'</span>
+<span class="code-variable">response</span> <span class="code-operator">=</span> <span class="code-variable">requests</span>.<span class="code-function">get</span>(<span class="code-variable">url</span>)
+<span class="code-keyword">if</span> <span class="code-variable">response</span>.<span class="code-variable">status_code</span> <span class="code-operator">==</span> <span class="code-number">200</span>:
+    <span class="code-variable">soup</span> <span class="code-operator">=</span> <span class="code-function">BeautifulSoup</span>(<span class="code-variable">response</span>.<span class="code-variable">text</span>, <span class="code-string">'html.parser'</span>)
+    
+    <span class="code-variable">first_quote_div</span> <span class="code-operator">=</span> <span class="code-variable">soup</span>.<span class="code-function">find</span>(<span class="code-string">'div'</span>, <span class="code-variable">class_</span><span class="code-operator">=</span><span class="code-string">'quote'</span>)
+    
+    <span class="code-variable">text</span> <span class="code-operator">=</span> <span class="code-variable">first_quote_div</span>.<span class="code-function">find</span>(<span class="code-string">'span'</span>, <span class="code-variable">class_</span><span class="code-operator">=</span><span class="code-string">'text'</span>).<span class="code-variable">text</span>
+    <span class="code-variable">author</span> <span class="code-operator">=</span> <span class="code-variable">first_quote_div</span>.<span class="code-function">find</span>(<span class="code-string">'small'</span>, <span class="code-variable">class_</span><span class="code-operator">=</span><span class="code-string">'author'</span>).<span class="code-variable">text</span>
+    <span class="code-variable">tags_list</span> <span class="code-operator">=</span> [<span class="code-variable">tag</span>.<span class="code-variable">text</span> <span class="code-keyword">for</span> <span class="code-variable">tag</span> <span class="code-keyword">in</span> <span class="code-variable">first_quote_div</span>.<span class="code-function">find_all</span>(<span class="code-string">'a'</span>, <span class="code-variable">class_</span><span class="code-operator">=</span><span class="code-string">'tag'</span>)]
+
+    <span class="code-builtin">print</span>(<span class="code-string">"--- Première Citation ---"</span>)
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Texte : {text}"</span>)
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Auteur : {author}"</span>)
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Tags : {tags_list}"</span>)
+</code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est le rôle principal de la bibliothèque `requests` dans un projet de web scraping ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Parser le code HTML.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Télécharger le contenu HTML d'une page web.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Nettoyer les données extraites.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Visualiser les données.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. À quoi sert la bibliothèque `BeautifulSoup` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À faire des requêtes HTTP.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À respecter le fichier `robots.txt`.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À naviguer et extraire des informations d'un document HTML.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À stocker les données dans un DataFrame.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Quelle méthode de BeautifulSoup utiliser pour trouver <strong>toutes</strong> les balises `<a>` ayant la classe `tag` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `soup.find('a', class_='tag')`</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `soup.find_all('a', class_='tag')`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `soup.get('a.tag')`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `soup.select_all('.tag')`</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Qu'est-ce que le fichier `robots.txt` d'un site web ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Un fichier qui liste tous les visiteurs du site.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le code source de la page d'accueil.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Un fichier qui donne des instructions aux robots sur les pages à ne pas visiter.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Un fichier de sécurité qui bloque les attaques.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. En HTML, quel est l'attribut qui est censé être un identifiant unique pour un seul élément de la page ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `id`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `class`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `href`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `src`</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Scraping et JavaScript :</strong> Le site `quotes.toscrape.com` est simple (statique). De nombreux sites modernes chargent leur contenu avec du JavaScript après le chargement initial de la page. Pourquoi `requests` et `BeautifulSoup` seuls ne suffisent-ils pas pour scraper ces sites, et quel type d'outil faudrait-il utiliser à la place (ex: Selenium) ?</p>
+                    <p><strong>2. Gérer la pagination :</strong> Notre script ne scrape que la première page. Si vous vouliez scraper les citations de toutes les pages du site, quelle serait votre stratégie ? (Indice : regardez le bouton "Next" en bas de la page et observez comment l'URL change).</p>
+                    <p><strong>3. Alternative aux classes :</strong> Parfois, les balises n'ont pas de `class` ou d'`id` pratiques. BeautifulSoup permet de naviguer dans l'arborescence HTML (ex: trouver le "parent" d'une balise, le "frère suivant", etc.). Comment pourriez-vous trouver le nom de l'auteur sur `quotes.toscrape.com` en partant de la balise de la citation, mais sans utiliser `find('small', class_='author')` ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 19: Les Forêts Aléatoires</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 19. Les Forêts Aléatoires - La puissance du collectif
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Pour prendre une décision financière importante, préféreriez-vous demander l'avis d'un seul expert, aussi brillant soit-il, ou celui d'un comité de 100 experts aux opinions et aux expériences variées ? Un seul expert peut avoir des biais ou faire une erreur. La sagesse du groupe, elle, est souvent supérieure car les erreurs des uns sont corrigées par les forces des autres. Une forêt aléatoire (Random Forest), c'est exactement ça : un comité d'arbres de décision. On en entraîne des centaines, chacun avec une "perspective" légèrement différente, et on les fait voter. C'est l'un des modèles les plus robustes qui existent.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le secret de la diversité : Le pouvoir de l'aléatoire</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">
+                        La puissance d'une forêt aléatoire vient de la diversité de ses arbres. Si tous les experts de notre comité avaient fait les mêmes études, leur avis collectif ne serait pas très utile. Pour garantir cette diversité, l'algorithme utilise deux sources d'aléatoire, qui travaillent de concert.
+                    </p>
+                    [Image d'un diagramme de Forêt Aléatoire montrant le bagging et la sélection de features]
+                    <div class="bg-gray-900/50 p-6 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">1. Le Bagging (Bootstrap Aggregating) : Des points de vue différents</h3>
+                        <p class="text-justify mb-4">Le Bagging s'assure que chaque arbre apprend sur une version légèrement différente des données. Au lieu de donner à chaque "expert" le même dossier complet, on leur en donne des versions photocopiées au hasard.</p>
+                        <p class="text-justify">Concrètement, pour un jeu de données de N passagers, chaque arbre est entraîné sur un échantillon de N passagers tirés <strong>"avec remise"</strong>. Cela a deux conséquences majeures :</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4 mt-4">
+                            <li><strong>Duplication :</strong> Certains passagers peuvent être sélectionnés plusieurs fois pour l'entraînement d'un même arbre. L'arbre accordera donc plus d'importance à ces exemples.</li>
+                            <li><strong>Omission (Out-of-Bag) :</strong> En moyenne, environ un tiers (≈37%) des passagers originaux ne sera pas sélectionné pour un arbre donné.</li>
+                        </ul>
+                         <p class="mt-4 text-justify italic text-gray-400"><strong>Exemple :</strong> Si nos données sont [P1, P2, P3, P4], l'échantillon pour l'Arbre 1 pourrait être [P2, P4, P1, P2]. L'Arbre 1 est donc plus influencé par P2 et n'a jamais vu P3. L'échantillon pour l'Arbre 2 pourrait être [P3, P1, P3, P4], qui ignore P2.</p>
+                         <p class="mt-4 font-bold">Résultat : Chaque arbre développe une "expertise" légèrement différente, ce qui réduit la variance globale du modèle final et le rend moins sujet au surapprentissage.</p>
+                    </div>
+                     <div class="bg-gray-900/50 p-6 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">2. La Sélection Aléatoire de Features : Des raisonnements différents</h3>
+                        <p class="text-justify mb-4">Cette étape empêche tous les arbres de se reposer sur la même "meilleure variable". Imaginez que le "Sexe" soit la variable la plus prédictive. Sans cette technique, presque tous les arbres commenceraient par poser la question "Est-ce une femme ?". Ils se ressembleraient tous énormément.</p>
+                        <p class="text-justify">Pour éviter cela, à chaque fois qu'un arbre doit créer une nouvelle branche (un nouveau nœud), on lui présente seulement un <strong>sous-ensemble aléatoire de variables</strong> parmi lesquelles choisir la meilleure question.</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4 mt-4">
+                           <li><strong>Arbre 1, Nœud 1 :</strong> L'algorithme lui propose au hasard `['Age', 'Fare']`. Il doit trouver la meilleure question possible en utilisant uniquement l'âge ou le tarif.</li>
+                            <li><strong>Arbre 2, Nœud 1 :</strong> L'algorithme lui propose `['Sex', 'Pclass']`. Il choisira probablement une question sur le sexe.</li>
+                        </ul>
+                         <p class="mt-4 text-justify italic text-gray-400">Par défaut, Scikit-Learn choisit la racine carrée du nombre total de variables (ex: sqrt(6) ≈ 2-3 variables à chaque fois).</p>
+                         <p class="mt-4 font-bold">Résultat : Cette contrainte force les arbres à explorer des relations différentes et moins évidentes dans les données. Cela "décorrèle" les arbres, rendant leur vote collectif beaucoup plus puissant et fiable.</p>
+                    </div>
+                    <p class="text-justify font-bold text-cyan-300 text-center text-lg p-4 bg-gray-800 rounded-md">Ensemble, ces deux mécanismes créent une forêt d'experts diversifiés, où les erreurs et les biais individuels de chaque arbre sont compensés par la sagesse du groupe.</p>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La Forêt en action sur le Titanic</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">Utilisons le `RandomForestClassifier` de Scikit-Learn et comparons-le à un arbre de décision unique. Nous allons décomposer le processus pour bien comprendre chaque étape.</p>
+
+                    <div>
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Étape 1 : Préparation des Données</h3>
+                        <p class="mb-4 text-justify">Comme toujours, nous devons nettoyer nos données pour que le modèle puisse les utiliser. Nous répétons ici les étapes de nettoyage des chapitres précédents.</p>
+                        <pre><code><span class="code-comment"># Imports nécessaires</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.ensemble</span> <span class="code-keyword">import</span> <span class="code-variable">RandomForestClassifier</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.tree</span> <span class="code-keyword">import</span> <span class="code-variable">DecisionTreeClassifier</span>
+
+<span class="code-comment"># Chargement et nettoyage</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>(), <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Sex'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Sex'</span>].<span class="code-function">map</span>({<span class="code-string">'male'</span>: <span class="code-number">0</span>, <span class="code-string">'female'</span>: <span class="code-number">1</span>})
+<span class="code-variable">df</span>.<span class="code-function">drop</span>([<span class="code-string">'Cabin'</span>, <span class="code-string">'Name'</span>, <span class="code-string">'Ticket'</span>, <span class="code-string">'Embarked'</span>], <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+
+<span class="code-comment"># Sélection des features (X) et de la cible (y), puis division des données</span>
+<span class="code-variable">features</span> <span class="code-operator">=</span> [<span class="code-string">'Pclass'</span>, <span class="code-string">'Sex'</span>, <span class="code-string">'Age'</span>, <span class="code-string">'Fare'</span>, <span class="code-string">'SibSp'</span>, <span class="code-string">'Parch'</span>]
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-variable">features</span>]
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Survived'</span>]
+<span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">test_size</span><span class="code-operator">=</span><span class="code-number">0.3</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+</code></pre>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Étape 2 : L'Expert Solitaire vs Le Comité d'Experts</h3>
+                        <p class="mb-4 text-justify">Nous allons entraîner nos deux modèles et comparer directement leur score de performance (leur exactitude) sur l'ensemble de test, celui qu'ils n'ont jamais vu.</p>
+                        <pre><code><span class="code-comment"># Modèle 1 : L'Arbre de Décision unique (l'expert solitaire)</span>
+<span class="code-variable">single_tree</span> <span class="code-operator">=</span> <span class="code-function">DecisionTreeClassifier</span>(<span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+<span class="code-variable">single_tree</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+<span class="code-variable">score_tree</span> <span class="code-operator">=</span> <span class="code-variable">single_tree</span>.<span class="code-function">score</span>(<span class="code-variable">X_test</span>, <span class="code-variable">y_test</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score de l'Arbre de Décision unique : {score_tree:.4f}"</span>)
+
+<span class="code-comment"># Modèle 2 : La Forêt Aléatoire (le comité de 100 experts)</span>
+<span class="code-variable">forest</span> <span class="code-operator">=</span> <span class="code-function">RandomForestClassifier</span>(<span class="code-variable">n_estimators</span><span class="code-operator">=</span><span class="code-number">100</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+<span class="code-variable">forest</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+<span class="code-variable">score_forest</span> <span class="code-operator">=</span> <span class="code-variable">forest</span>.<span class="code-function">score</span>(<span class="code-variable">X_test</span>, <span class="code-variable">y_test</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score de la Forêt Aléatoire : {score_forest:.4f}"</span>)
+</code></pre>
+                        <p class="mt-4 text-justify">La sortie montre quasi-systématiquement un score plus élevé pour la forêt aléatoire. L'intelligence collective a produit un modèle plus performant et, surtout, plus stable, qui généralise mieux aux nouvelles données.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Étape 3 : Le Débriefing - Quelles variables comptent le plus ?</h3>
+                        <p class="mb-4 text-justify">Un avantage majeur des forêts est leur capacité à nous dire quelles variables ont été les plus utiles. Pour chaque arbre, chaque fois qu'une variable est utilisée pour une question, elle obtient un "score d'importance" basé sur la réduction d'impureté qu'elle a générée. La forêt fait la moyenne de ces scores sur tous les arbres.</p>
+                        <pre><code><span class="code-comment"># 5. Afficher l'importance des variables</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>
+
+<span class="code-variable">importances</span> <span class="code-operator">=</span> <span class="code-variable">forest</span>.<span class="code-variable">feature_importances_</span>
+<span class="code-variable">feature_importances</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">Series</span>(<span class="code-variable">importances</span>, <span class="code-variable">index</span><span class="code-operator">=</span><span class="code-variable">features</span>).<span class="code-function">sort_values</span>(<span class="code-variable">ascending</span><span class="code-operator">=</span><span class="code-keyword">False</span>)
+
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">10</span>, <span class="code-number">6</span>))
+<span class="code-variable">sns</span>.<span class="code-function">barplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-variable">feature_importances</span>, <span class="code-variable">y</span><span class="code-operator">=</span><span class="code-variable">feature_importances</span>.<span class="code-variable">index</span>, <span class="code-variable">palette</span><span class="code-operator">=</span><span class="code-string">'viridis'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"Importance des variables selon la Forêt Aléatoire"</span>, <span class="code-variable">fontsize</span><span class="code-operator">=</span><span class="code-number">16</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+</code></pre>
+                        <p class="mt-4 text-justify">Le graphique qui en résulte confirme notre intuition et notre analyse exploratoire des chapitres précédents : le sexe, le tarif du billet (`Fare`), et l'âge sont, de loin, les facteurs les plus décisifs pour prédire la survie. C'est une information cruciale qui peut guider les futures analyses.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Challenge : Le juste prix des arbres</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-4">
+                    <p class="text-lg text-justify">`n_estimators` contrôle le nombre d'arbres. Intuitivement, plus on a d'experts, mieux c'est. Mais est-ce toujours vrai ? Y a-t-il un coût à ajouter plus d'arbres ?</p>
+                    <div>
+                        <h3 class="font-bold text-cyan-300">Votre mission :</h3>
+                        <ul class="list-decimal list-inside pl-4 mt-2 space-y-1">
+                            <li>Entraînez plusieurs modèles `RandomForestClassifier` en faisant varier `n_estimators` (ex: 10, 50, 100, 200, 500).</li>
+                            <li>Pour chaque modèle, enregistrez son score sur l'ensemble de test.</li>
+                            <li>Tracez un graphique montrant l'évolution du score en fonction du nombre d'arbres. Le score s'améliore-t-il indéfiniment ?</li>
+                        </ul>
+                    </div>
+                    <details class="bg-gray-900/50 p-4 rounded-md cursor-pointer">
+                        <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                        <div class="mt-4">
+                            <pre><code><span class="code-variable">n_estimators_list</span> <span class="code-operator">=</span> [<span class="code-number">10</span>, <span class="code-number">20</span>, <span class="code-number">50</span>, <span class="code-number">100</span>, <span class="code-number">200</span>, <span class="code-number">500</span>]
+<span class="code-variable">scores</span> <span class="code-operator">=</span> []
+<span class="code-keyword">for</span> <span class="code-variable">n</span> <span class="code-keyword">in</span> <span class="code-variable">n_estimators_list</span>:
+    <span class="code-variable">model</span> <span class="code-operator">=</span> <span class="code-function">RandomForestClassifier</span>(<span class="code-variable">n_estimators</span><span class="code-operator">=</span><span class="code-variable">n</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+    <span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+    <span class="code-variable">scores</span>.<span class="code-function">append</span>(<span class="code-variable">model</span>.<span class="code-function">score</span>(<span class="code-variable">X_test</span>, <span class="code-variable">y_test</span>))
+
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">10</span>, <span class="code-number">6</span>))
+<span class="code-variable">plt</span>.<span class="code-function">plot</span>(<span class="code-variable">n_estimators_list</span>, <span class="code-variable">scores</span>, <span class="code-variable">marker</span><span class="code-operator">=</span><span class="code-string">'o'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"Performance vs. Nombre d'Arbres"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">xlabel</span>(<span class="code-string">"Nombre d'arbres"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">ylabel</span>(<span class="code-string">"Score"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">grid</span>(<span class="code-keyword">True</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+</code></pre>
+                            <div class="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-600">
+                                <h4 class="font-bold text-lg text-green-300">Interprétation :</h4>
+                                <p class="mt-2 text-justify">Le graphique montre que la performance augmente rapidement au début, puis se stabilise. Passer de 100 à 500 arbres n'apporte qu'un gain marginal, mais augmente considérablement le temps de calcul. C'est un compromis classique : on cherche le "coude" où le gain de performance ne justifie plus le coût de calcul supplémentaire.</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est l'avantage principal d'une Forêt Aléatoire par rapport à un Arbre de Décision unique ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Elle est plus facile à visualiser.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Elle est plus robuste face au surapprentissage (overfitting).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Elle est plus rapide à entraîner.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Elle ne nécessite aucune donnée d'entraînement.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Le "Bagging" consiste à entraîner chaque arbre sur...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La totalité du jeu de données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Uniquement les variables les plus importantes.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Un échantillon aléatoire des données avec remise.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Uniquement les données de test.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Pourquoi une forêt aléatoire utilise-t-elle une sélection aléatoire de "features" à chaque nœud ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Pour accélérer le calcul.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour forcer les arbres à être différents et moins corrélés.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour utiliser uniquement les meilleures variables.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Car c'est une obligation de la librairie Scikit-Learn.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Comment une Forêt Aléatoire fait-elle une prédiction finale en classification ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) En choisissant la prédiction de son meilleur arbre.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) En calculant la moyenne des prédictions.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) En organisant un vote majoritaire entre tous les arbres.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) En utilisant l'arbre le plus profond.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Que mesure le `feature_importances_` d'une Forêt Aléatoire ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La contribution moyenne de chaque variable à la réduction de l'impureté sur l'ensemble des arbres.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le nombre de fois qu'une variable est utilisée dans la forêt.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le score de corrélation de chaque variable avec la cible.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La complexité de chaque variable.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Au-delà de la classification :</strong> Comment une forêt aléatoire ferait-elle pour prédire une valeur continue, comme le prix d'une maison (régression) ? Quel serait le mécanisme de "vote" ?</p>
+                    <p><strong>2. Le coût de la performance :</strong> Quels sont les deux principaux inconvénients des forêts aléatoires par rapport à un arbre de décision unique, en termes de ressources et d'interprétabilité ?</p>
+                    <p><strong>3. L'hyperparamètre caché :</strong> Nous avons parlé du nombre d'arbres (`n_estimators`), mais un autre hyperparamètre crucial est `max_features` (le nombre de variables à considérer à chaque division). Quel serait l'effet d'un `max_features` très petit ? Et d'un `max_features` égal au nombre total de variables ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = "Bravo, c'est la bonne réponse !";
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

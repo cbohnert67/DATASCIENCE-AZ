@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 23: Projet Machine Learning (Partie 1)</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 23. Projet Machine Learning (Partie 1) - Prédire le prix d'une maison
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Nouveau projet de A à Z ! Après avoir appris à classifier les survivants du Titanic, nous nous attaquons à un autre problème classique : la régression. Notre objectif sera de prédire le prix de vente de maisons en se basant sur leurs caractéristiques. Dans cette première partie, nous allons suivre les étapes cruciales de tout projet : la collecte, l'inspection et l'exploration des données (EDA). C'est la phase d'enquête où nous devenons des détectives immobiliers.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'importance de l'Analyse Exploratoire des Données (EDA)</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                   <p class="text-justify text-lg">Avant même de penser à un algorithme, un bon data scientist enfile sa casquette de détective. L'EDA est cette phase d'enquête qui consiste à "interroger" les données pour qu'elles nous racontent leur histoire. On ne cherche pas encore de solution, mais des indices.</p>
+                   
+                   <p class="text-justify">Une bonne exploration est la garantie d'un bon modèle, car elle nous permet de :</p>
+                   <ul class="list-disc list-inside space-y-3 pl-4 text-lg">
+                       <li>
+                           <strong>Formuler des hypothèses :</strong> "Je pense que la surface habitable est le facteur le plus important", "Le quartier doit jouer un grand rôle", "Les maisons récentes sont-elles toujours plus chères ?". L'EDA permet de valider ou d'infirmer ces intuitions.
+                       </li>
+                       <li>
+                           <strong>Détecter les problèmes :</strong> Repérer les valeurs manquantes, les erreurs de saisie, ou les points de données complètement aberrants (outliers) qui pourraient fausser notre analyse.
+                       </li>
+                       <li>
+                           <strong>Inspirer le Feature Engineering :</strong> En découvrant des relations intéressantes, on trouve des idées pour créer de nouvelles variables plus pertinentes, comme nous l'avons vu au chapitre précédent.
+                       </li>
+                   </ul>
+                   <p class="font-bold text-cyan-300 text-center text-xl mt-4">En bref, l'EDA transforme un simple tableau de chiffres en une histoire pleine de sens.</p>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Explorer le marché immobilier d'Ames</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">Nous allons utiliser le jeu de données "Ames Housing", un dataset riche contenant 79 variables (plus un ID et le prix de vente) décrivant (presque) tous les aspects des maisons vendues à Ames, dans l'Iowa. C'est le terrain de jeu parfait pour notre enquête.</p>
+                    
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">Prise de contact : Charger et inspecter les données</h3>
+                        <p class="mb-3 text-justify">La toute première étape consiste à charger nos données dans un DataFrame Pandas et à effectuer quelques vérifications de base pour comprendre à quoi nous avons affaire.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>
+
+<span class="code-comment"># Charger les données depuis le fichier CSV</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+
+<span class="code-comment"># Afficher les dimensions : (nombre de lignes, nombre de colonnes)</span>
+<span class="code-builtin">print</span>(<span class="code-string">"Dimensions du dataset :"</span>, <span class="code-variable">df</span>.<span class="code-variable">shape</span>)
+
+<span class="code-comment"># Obtenir un résumé complet : types de colonnes et valeurs non-nulles</span>
+<span class="code-builtin">print</span>(<span class="code-string">"\nRésumé du DataFrame :"</span>)
+<span class="code-variable">df</span>.<span class="code-function">info</span>()</code></pre>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">Interprétation de notre première inspection</h3>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong><code>df.shape</code> :</strong> C'est notre carte d'identité. Elle nous dit que nous avons 1460 maisons (lignes) et 81 caractéristiques (colonnes) à analyser. C'est un jeu de données riche !</li>
+                            <li><strong><code>df.info()</code> :</strong> C'est notre premier rapport d'enquête. Il est crucial pour deux raisons :
+                                <ul class="list-['-_'] list-inside space-y-2 pl-6 mt-2">
+                                    <li><strong>Détection des valeurs manquantes :</strong> En comparant le nombre d'entrées (1460) au nombre de valeurs "non-null" pour chaque colonne, on repère immédiatement les colonnes avec des données manquantes (par ex. `Alley`, `Fence`, `PoolQC` auront beaucoup moins que 1460 entrées).</li>
+                                    <li><strong>Identification des types de données :</strong> `df.info()` nous montre les colonnes numériques (`int64`, `float64`) et les colonnes catégorielles (`object`). Savoir cela nous guidera : on calculera des corrélations sur les nombres et on utilisera des diagrammes en barres ou des boîtes à moustaches pour les catégories.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p class="mt-4">Cette première inspection nous donne déjà une feuille de route : nous devrons gérer de nombreuses valeurs manquantes et trouver des stratégies pour traiter à la fois les variables numériques et catégorielles.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Étape 1 : Analyse de la variable cible (SalePrice)</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">Tout projet de régression commence par l'étude de la variable que l'on cherche à prédire. C'est la star de notre analyse, il faut la connaître intimement.</p>
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">Visualiser la distribution</h3>
+                        <p class="mb-3 text-justify">Un histogramme est l'outil parfait pour visualiser la répartition des prix. Il nous montre combien de maisons se trouvent dans chaque tranche de prix.</p>
+                        <pre><code><span class="code-comment"># Créer un histogramme avec une courbe de densité (kde=True)</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">12</span>, <span class="code-number">6</span>))
+<span class="code-variable">sns</span>.<span class="code-function">histplot</span>(<span class="code-variable">df</span>[<span class="code-string">'SalePrice'</span>], <span class="code-variable">kde</span><span class="code-operator">=</span><span class="code-constant">True</span>, <span class="code-variable">bins</span><span class="code-operator">=</span><span class="code-number">50</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Distribution du Prix de Vente (SalePrice)'</span>, <span class="code-variable">fontsize</span><span class="code-operator">=</span><span class="code-number">16</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        [Image d'un histogramme de la distribution des prix de vente]
+                        <h4 class="font-semibold text-white mt-4">Observation :</h4>
+                        <p class="mt-2 text-justify">La distribution est clairement <strong>asymétrique à droite (right-skewed)</strong>. La plupart des maisons se concentrent dans la gamme des 100k-200k€, mais une longue "queue" s'étend vers la droite, représentant quelques maisons très chères. De nombreux modèles de régression (en particulier les modèles linéaires) fonctionnent mieux lorsque la variable cible suit une distribution normale (une "courbe en cloche"). Cette asymétrie peut violer leurs hypothèses et réduire leur performance.</p>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">Action : Normaliser avec une transformation logarithmique</h3>
+                        <p class="mb-3 text-justify">Pour corriger cette asymétrie, nous appliquons une transformation logarithmique. Elle a pour effet de "comprimer" les grandes valeurs plus fortement que les petites, ce qui va "tirer" la queue de la distribution vers le centre. On utilise `np.log1p` qui calcule `log(1 + x)` pour éviter les problèmes si un prix était de 0.</p>
+                        <pre><code><span class="code-comment"># Appliquer la transformation et créer une nouvelle colonne</span>
+<span class="code-variable">df</span>[<span class="code-string">'SalePriceLog'</span>] <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">log1p</span>(<span class="code-variable">df</span>[<span class="code-string">'SalePrice'</span>])
+
+<span class="code-comment"># Visualiser la nouvelle distribution</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">12</span>, <span class="code-number">6</span>))
+<span class="code-variable">sns</span>.<span class="code-function">histplot</span>(<span class="code-variable">df</span>[<span class="code-string">'SalePriceLog'</span>], <span class="code-variable">kde</span><span class="code-operator">=</span><span class="code-constant">True</span>, <span class="code-variable">bins</span><span class="code-operator">=</span><span class="code-number">50</span>, <span class="code-variable">color</span><span class="code-operator">=</span><span class="code-string">'green'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Distribution du Prix de Vente après transformation'</span>, <span class="code-variable">fontsize</span><span class="code-operator">=</span><span class="code-number">16</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                         [Image d'un histogramme de la distribution des prix après transformation]
+                         <h4 class="font-semibold text-white mt-4">Résultat :</h4>
+                         <p class="mt-2 text-justify">Parfait ! La nouvelle distribution est beaucoup plus symétrique et ressemble à une distribution normale. Nous entraînerons donc nos modèles à prédire `SalePriceLog`. Pour obtenir une prédiction finale en euros, il nous suffira d'appliquer la transformation inverse (l'exponentielle, avec `np.expm1`).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Challenge : Identifier les facteurs clés</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-4">
+                    <p class="text-lg text-justify">Quelles variables sont les plus liées à `SalePrice` ?</p>
+                    <div>
+                        <h3 class="font-bold text-cyan-300">Votre mission :</h3>
+                        <ul class="list-decimal list-inside pl-4 mt-2 space-y-1">
+                            <li>Calculez la matrice de corrélation des variables numériques.</li>
+                            <li>Identifiez les 10 variables les plus corrélées avec `SalePrice`.</li>
+                            <li>Pour le top 3, créez un nuage de points pour visualiser leur relation avec `SalePrice`.</li>
+                        </ul>
+                    </div>
+                    <details class="bg-gray-900/50 p-4 rounded-md cursor-pointer">
+                        <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                        <div class="mt-4">
+                            <pre><code><span class="code-comment"># 1. Matrice de corrélation</span>
+<span class="code-variable">corr_matrix</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">select_dtypes</span>(<span class="code-variable">include</span><span class="code-operator">=</span>[<span class="code-variable">np</span>.<span class="code-variable">number</span>]).<span class="code-function">corr</span>()
+
+<span class="code-comment"># 2. Top 10 des variables corrélées</span>
+<span class="code-variable">top_10_corr_cols</span> <span class="code-operator">=</span> <span class="code-variable">corr_matrix</span>.<span class="code-function">nlargest</span>(<span class="code-number">11</span>, <span class="code-string">'SalePrice'</span>)[<span class="code-string">'SalePrice'</span>].<span class="code-function">index</span>
+<span class="code-variable">top_10_corr_matrix</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-variable">top_10_corr_cols</span>].<span class="code-function">corr</span>()
+<span class="code-variable">sns</span>.<span class="code-function">heatmap</span>(<span class="code-variable">top_10_corr_matrix</span>, <span class="code-variable">annot</span><span class="code-operator">=</span><span class="code-constant">True</span>, <span class="code-variable">cmap</span><span class="code-operator">=</span><span class="code-string">'coolwarm'</span>, <span class="code-variable">fmt</span><span class="code-operator">=</span><span class="code-string">'.2f'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+
+<span class="code-comment"># 3. Visualiser le top 3</span>
+<span class="code-keyword">for</span> <span class="code-variable">feature</span> <span class="code-keyword">in</span> [<span class="code-string">'OverallQual'</span>, <span class="code-string">'GrLivArea'</span>, <span class="code-string">'GarageCars'</span>]:
+    <span class="code-variable">sns</span>.<span class="code-function">scatterplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-variable">df</span>[<span class="code-variable">feature</span>], <span class="code-variable">y</span><span class="code-operator">=</span><span class="code-variable">df</span>[<span class="code-string">'SalePrice'</span>])
+    <span class="code-variable">plt</span>.<span class="code-function">show</span>()
+</code></pre>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Qu'est-ce que l'Analyse Exploratoire des Données (EDA) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) L'entraînement final du modèle de machine learning.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La phase d'enquête initiale pour comprendre les données, leurs relations et leurs problèmes.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La création de nouvelles variables (feature engineering).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) L'évaluation de la performance du modèle.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Pourquoi est-il souvent utile d'appliquer une transformation logarithmique à une variable cible comme `SalePrice` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Pour augmenter la valeur moyenne des prix.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour rendre la variable plus facile à lire pour les humains.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour normaliser une distribution asymétrique, ce que de nombreux modèles préfèrent.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Pour supprimer les valeurs aberrantes (outliers).</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Qu'est-ce qu'une matrice de corrélation nous montre ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La force et la direction de la relation linéaire entre des paires de variables numériques.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les causes directes des variations de prix.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La distribution de chaque variable individuelle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le nombre de valeurs manquantes dans chaque colonne.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans le dataset d'Ames, quelle variable est la plus corrélée avec `SalePrice` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `GrLivArea` (Surface habitable)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `GarageCars` (Capacité du garage)</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `OverallQual` (Qualité générale)</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `YearBuilt` (Année de construction)</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Un nuage de points (scatter plot) entre `GrLivArea` et `SalePrice` montre probablement :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une tendance positive : plus la surface est grande, plus le prix est élevé.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Une tendance négative : plus la surface est grande, plus le prix est bas.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Aucune relation claire entre les deux variables.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Une relation en forme de U.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le piège de la corrélation :</strong> La corrélation n'implique pas la causalité. La variable `GarageCars` (capacité du garage) est très corrélée au prix. Est-ce que construire un plus grand garage fait automatiquement monter le prix, ou y a-t-il une autre variable "cachée" qui explique cette relation ?</p>
+                    <p><strong>2. Au-delà des nombres :</strong> Comment pourriez-vous explorer la relation entre une variable <strong>catégorielle</strong> (comme `Neighborhood`, le quartier) et `SalePrice` ? Quel type de graphique serait le plus approprié ?</p>
+                    <p><strong>3. L'enquête continue :</strong> En regardant les nuages de points, vous pourriez voir des points qui semblent s'écarter de la tendance générale (des "outliers"). Pourquoi est-il important d'identifier ces points et que pourriez-vous décider d'en faire ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = "Bravo, c'est la bonne réponse !";
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

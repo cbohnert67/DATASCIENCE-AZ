@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 36: Travailler avec des données textuelles</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 36. Travailler avec des données textuelles - Les bases du NLP
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Le texte est l'une des sources de données les plus abondantes et les plus riches au monde : articles de presse, avis clients, e-mails, réseaux sociaux... Mais les modèles de machine learning ne comprennent que les nombres. Le Traitement du Langage Naturel (NLP ou TAL en français) est le domaine de l'IA qui nous apprend à transformer ce chaos de mots en une structure numérique ordonnée que les machines peuvent enfin comprendre. C'est l'art d'apprendre aux ordinateurs à lire.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Donner un sens aux mots : Le pipeline NLP</h2>
+                <p class="text-lg text-justify mb-6">Pour qu'un ordinateur comprenne un texte, nous devons le décomposer, le nettoyer et le quantifier. Ce processus se déroule en deux grandes étapes illustrées ci-dessous.</p>
+                <div class="space-y-8">
+                    <!-- Nettoyage -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Le Nettoyage du Texte (Preprocessing)</h3>
+                        <p class="mb-4 text-justify">Un texte brut est "bruyant" et plein d'éléments qui peuvent perturber un algorithme. Le nettoyer est une première étape essentielle. Prenons un exemple :</p>
+                        <p class="italic text-center bg-gray-900/50 p-3 rounded-md mb-4">"Les data scientists analysent différentes analyses de données."</p>
+                        <ul class="list-decimal list-inside space-y-4 pl-4">
+                            <li><strong>Mise en minuscules :</strong> Pour que "Data" et "data" soient traités comme le même mot. <br> <span class="text-gray-400 ml-6">→ "les data scientists analysent différentes analyses de données."</span></li>
+                            <li><strong>Suppression de la ponctuation :</strong> Les virgules, points, etc., sont retirés pour ne garder que les mots. <br> <span class="text-gray-400 ml-6">→ "les data scientists analysent différentes analyses de données"</span></li>
+                            <li><strong>Tokenisation :</strong> On segmente la phrase en une liste de mots ("tokens"). <br> <span class="text-gray-400 ml-6">→ <code>['les', 'data', 'scientists', 'analysent', 'différentes', 'analyses', 'de', 'données']</code></span></li>
+                            <li><strong>Suppression des "stopwords" :</strong> On retire les mots très courants et peu informatifs comme "les", "de". <br> <span class="text-gray-400 ml-6">→ <code>['data', 'scientists', 'analysent', 'différentes', 'analyses', 'données']</code></span></li>
+                            <li><strong>Lemmatisation (ou Stemming) :</strong> On ramène les mots à leur forme de base. "analysent" et "analyses" deviennent "analyse". La lemmatisation est plus précise car elle utilise un dictionnaire pour trouver la forme canonique (le lemme). <br> <span class="text-gray-400 ml-6">→ <code>['data', 'scientist', 'analyse', 'différent', 'analyse', 'donnée']</code></span></li>
+                        </ul>
+                         <p class="mt-4 text-justify">À la fin de ce processus, notre phrase complexe est devenue une liste de mots-clés épurée, prête pour l'étape suivante.</p>
+                    </div>
+                    <!-- Vectorisation -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. La Vectorisation : Transformer les mots en nombres</h3>
+                        <p class="mb-4 text-justify">Maintenant que nous avons des listes de tokens propres, il faut les convertir en vecteurs numériques. Voici comment les deux méthodes principales fonctionnent concrètement.</p>
+                        <div class="mb-6">
+                            <h4 class="text-xl font-semibold text-white mb-2">Bag-of-Words (BoW)</h4>
+                            <p class="mb-4 text-justify">Imaginez que nous ayons deux phrases nettoyées : <br> 
+                            - Doc 1 : <code>['ciel', 'bleu', 'soleil']</code> <br> 
+                            - Doc 2 : <code>['soleil', 'brille', 'ciel']</code></p>
+                            <p class="mb-4">Le BoW construit d'abord un dictionnaire de tous les mots uniques : <code>{'bleu', 'brille', 'ciel', 'soleil'}</code>. Ensuite, il crée un vecteur pour chaque document en comptant les occurrences de chaque mot du dictionnaire :</p>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-center bg-gray-900/50 rounded-md">
+                                    <thead class="border-b border-gray-600">
+                                        <tr>
+                                            <th class="p-2"></th>
+                                            <th class="p-2">bleu</th>
+                                            <th class="p-2">brille</th>
+                                            <th class="p-2">ciel</th>
+                                            <th class="p-2">soleil</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-gray-700">
+                                            <td class="font-bold p-2">Doc 1</td>
+                                            <td class="p-2 font-mono">1</td>
+                                            <td class="p-2 font-mono">0</td>
+                                            <td class="p-2 font-mono">1</td>
+                                            <td class="p-2 font-mono">1</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-bold p-2">Doc 2</td>
+                                            <td class="p-2 font-mono">0</td>
+                                            <td class="p-2 font-mono">1</td>
+                                            <td class="p-2 font-mono">1</td>
+                                            <td class="p-2 font-mono">1</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="mt-4 text-justify">Le Doc 1 est maintenant représenté par le vecteur <code>[1, 0, 1, 1]</code> et le Doc 2 par <code>[0, 1, 1, 1]</code>.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-white mb-2">TF-IDF</h4>
+                            <p class="mb-4 text-justify">Le TF-IDF affine ce comptage. Il se dit que le mot "soleil", qui apparaît dans les deux documents, est moins discriminant que le mot "brille" qui n'apparaît que dans le Doc 2.</p>
+                            <ul class="list-disc list-inside space-y-2 pl-4">
+                                <li><strong>TF (Term Frequency) :</strong> C'est la même chose que le BoW, la fréquence du mot dans le document.</li>
+                                <li><strong>IDF (Inverse Document Frequency) :</strong> C'est une mesure de la rareté d'un mot dans tout le corpus. Un mot présent dans tous les documents aura un score IDF très bas (proche de 0), tandis qu'un mot rare aura un score IDF élevé.</li>
+                            </ul>
+                            <p class="mt-4 text-justify">Le score final est <strong>TF * IDF</strong>. Ainsi, dans notre exemple, le mot "brille" aura un score TF-IDF plus élevé que "soleil" dans le Doc 2, car il est plus spécifique à ce document. Cela aide le modèle à se concentrer sur les mots qui ont vraiment du sens.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le NLP avec Scikit-Learn : Pas à pas</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-lg text-justify">Scikit-Learn fournit des outils incroyablement efficaces pour réaliser ces étapes en une seule fois. Voyons comment transformer un corpus de texte en matrices numériques, en décomposant chaque étape.</p>
+
+                    <pre><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.feature_extraction.text</span> <span class="code-keyword">import</span> <span class="code-variable">CountVectorizer, TfidfVectorizer</span>
+<span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+
+<span class="code-comment"># Notre corpus de 3 phrases</span>
+<span class="code-variable">corpus</span> <span class="code-operator">=</span> [
+    <span class="code-string">'Le ciel est bleu et le soleil brille.'</span>,
+    <span class="code-string">'Le soleil de minuit est un phénomène du nord.'</span>,
+    <span class="code-string">'Un ciel bleu est un beau ciel.'</span>
+]</code></pre>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 1 : Le Sac de Mots avec <code>CountVectorizer</code></h3>
+                        <p class="mb-4 text-justify"><code>CountVectorizer</code> va d'abord effectuer un nettoyage de base (mise en minuscule, tokenisation) pour construire un dictionnaire de tous les mots uniques (le vocabulaire). Ensuite, il comptera les occurrences de chaque mot dans chaque phrase.</p>
+                        <pre><code><span class="code-variable">bow_vectorizer</span> <span class="code-operator">=</span> <span class="code-function">CountVectorizer</span>()
+<span class="code-variable">X_bow</span> <span class="code-operator">=</span> <span class="code-variable">bow_vectorizer</span>.<span class="code-function">fit_transform</span>(<span class="code-variable">corpus</span>)
+
+<span class="code-comment"># Créons un DataFrame pour une meilleure lisibilité</span>
+<span class="code-variable">df_bow</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">DataFrame</span>(<span class="code-variable">X_bow</span>.<span class="code-function">toarray</span>(), <span class="code-variable">columns</span><span class="code-operator">=</span><span class="code-variable">bow_vectorizer</span>.<span class="code-function">get_feature_names_out</span>())
+<span class="code-builtin">print</span>(<span class="code-string">"--- Matrice Bag-of-Words ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df_bow</span>)</code></pre>
+                        <p class="mt-4 text-justify"><strong>Interprétation :</strong> Chaque ligne correspond à une de nos phrases. Chaque colonne correspond à un mot du vocabulaire. La valeur `2` pour `ciel` dans la dernière ligne indique que le mot "ciel" apparaît deux fois dans la troisième phrase. C'est une représentation simple et directe.</p>
+                    </div>
+
+                     <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 2 : L'approche TF-IDF avec <code>TfidfVectorizer</code></h3>
+                        <p class="mb-4 text-justify"><code>TfidfVectorizer</code> fait la même chose, mais au lieu de comptes bruts, il calcule les scores TF-IDF. Les mots rares et spécifiques à une phrase auront un score plus élevé.</p>
+                        <pre><code><span class="code-variable">tfidf_vectorizer</span> <span class="code-operator">=</span> <span class="code-function">TfidfVectorizer</span>()
+<span class="code-variable">X_tfidf</span> <span class="code-operator">=</span> <span class="code-variable">tfidf_vectorizer</span>.<span class="code-function">fit_transform</span>(<span class="code-variable">corpus</span>)
+
+<span class="code-comment"># Créons un DataFrame pour une meilleure lisibilité</span>
+<span class="code-variable">df_tfidf</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">DataFrame</span>(<span class="code-variable">np</span>.<span class="code-function">round</span>(<span class="code-variable">X_tfidf</span>.<span class="code-function">toarray</span>(), <span class="code-number">2</span>), <span class="code-variable">columns</span><span class="code-operator">=</span><span class="code-variable">tfidf_vectorizer</span>.<span class="code-function">get_feature_names_out</span>())
+<span class="code-builtin">print</span>(<span class="code-string">"\n--- Matrice TF-IDF ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df_tfidf</span>)</code></pre>
+                        <p class="mt-4 text-justify"><strong>Interprétation :</strong> Remarquez que les valeurs ne sont plus des entiers. Dans la deuxième phrase, les mots comme `minuit`, `nord` et `phénomène` ont des scores élevés (0.53) car ils n'apparaissent que là. En revanche, `soleil` et `est`, présents dans d'autres phrases, ont un score plus faible (0.32). Le TF-IDF a correctement identifié les mots les plus caractéristiques de chaque phrase.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-cyan-500/50 shadow-lg">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Construire un filtre anti-spam</h2>
+                <p class="text-lg text-justify mb-4">
+                    Le NLP permet de résoudre des problèmes très concrets, comme le filtrage des spams. Votre mission :
+                </p>
+                <div class="bg-gray-900/50 p-4 rounded-md">
+                    <ol class="list-decimal list-inside space-y-3">
+                        <li>Trouver un jeu de données de SMS (le "SMS Spam Collection" est un classique sur Kaggle).</li>
+                        <li>Utiliser <code>TfidfVectorizer</code> pour transformer le texte des SMS en une matrice numérique.</li>
+                        <li>Entraîner un modèle de <code>LogisticRegression</code> sur cette matrice pour classifier les messages.</li>
+                        <li>Évaluer la performance de votre premier classifieur de spam !</li>
+                    </ol>
+                </div>
+                 <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-6">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                    <pre class="mt-4"><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.feature_extraction.text</span> <span class="code-keyword">import</span> <span class="code-variable">TfidfVectorizer</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.linear_model</span> <span class="code-keyword">import</span> <span class="code-variable">LogisticRegression</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.pipeline</span> <span class="code-keyword">import</span> <span class="code-variable">Pipeline</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.metrics</span> <span class="code-keyword">import</span> <span class="code-variable">classification_report, accuracy_score</span>
+
+<span class="code-comment"># 1. Charger les données (téléchargez 'spam.csv' sur Kaggle)</span>
+<span class="code-keyword">try</span>:
+    <span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'spam.csv'</span>, <span class="code-variable">encoding</span><span class="code-operator">=</span><span class="code-string">'latin-1'</span>)
+    <span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[[<span class="code-string">'v1'</span>, <span class="code-string">'v2'</span>]]
+    <span class="code-variable">df</span>.<span class="code-variable">columns</span> <span class="code-operator">=</span> [<span class="code-string">'label'</span>, <span class="code-string">'message'</span>]
+<span class="code-keyword">except</span> <span class="code-variable">FileNotFoundError</span>:
+    <span class="code-builtin">print</span>(<span class="code-string">"Fichier 'spam.csv' non trouvé. Utilisation de données d'exemple."</span>)
+    <span class="code-variable">data</span> <span class="code-operator">=</span> {<span class="code-string">'label'</span>: [<span class="code-string">'ham'</span>, <span class="code-string">'spam'</span>], <span class="code-string">'message'</span>: [<span class="code-string">'Go until jurong point'</span>, <span class="code-string">'Free entry in 2 a wkly comp'</span>]}
+    <span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">DataFrame</span>(<span class="code-variable">data</span>)
+
+<span class="code-comment"># 2. Séparer les données</span>
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'message'</span>]
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'label'</span>]
+<span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">test_size</span><span class="code-operator">=</span><span class="code-number">0.2</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+
+<span class="code-comment"># 3. Créer un pipeline qui combine la vectorisation et la classification</span>
+<span class="code-variable">text_clf_pipeline</span> <span class="code-operator">=</span> <span class="code-function">Pipeline</span>([
+    (<span class="code-string">'tfidf'</span>, <span class="code-function">TfidfVectorizer</span>(<span class="code-variable">stop_words</span><span class="code-operator">=</span><span class="code-string">'english'</span>)),
+    (<span class="code-string">'clf'</span>, <span class="code-function">LogisticRegression</span>(<span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)),
+])
+
+<span class="code-comment"># 4. Entraîner et évaluer le pipeline</span>
+<span class="code-variable">text_clf_pipeline</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+<span class="code-variable">predictions</span> <span class="code-operator">=</span> <span class="code-variable">text_clf_pipeline</span>.<span class="code-function">predict</span>(<span class="code-variable">X_test</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Exactitude (Accuracy) : {accuracy_score(y_test, predictions):.2%}\n"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">classification_report</span>(<span class="code-variable">y_test</span>, <span class="code-variable">predictions</span>))
+
+<span class="code-comment"># 5. Tester avec de nouvelles phrases</span>
+<span class="code-builtin">print</span>(<span class="code-string">"\n--- Test sur de nouvelles phrases ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Prédiction pour 'Congratulations! You've won...' -> {text_clf_pipeline.predict(['Congratulations! You have won a free ticket.'])[0]}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Prédiction pour 'Hey, are we still on...' -> {text_clf_pipeline.predict(['Hey, are we still on for tonight?'])[0]}"</span>)
+
+                    </code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est le rôle de la tokenisation dans le pipeline NLP ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Traduire le texte dans une autre langue</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Segmenter un texte en une liste de mots ou de symboles</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Mettre tous les mots en majuscules</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Supprimer les mots inutiles</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Quelle est la principale faiblesse de l'approche "Bag-of-Words" (Sac de Mots) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Elle ignore l'ordre et le contexte des mots</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Elle est très lente à calculer</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Elle ne fonctionne qu'avec des textes très courts</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Elle ne compte que les mots rares</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Comment le TF-IDF détermine-t-il l'importance d'un mot ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) En comptant uniquement sa fréquence dans un document</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) En privilégiant les mots qui apparaissent dans tous les documents</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) En donnant plus de poids à un mot fréquent dans un document mais rare dans le reste du corpus</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) En se basant sur la longueur du mot</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans Scikit-Learn, à quoi sert un <code>Pipeline</code> pour une tâche NLP ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À visualiser les résultats</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À charger les données texte depuis un fichier</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À choisir le meilleur modèle de classification</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À enchaîner séquentiellement la vectorisation du texte et l'entraînement du modèle</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. La lemmatisation est une technique qui...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) ...coupe la fin des mots pour ne garder que la racine (stemming).</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) ...réduit un mot à sa forme canonique (lemme) en utilisant un dictionnaire.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) ...compte le nombre de lettres dans un mot.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) ...supprime les mots les plus courants d'un texte.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le contexte est roi :</strong> Les méthodes comme Bag-of-Words ou TF-IDF ignorent l'ordre des mots. La phrase "le chien chasse le chat" est vue de la même manière que "le chat chasse le chien". Pour quelles tâches cette perte de contexte est-elle problématique ?</p>
+                    <p><strong>2. Le problème des mots inconnus :</strong> Un modèle NLP est entraîné sur un vocabulaire spécifique. Que se passe-t-il s'il rencontre un mot qu'il n'a jamais vu pendant son entraînement (un néologisme, un mot d'argot, une faute de frappe) ? Comment pourrait-on gérer ce problème ?</p>
+                    <p><strong>3. Au-delà des mots :</strong> Le NLP se concentre sur les mots, mais le langage humain est plus riche. Comment des modèles pourraient-ils prendre en compte les émojis, le ton (ironie, sarcasme) ou la structure d'un texte (titres, paragraphes) pour mieux le comprendre ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let answered = false;
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (answered) return;
+                        answered = true;
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                            opt.classList.add('cursor-not-allowed');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

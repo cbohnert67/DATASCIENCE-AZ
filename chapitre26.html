@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 26: Les Machines à Vecteurs de Support (SVM)</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 26 : Les Machines à Vecteurs de Support (SVM) - Trouver la frontière parfaite
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Pour séparer deux groupes de points, il existe une infinité de lignes possibles. Mais sont-elles toutes aussi bonnes ? Intuitivement, non. Les Machines à Vecteurs de Support (SVM) ne cherchent pas n'importe quelle ligne de séparation ; elles cherchent LA meilleure : celle qui est la plus éloignée possible des points de chaque groupe. La SVM cherche à tracer la "rue" la plus large possible entre les deux groupes. Cette approche géométrique en fait un modèle extrêmement robuste et performant.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La géométrie de la séparation optimale</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">L'idée de marge maximale</h3>
+                        <p class="mb-4 text-justify">
+                            Imaginez deux villages sur une carte. Vous voulez tracer une route qui les sépare. Vous pourriez tracer la route n'importe où entre les deux, mais la route la plus "sûre" serait celle qui passe exactement au milieu, aussi loin que possible des maisons les plus proches de chaque village. C'est exactement l'idée de la SVM.
+                        </p>
+                        <p class="mb-4 text-justify">
+                            L'objectif principal d'une SVM est de trouver un <strong>hyperplan</strong> (une ligne en 2D, un plan en 3D) qui sépare les données en maximisant la distance avec les points les plus proches de chaque classe. Cette zone vide autour de l'hyperplan est appelée la <strong>marge</strong>. Un modèle avec une grande marge est plus robuste, car il généralise mieux et est moins sensible aux petites variations des données.
+                        </p>
+                        [Image d'un SVM avec une marge large et des vecteurs de support]
+                        <h4 class="text-xl font-semibold text-white mt-6 mb-2">Les Vecteurs de Support : Les seuls points qui comptent</h4>
+                        <p class="mb-4 text-justify">
+                            Les "maisons" les plus proches de la route, celles qui définissent les bords de la marge, sont appelées les <strong>vecteurs de support</strong>. Ce sont les points les plus critiques car ce sont eux, et uniquement eux, qui déterminent la position et l'orientation de la frontière. Si vous déplaciez n'importe quel autre point (une maison loin de la route), la frontière ne bougerait pas. Mais si vous déplacez un vecteur de support, la frontière optimale changera. La SVM est donc très efficace en mémoire car elle n'a besoin de retenir que ces quelques points cruciaux pour définir tout le modèle.
+                        </p>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">L'hyperparamètre C : Le compromis Marge vs. Erreurs</h3>
+                        <p class="mb-4 text-justify">
+                            Dans le monde réel, les données sont rarement parfaitement séparables. L'hyperparamètre `C` (le paramètre de régularisation) agit comme un "garde-fou" qui contrôle le compromis entre avoir une marge large et ne commettre aucune erreur sur le jeu d'entraînement.
+                        </p>
+                         <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-green-400">Un petit C (ex: C=0.1) : Priorité à la marge large</h4>
+                                <p>Le modèle est plus "tolérant". Il préfère avoir une marge la plus large possible, même si cela signifie que quelques points se retrouvent du mauvais côté de la marge (ou même de la frontière). Cela crée un modèle plus simple, plus général, et moins susceptible de surapprendre (overfitting).</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-red-400">Un grand C (ex: C=100) : Tolérance zéro pour les erreurs</h4>
+                                <p>Le modèle est très "strict". Il va tout faire pour classer correctement chaque point d'entraînement. Pour y parvenir, il est prêt à sacrifier la largeur de la marge, ce qui peut créer une frontière de décision très complexe et sinueuse. Le risque est de créer un modèle qui s'adapte trop au bruit des données d'entraînement et généralise mal (overfitting).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Conquérir le non-linéaire : L'Astuce du Noyau (Kernel Trick)</h3>
+                        <p class="mb-4 text-justify">L'astuce du noyau est l'une des idées les plus élégantes du machine learning. Elle permet aux SVM de tracer des frontières non-linéaires complexes.
+                        </p>
+                        <p class="mb-4 text-justify">
+                           L'analogie : Imaginez des points rouges au centre d'un cercle de points bleus sur une nappe (2D). Impossible de les séparer avec une règle. L'astuce du noyau consiste à "pincer" la nappe en son centre et à la soulever. En 3D, les points rouges se retrouvent en haut d'un cône, et les bleus en bas. Il devient alors trivial de les séparer avec un plan horizontal. Le noyau est une fonction mathématique qui fait cela sans jamais avoir à calculer les coordonnées des points dans cette nouvelle dimension, ce qui serait très coûteux.
+                        </p>
+                        [Image de l'astuce du noyau projetant des données 2D en 3D]
+                        <div class="mt-6 bg-gray-900/50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-lg text-cyan-300">Noyau RBF et son hyperparamètre `gamma`</h4>
+                             <p class="mt-2 text-justify">Le noyau le plus utilisé est le RBF (Radial Basis Function). Il est contrôlé par l'hyperparamètre `gamma`, qui définit la "zone d'influence" de chaque vecteur de support.</p>
+                             <ul class="list-disc list-inside space-y-2 mt-2">
+                                <li><strong>Un petit `gamma` (ex: 0.1)</strong> : Chaque point a une grande influence. La frontière de décision est très lisse et générale. C'est un modèle à faible variance mais potentiellement à biais élevé.</li>
+                                <li><strong>Un grand `gamma` (ex: 10)</strong> : L'influence de chaque point est très locale. Le modèle va créer une frontière très complexe qui épouse les données de près, risquant de surapprendre (overfitting). C'est un modèle à faible biais mais à haute variance.</li>
+                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Les SVM avec Scikit-Learn</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-4">1. Noyau linéaire pour données séparables</h3>
+                        <p class="mb-4 text-justify">Pour illustrer le concept de base, nous allons d'abord créer des données synthétiques parfaitement séparables à l'aide de la fonction `make_blobs` de Scikit-Learn. Ensuite, nous appliquerons un SVM avec un noyau linéaire.</p>
+<pre><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.datasets</span> <span class="code-keyword">import</span> <span class="code-variable">make_blobs</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.svm</span> <span class="code-keyword">import</span> <span class="code-variable">SVC</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+
+<span class="code-comment"># Crée 2 groupes de points bien distincts</span>
+<span class="code-variable">X</span>, <span class="code-variable">y</span> = <span class="code-function">make_blobs</span>(<span class="code-variable">n_samples</span>=<span class="code-number">100</span>, <span class="code-variable">centers</span>=<span class="code-number">2</span>, <span class="code-variable">random_state</span>=<span class="code-number">0</span>, <span class="code-variable">cluster_std</span>=<span class="code-number">0.8</span>)
+
+<span class="code-comment"># Initialise le modèle SVM avec un noyau linéaire</span>
+<span class="code-variable">model</span> = <span class="code-function">SVC</span>(<span class="code-variable">kernel</span>=<span class="code-string">'linear'</span>)
+<span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>)
+
+<span class="code-comment"># Affiche les points de données</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span>=(<span class="code-number">8</span>, <span class="code-number">6</span>))
+<span class="code-variable">plt</span>.<span class="code-function">scatter</span>(<span class="code-variable">X</span>[:, <span class="code-number">0</span>], <span class="code-variable">X</span>[:, <span class="code-number">1</span>], <span class="code-variable">c</span>=<span class="code-variable">y</span>, <span class="code-variable">s</span>=<span class="code-number">50</span>, <span class="code-variable">cmap</span>=<span class="code-string">'autumn'</span>)
+
+<span class="code-comment"># Met en évidence les vecteurs de support avec un cercle noir</span>
+<span class="code-variable">plt</span>.<span class="code-function">scatter</span>(<span class="code-variable">model</span>.<span class="code-variable">support_vectors_</span>[:, <span class="code-number">0</span>], <span class="code-variable">model</span>.<span class="code-variable">support_vectors_</span>[:, <span class="code-number">1</span>],
+            <span class="code-variable">s</span>=<span class="code-number">200</span>, <span class="code-variable">facecolors</span>=<span class="code-string">'none'</span>, <span class="code-variable">edgecolors</span>=<span class="code-string">'k'</span>, <span class="code-variable">linewidth</span>=<span class="code-number">2</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"SVM avec un noyau linéaire"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+</code></pre>
+                        <div class="mt-4 text-justify bg-gray-900/50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-lg text-cyan-300">Interprétation du graphique</h4>
+                            <p>Le graphique montre les deux groupes de points (jaune et rouge). Le SVM a trouvé la ligne de séparation optimale. Les points entourés de cercles noirs sont les vecteurs de support : ce sont les seuls points qui ont influencé la décision du modèle.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-4">2. Noyau RBF pour données complexes</h3>
+                        <p class="mb-4 text-justify">Maintenant, créons des données que l'on ne peut pas séparer avec une ligne droite, en utilisant `make_moons`. C'est là que la magie du noyau RBF opère.</p>
+<pre><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.datasets</span> <span class="code-keyword">import</span> <span class="code-variable">make_moons</span>
+
+<span class="code-comment"># Crée des données en forme de deux demi-lunes entrelacées</span>
+<span class="code-variable">X</span>, <span class="code-variable">y</span> = <span class="code-function">make_moons</span>(<span class="code-variable">n_samples</span>=<span class="code-number">100</span>, <span class="code-variable">noise</span>=<span class="code-number">0.15</span>, <span class="code-variable">random_state</span>=<span class="code-number">42</span>)
+
+<span class="code-comment"># Utilise un noyau RBF. 'gamma' contrôle la souplesse de la frontière</span>
+<span class="code-variable">model</span> = <span class="code-function">SVC</span>(<span class="code-variable">kernel</span>=<span class="code-string">'rbf'</span>, <span class="code-variable">gamma</span>=<span class="code-number">2</span>, <span class="code-variable">C</span>=<span class="code-number">1.0</span>)
+<span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>)
+
+<span class="code-comment"># Affiche le résultat</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span>=(<span class="code-number">8</span>, <span class="code-number">6</span>))
+<span class="code-variable">plt</span>.<span class="code-function">scatter</span>(<span class="code-variable">X</span>[:, <span class="code-number">0</span>], <span class="code-variable">X</span>[:, <span class="code-number">1</span>], <span class="code-variable">c</span>=<span class="code-variable">y</span>, <span class="code-variable">s</span>=<span class="code-number">50</span>, <span class="code-variable">cmap</span>=<span class="code-string">'autumn'</span>)
+<span class="code-comment"># Ici, on ne montre pas la frontière, mais le modèle l'a bien apprise</span>
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"Données complexes pour un noyau RBF"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+</code></pre>
+                        <div class="mt-4 text-justify bg-gray-900/50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-lg text-cyan-300">Interprétation</h4>
+                            <p>Bien que nous ne visualisions pas la frontière ici (cela demande un code plus complexe), le modèle a réussi à apprendre une séparation non-linéaire qui épouse la forme des "lunes". Un `kernel='linear'` aurait complètement échoué sur ce type de données. Les hyperparamètres `gamma=2` et `C=1.0` ont été choisis pour bien s'adapter à la courbure des données.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous ! L'optimisation est la clé</h2>
+                <p class="text-lg text-justify mb-4">Les SVM sont extrêmement puissants, mais leur performance dépend fortement de leurs hyperparamètres C et gamma.</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                     <ul class="list-decimal list-inside space-y-2">
+                        <li>Utilisez `GridSearchCV` de Scikit-Learn sur le dataset Iris.</li>
+                        <li>Cherchez la meilleure combinaison de `C` (ex: `[0.1, 1, 10, 100]`) et `gamma` (ex: `[1, 0.1, 0.01, 0.001]`) pour un `SVC` avec un noyau `rbf`.</li>
+                        <li>Le modèle optimisé est-il plus performant que les autres modèles que nous avons testés sur ce même dataset (comme le KNN) ?</li>
+                    </ul>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+<pre class="mt-4"><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.datasets</span> <span class="code-keyword">import</span> <span class="code-variable">load_iris</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split, GridSearchCV</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.preprocessing</span> <span class="code-keyword">import</span> <span class="code-variable">StandardScaler</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.pipeline</span> <span class="code-keyword">import</span> <span class="code-variable">Pipeline</span>
+
+<span class="code-comment"># Charger les données Iris</span>
+<span class="code-variable">iris</span> = <span class="code-function">load_iris</span>()
+<span class="code-variable">X</span>, <span class="code-variable">y</span> = <span class="code-variable">iris</span>.<span class="code-variable">data</span>, <span class="code-variable">iris</span>.<span class="code-variable">target</span>
+<span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> = <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">random_state</span>=<span class="code-number">42</span>)
+
+<span class="code-comment"># Créer un pipeline pour mettre à l'échelle les données puis appliquer le SVM</span>
+<span class="code-comment"># C'est une bonne pratique, car les SVM sont aussi sensibles à l'échelle des données</span>
+<span class="code-variable">pipe</span> = <span class="code-function">Pipeline</span>([
+    (<span class="code-string">'scaler'</span>, <span class="code-function">StandardScaler</span>()),
+    (<span class="code-string">'svm'</span>, <span class="code-function">SVC</span>(<span class="code-variable">kernel</span>=<span class="code-string">'rbf'</span>))
+])
+
+<span class="code-comment"># Définir la grille de recherche pour les hyperparamètres</span>
+<span class="code-variable">param_grid</span> = {
+    <span class="code-string">'svm__C'</span>: [<span class="code-number">0.1</span>, <span class="code-number">1</span>, <span class="code-number">10</span>, <span class="code-number">100</span>],
+    <span class="code-string">'svm__gamma'</span>: [<span class="code-number">1</span>, <span class="code-number">0.1</span>, <span class="code-number">0.01</span>, <span class="code-number">0.001</span>]
+}
+
+<span class="code-comment"># Configurer et lancer la recherche par grille avec validation croisée</span>
+<span class="code-variable">grid_search</span> = <span class="code-function">GridSearchCV</span>(<span class="code-variable">pipe</span>, <span class="code-variable">param_grid</span>, <span class="code-variable">cv</span>=<span class="code-number">5</span>)
+<span class="code-variable">grid_search</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+
+<span class="code-builtin">print</span>(<span class="code-string">"--- Optimisation du SVM avec GridSearchCV ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Meilleurs hyperparamètres trouvés : {grid_search.best_params_}"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Meilleur score de validation croisée : {grid_search.best_score_:.2%}"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"\nScore du modèle optimisé sur les données de test : {grid_search.score(X_test, y_test):.2%}"</span>)
+</code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est l'objectif principal d'un algorithme SVM ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Trouver l'hyperplan qui maximise la marge entre les classes.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Classifier les points en se basant sur leurs plus proches voisins.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Créer une série d'arbres de décision.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Regrouper les données en clusters non supervisés.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Comment s'appellent les points de données qui définissent la position de l'hyperplan de séparation ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Les points centraux</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les centroïdes</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Les vecteurs de support</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Les points de marge</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. À quoi sert l'"astuce du noyau" (Kernel Trick) dans les SVM ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À accélérer le calcul des distances.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À permettre de séparer des données non linéairement séparables.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À réduire le nombre de vecteurs de support.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À choisir automatiquement la meilleure valeur pour C.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Un hyperparamètre `C` très élevé dans un SVM va...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Tenter de classifier correctement chaque point, au risque d'avoir une marge plus petite.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Favoriser une marge plus large, même si certains points sont mal classés.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Rendre la frontière de décision plus lisse et moins complexe.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) N'avoir aucun effet sur le modèle.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Lequel de ces noyaux est le plus couramment utilisé pour gérer des frontières de décision complexes ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le noyau linéaire</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le noyau polynomial</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le noyau RBF (Radial Basis Function)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le noyau sigmoïde</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. SVM pour la régression :</strong> Comment imaginez-vous qu'on puisse adapter l'idée de "marge maximale" pour prédire une valeur continue (régression) au lieu d'une catégorie ? (Indice : recherchez "Support Vector Regression" ou SVR).</p>
+                    <p><strong>2. Le choix du noyau :</strong> Dans quels cas un noyau linéaire simple pourrait-il être préférable à un noyau RBF complexe, même si les données ne sont pas parfaitement séparables ? (Pensez à la vitesse, à l'interprétabilité et au risque d'overfitting).</p>
+                    <p><strong>3. Au-delà de la classification binaire :</strong> Les SVM sont nativement conçus pour des problèmes à deux classes. Comment s'y prennent-ils pour gérer des problèmes multi-classes, comme le dataset Iris qui en a trois ? (Indice : recherchez les stratégies "One-vs-Rest" et "One-vs-One").</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

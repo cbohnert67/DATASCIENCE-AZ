@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 25: Les K-Plus Proches Voisins (KNN)</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 25 : Les K-Plus Proches Voisins (KNN) - Simple, intuitif et étonnamment efficace
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    "Dis-moi qui sont tes amis, je te dirai qui tu es." Ce vieux proverbe résume parfaitement la philosophie de l'un des algorithmes les plus intuitifs du machine learning : les K-Plus Proches Voisins (K-Nearest Neighbors, ou KNN). Pour classifier un nouveau point de donnée, l'algorithme ne fait rien de plus que de regarder ses voisins les plus proches et de suivre l'avis de la majorité. C'est une approche simple, sans "modèle" complexe à construire, mais étonnamment efficace, en particulier pour des problèmes où la frontière entre les classes n'est pas linéaire.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La sagesse de la proximité</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Comment fonctionne l'algorithme ?</h3>
+                        <p class="mb-4 text-justify">
+                            Le KNN est un algorithme basé sur la distance. Pour classifier un nouveau point (par exemple, une fleur dont on ne connaît pas l'espèce), il suit ces étapes simples :
+                        </p>
+                        [Image d'un diagramme de l'algorithme KNN]
+                        <ol class="list-decimal list-inside space-y-4 text-lg">
+                            <li>
+                                <strong>Choisir K :</strong> On décide d'abord du nombre de voisins (K) à consulter. C'est notre seul réglage. Imaginons que nous choisissons <strong>K=5</strong>.
+                            </li>
+                            <li>
+                                <strong>Calculer les distances :</strong> Pour le nouveau point, on calcule sa distance à <em>tous</em> les autres points déjà connus. La distance la plus courante est la <strong>distance euclidienne</strong>. Pour deux points P1=(x1, y1) et P2=(x2, y2) dans un plan, c'est simplement :
+                                <p class="text-center my-2">$$ d(P1, P2) = \sqrt{(x2 - x1)^2 + (y2 - y1)^2} $$</p>
+                                C'est l'application du théorème de Pythagore. L'idée se généralise à plus de deux dimensions.
+                            </li>
+                            <li>
+                                <strong>Trouver les K plus proches voisins :</strong> On trie tous les points connus du plus proche au plus lointain par rapport à notre nouveau point, et on ne garde que les <strong>K</strong> premiers (donc les 5 plus proches dans notre exemple).
+                            </li>
+                            <li>
+                                <strong>Vote majoritaire :</strong> On organise une "élection" parmi ces K voisins. On regarde leurs étiquettes (leur "parti politique"). Le nouveau point se voit attribuer l'étiquette la plus représentée.
+                                <div class="bg-gray-900/50 p-3 rounded-md mt-2">
+                                    <strong>Exemple :</strong> Parmi les 5 voisins les plus proches de notre nouvelle fleur, il y a :
+                                    <ul class="list-disc list-inside ml-4">
+                                        <li>3 fleurs de l'espèce "Versicolor"</li>
+                                        <li>1 fleur de l'espèce "Setosa"</li>
+                                        <li>1 fleur de l'espèce "Virginica"</li>
+                                    </ul>
+                                    La majorité est "Versicolor" (3 votes sur 5). Notre nouvelle fleur est donc classifiée comme <strong>"Versicolor"</strong>.
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le choix de K : Un équilibre délicat</h3>
+                        <p class="mb-4 text-justify">Le choix de K est un compromis qui affecte directement le biais et la variance du modèle. C'est le principal réglage pour trouver le bon équilibre.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-red-400">Un petit K (ex: K=1)</h4>
+                                <p>C'est comme ne demander l'avis que de son plus proche voisin. Le modèle devient très sensible au moindre bruit. Une seule donnée aberrante peut complètement changer une prédiction. La frontière de décision devient très "tordue" pour s'adapter à chaque point. On parle de <strong>haute variance</strong> et de risque d'<strong>overfitting</strong>.</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-green-400">Un grand K (ex: K=21)</h4>
+                                <p>C'est comme faire un sondage dans tout le quartier. L'influence des points individuels est lissée. Le modèle devient plus stable et robuste au bruit, mais il peut perdre en précision sur les frontières complexes. Si K est trop grand, le modèle prédira toujours la classe la plus fréquente dans les données. On parle de <strong>biais élevé</strong> et de risque d'<strong>underfitting</strong>.</p>
+                            </div>
+                        </div>
+                         <p class="mt-4 text-justify"><strong>La pratique courante :</strong> On choisit généralement une valeur impaire pour K (3, 5, 7...) pour éviter les cas d'égalité lors du vote. On utilise ensuite une boucle et un graphique (comme dans la section suivante) pour évaluer la performance du modèle pour différentes valeurs de K et choisir la meilleure. </p>
+                    </div>
+
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">L'importance cruciale de la mise à l'échelle (Scaling)</h3>
+                        <p class="mb-4 text-justify">Puisque le KNN est entièrement basé sur la distance, il est extrêmement sensible à l'échelle des variables. C'est peut-être le point le plus important à retenir pour cet algorithme.</p>
+                        <p class="mb-4 text-justify">
+                            <strong>Exemple concret :</strong> Imaginons que l'on veuille classifier des clients en "Bon payeur" / "Mauvais payeur" avec deux features :
+                        </p>
+                        <ul class="list-disc list-inside ml-4 mb-4">
+                            <li><strong>Âge :</strong> entre 20 et 70 ans.</li>
+                            <li><strong>Salaire annuel :</strong> entre 30 000 et 150 000 euros.</li>
+                        </ul>
+                        <p class="mb-2">Prenons deux clients, A et B, et calculons la part de chaque variable dans la distance au carré (avant la racine) :</p>
+                        <ul class="list-disc list-inside ml-4 mb-4">
+                            <li>Client A : 30 ans, 40 000€</li>
+                            <li>Client B : 35 ans, 45 000€</li>
+                        </ul>
+                        <p>$$ (x_B - x_A)^2 = (\text{différence de salaire})^2 + (\text{différence d'âge})^2 $$</p>
+                        <p>$$ (x_B - x_A)^2 = (45000 - 40000)^2 + (35 - 30)^2 $$</p>
+                        <p>$$ (x_B - x_A)^2 = (5000)^2 + (5)^2 = \underbrace{25 000 000}_{\text{99.99% dû au salaire}} + \underbrace{25}_{\text{0.01% dû à l'âge}} $$</p>
+                        <p class="mt-4 text-justify font-bold text-yellow-300">
+                           Le salaire compte pour 99.99% de la distance ! L'âge n'a quasiment aucun impact. Pour KNN, c'est comme si la variable "âge" n'existait pas. Pour corriger cela, il est <strong>impératif</strong> de mettre toutes les features à la même échelle (par exemple avec `StandardScaler`) avant d'utiliser un KNN.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le KNN en action sur le dataset Iris</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-lg text-justify">
+                        Le jeu de données Iris est un classique pour l'apprentissage de la classification. Il contient des mesures (longueur/largeur des sépales/pétales) pour 150 fleurs de 3 espèces différentes. Notre but est de trouver la valeur de K qui permet de classifier au mieux les fleurs.
+                    </p>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-3">Étape 1 : Préparation des données</h3>
+                        <p class="mb-2">On charge les données, on les sépare en un jeu d'entraînement (pour "apprendre") et un jeu de test (pour évaluer, sur des données jamais vues). Puis, on applique le `StandardScaler`.</p>
+                        <p class="italic text-gray-400 mb-2">Note : On utilise `fit_transform` sur `X_train` pour apprendre les paramètres de mise à l'échelle (la moyenne et l'écart-type) et les appliquer. On utilise ensuite seulement `transform` sur `X_test` pour appliquer ces MÊMES paramètres, évitant ainsi toute fuite d'information du jeu de test vers l'entraînement.</p>
+<pre><code><span class="code-comment"># Charger les données et les diviser</span>
+<span class="code-variable">iris</span> = <span class="code-function">load_iris</span>()
+<span class="code-variable">X</span>, <span class="code-variable">y</span> = <span class="code-variable">iris</span>.<span class="code-variable">data</span>, <span class="code-variable">iris</span>.<span class="code-variable">target</span>
+<span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> = <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">test_size</span>=<span class="code-number">0.3</span>, <span class="code-variable">random_state</span>=<span class="code-number">42</span>)
+
+<span class="code-comment"># Mettre les données à l'échelle (étape cruciale !)</span>
+<span class="code-variable">scaler</span> = <span class="code-function">StandardScaler</span>()
+<span class="code-variable">X_train_scaled</span> = <span class="code-variable">scaler</span>.<span class="code-function">fit_transform</span>(<span class="code-variable">X_train</span>)
+<span class="code-variable">X_test_scaled</span> = <span class="code-variable">scaler</span>.<span class="code-function">transform</span>(<span class="code-variable">X_test</span>)
+</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-3">Étape 2 : La recherche du K optimal</h3>
+                        <p class="mb-2">On va maintenant entraîner un modèle KNN pour chaque valeur de K entre 1 et 25. Pour chaque K, on entraîne le modèle sur `X_train_scaled`, on fait des prédictions sur `X_test_scaled`, et on mesure l'exactitude (`accuracy`, le pourcentage de prédictions correctes).</p>
+<pre><code><span class="code-comment"># Tester plusieurs valeurs de K</span>
+<span class="code-variable">k_range</span> = <span class="code-function">range</span>(<span class="code-number">1</span>, <span class="code-number">26</span>)
+<span class="code-variable">scores</span> = []
+<span class="code-keyword">for</span> <span class="code-variable">k</span> <span class="code-keyword">in</span> <span class="code-variable">k_range</span>:
+    <span class="code-variable">knn</span> = <span class="code-function">KNeighborsClassifier</span>(<span class="code-variable">n_neighbors</span>=<span class="code-variable">k</span>)
+    <span class="code-variable">knn</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train_scaled</span>, <span class="code-variable">y_train</span>)
+    <span class="code-variable">y_pred</span> = <span class="code-variable">knn</span>.<span class="code-function">predict</span>(<span class="code-variable">X_test_scaled</span>)
+    <span class="code-variable">scores</span>.<span class="code-function">append</span>(<span class="code-function">accuracy_score</span>(<span class="code-variable">y_test</span>, <span class="code-variable">y_pred</span>))
+</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-3">Étape 3 : Visualisation et interprétation</h3>
+                        <p class="mb-2">Le graphique est notre outil de décision. Il montre la performance du modèle pour chaque K. On cherche le "coude" (elbow) : le point où l'exactitude est maximale juste avant de commencer à stagner ou à diminuer. C'est le K qui offre le meilleur compromis biais-variance.</p>
+<pre><code><span class="code-comment"># Visualiser les résultats</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span>=(<span class="code-number">12</span>, <span class="code-number">7</span>))
+<span class="code-variable">plt</span>.<span class="code-function">plot</span>(<span class="code-variable">k_range</span>, <span class="code-variable">scores</span>, <span class="code-variable">marker</span>=<span class="code-string">'o'</span>, <span class="code-variable">linestyle</span>=<span class="code-string">'--'</span>)
+<span class="code-comment"># ... code de visualisation ...</span>
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+
+<span class="code-comment"># Trouver et afficher le meilleur K</span>
+<span class="code-variable">best_k</span> = <span class="code-variable">k_range</span>[<span class="code-variable">np</span>.<span class="code-function">argmax</span>(<span class="code-variable">scores</span>)]
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Meilleur score obtenu : {max(scores):.2%} pour K = {best_k}"</span>)
+</code></pre>
+                        <div class="mt-4 text-justify bg-gray-900/50 p-4 rounded-lg">
+                             <h4 class="font-semibold text-lg text-cyan-300">Analyse du graphique</h4>
+                             [Image d'un graphique de performance KNN en fonction de K]
+                            On observe typiquement que pour K=1, la performance est bonne mais peut être instable. Elle augmente ensuite pour atteindre un plateau (souvent entre K=3 et K=9 pour ce dataset), ce qui représente le "sweet spot". Pour des valeurs de K plus élevées, la performance commence à diminuer car le modèle devient trop simple et lisse trop les frontières de décision. Dans notre cas, le code montre que le meilleur score est obtenu pour une valeur de K dans cette zone de plateau.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous ! L'apprenant paresseux</h2>
+                <p class="text-lg text-justify mb-4">Le KNN a un fonctionnement très différent des modèles que nous avons vus jusqu'à présent, comme les forêts aléatoires.</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                     <ul class="list-decimal list-inside space-y-2">
+                        <li>En utilisant le code ci-dessus, comparez le temps d'entraînement (`.fit()`) et le temps de prédiction (`.predict()`) d'un `KNeighborsClassifier` et d'un `RandomForestClassifier`.</li>
+                        <li>Que remarquez-vous ? Pourquoi dit-on que le KNN est un "lazy learner" (apprenant paresseux) ?</li>
+                    </ul>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+<pre class="mt-4"><code><span class="code-keyword">import</span> <span class="code-variable">time</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.ensemble</span> <span class="code-keyword">import</span> <span class="code-variable">RandomForestClassifier</span>
+
+<span class="code-comment"># --- Test de vitesse pour KNN ---</span>
+<span class="code-variable">knn_timing</span> = <span class="code-function">KNeighborsClassifier</span>(<span class="code-variable">n_neighbors</span>=<span class="code-number">5</span>)
+<span class="code-variable">start_fit</span> = <span class="code-variable">time</span>.<span class="code-function">time</span>()
+<span class="code-variable">knn_timing</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train_scaled</span>, <span class="code-variable">y_train</span>)
+<span class="code-variable">fit_time_knn</span> = <span class="code-variable">time</span>.<span class="code-function">time</span>() - <span class="code-variable">start_fit</span>
+
+<span class="code-variable">start_predict</span> = <span class="code-variable">time</span>.<span class="code-function">time</span>()
+<span class="code-variable">knn_timing</span>.<span class="code-function">predict</span>(<span class="code-variable">X_test_scaled</span>)
+<span class="code-variable">predict_time_knn</span> = <span class="code-variable">time</span>.<span class="code-function">time</span>() - <span class="code-variable">start_predict</span>
+
+<span class="code-builtin">print</span>(<span class="code-string">"--- KNeighborsClassifier ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Temps d'entraînement (.fit) : {fit_time_knn:.6f} secondes"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Temps de prédiction (.predict) : {predict_time_knn:.6f} secondes"</span>)
+
+
+<span class="code-comment"># --- Test de vitesse pour Random Forest ---</span>
+<span class="code-variable">rf_timing</span> = <span class="code-function">RandomForestClassifier</span>(<span class="code-variable">random_state</span>=<span class="code-number">42</span>)
+<span class="code-variable">start_fit</span> = <span class="code-variable">time</span>.<span class="code-function">time</span>()
+<span class="code-variable">rf_timing</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train_scaled</span>, <span class="code-variable">y_train</span>)
+<span class="code-variable">fit_time_rf</span> = <span class="code-variable">time</span>.<span class="code-function">time</span>() - <span class="code-variable">start_fit</span>
+
+<span class="code-variable">start_predict</span> = <span class="code-variable">time</span>.<span class="code-function">time</span>()
+<span class="code-variable">rf_timing</span>.<span class="code-function">predict</span>(<span class="code-variable">X_test_scaled</span>)
+<span class="code-variable">predict_time_rf</span> = <span class="code-variable">time</span>.<span class="code-function">time</span>() - <span class="code-variable">start_predict</span>
+
+<span class="code-builtin">print</span>(<span class="code-string">"\n--- RandomForestClassifier ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Temps d'entraînement (.fit) : {fit_time_rf:.6f} secondes"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Temps de prédiction (.predict) : {predict_time_rf:.6f} secondes"</span>)
+</code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Sur quel principe fondamental repose l'algorithme des K-Plus Proches Voisins (KNN) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La construction d'arbres de décision.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le calcul de la distance entre les points de données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La recherche d'une fonction mathématique complexe.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La séparation des données avec une ligne droite.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Pourquoi est-il crucial de mettre les données à l'échelle (scaling) avant d'utiliser l'algorithme KNN ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Pour éviter que les variables avec de grandes échelles ne dominent le calcul de distance.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour accélérer la phase d'entraînement (.fit).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour rendre les données plus faciles à visualiser.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) C'est une obligation syntaxique de la bibliothèque Scikit-Learn.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Que risque-t-on en choisissant une très petite valeur pour K (par exemple, K=1) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le modèle sera trop simple (underfitting).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le temps de calcul des prédictions sera très long.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le modèle sera très sensible au bruit et risque de surapprendre (overfitting).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le modèle ne pourra pas gérer les données non-linéaires.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Lequel de ces termes décrit le mieux le fonctionnement du KNN lors de la phase d'entraînement ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Apprenant Actif (Eager Learner)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Apprentissage par Renforcement</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Apprenant Paresseux (Lazy Learner)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Apprentissage Non Supervisé</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Comment le KNN fait-il une prédiction pour un nouveau point dans un problème de classification ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Par un vote majoritaire parmi ses K plus proches voisins.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) En calculant la moyenne des labels de ses voisins.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) En trouvant le voisin le plus éloigné.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) En construisant un arbre de décision local.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Avantages et Inconvénients :</strong> Quels sont, selon vous, les deux plus grands avantages et les deux plus grands inconvénients du KNN par rapport à un modèle comme la Régression Logistique ? (Pensez à l'interprétabilité, la vitesse, la gestion des non-linéarités, la mémoire...).</p>
+                    <p><strong>2. KNN pour la Régression :</strong> Nous avons vu le KNN pour la classification (vote majoritaire). Comment adapteriez-vous l'étape 4 de l'algorithme pour qu'il puisse prédire une valeur continue, comme le prix d'une maison ?</p>
+                    <p><strong>3. Le "Fardeau de la Dimension" :</strong> Recherchez ce qu'est le "curse of dimensionality" (fléau de la dimensionnalité). Pourquoi ce phénomène pose-t-il un problème majeur pour les algorithmes basés sur la distance comme le KNN lorsque le nombre de features (dimensions) devient très grand ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 34: Introduction à Kaggle</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 34. Introduction à Kaggle - Participez à votre première compétition
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Vous avez appris les algorithmes, maîtrisé les outils et même déployé un modèle. Et maintenant ? Il est temps de vous mesurer au monde, d'apprendre des meilleurs et de construire votre portfolio. Kaggle est la plus grande communauté de data scientists au monde. C'est à la fois un terrain de jeu pour tester vos compétences, une bibliothèque de connaissances infinie et une vitrine pour votre travail.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Pourquoi Kaggle est-il incontournable ?</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="mb-6 text-justify text-lg">Kaggle est bien plus qu'un simple site de compétitions. C'est un écosystème complet qui vous permet d'apprendre, de vous mesurer aux autres et de construire votre portfolio. Il repose sur trois piliers fondamentaux :</p>
+
+                        <!-- Pillar 1: Competitions -->
+                        <div class="bg-gray-900/50 p-6 rounded-lg border border-gray-700 mb-6">
+                            <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Les Compétitions : Le terrain de jeu ultime</h3>
+                            <p class="mb-4 text-justify">C'est la partie la plus célèbre et la plus stimulante. Des entreprises de renommée mondiale (comme Google, Netflix ou des fonds spéculatifs) et des instituts de recherche publient un problème concret avec un jeu de données et mettent la communauté au défi de trouver la meilleure solution.</p>
+                            <p class="italic text-gray-400 mb-4"><strong>Exemple concret :</strong> Une entreprise immobilière veut prédire le prix de vente des maisons. Elle fournit un fichier <code>train.csv</code> avec 1000 maisons, leurs caractéristiques (surface, nombre de chambres, etc.) et leur prix de vente. Elle fournit aussi un fichier <code>test.csv</code> avec 500 autres maisons, mais sans le prix. Votre but est d'entraîner un modèle sur les premières données pour prédire le prix des secondes.</p>
+                            <p class="mb-4 text-justify">Les prix peuvent aller de la simple reconnaissance à des centaines de milliers de dollars, mais la vraie valeur est ailleurs : c'est le test ultime pour vos compétences en conditions réelles et une occasion incroyable d'apprendre des approches que vous ne verriez nulle part ailleurs.</p>
+                        </div>
+
+                        <!-- Pillar 2: Datasets -->
+                        <div class="bg-gray-900/50 p-6 rounded-lg border border-gray-700 mb-6">
+                            <h3 class="text-2xl font-bold text-blue-400 mb-3">2. Les Datasets : La bibliothèque d'Alexandrie de la Data</h3>
+                            <p class="mb-4 text-justify">Oubliez la recherche fastidieuse de données pour vos projets. Kaggle héberge des dizaines de milliers de jeux de données sur absolument tous les sujets imaginables, nettoyés et prêts à l'emploi. C'est une ressource inestimable pour vous entraîner et pour trouver l'inspiration.</p>
+                             <ul class="list-disc list-inside space-y-2 mb-4 pl-4">
+                                <li>Envie de faire de la reconnaissance d'images ? Il y a des datasets sur les races de chiens, les radiographies pulmonaires ou les types de plancton.</li>
+                                <li>Passionné par le traitement du langage ? Analysez des millions de critiques de films, des tweets politiques ou les œuvres complètes de Shakespeare.</li>
+                                <li>Plutôt chiffres ? Plongez dans les données financières, les statistiques de la Coupe du Monde de football ou les indicateurs démographiques mondiaux.</li>
+                            </ul>
+                            <p class="text-justify">Utiliser un dataset original de Kaggle pour un projet personnel dans votre portfolio est bien plus impressionnant que d'utiliser les mêmes 3 datasets vus et revus dans tous les tutoriels.</p>
+                        </div>
+
+                        <!-- Pillar 3: Notebooks -->
+                        <div class="bg-gray-900/50 p-6 rounded-lg border border-gray-700">
+                            <h3 class="text-2xl font-bold text-blue-400 mb-3">3. Les Notebooks : L'apprentissage collaboratif à grande échelle</h3>
+                            <p class="mb-4 text-justify">Les Notebooks (ou Kernels) sont un environnement de code en ligne (similaire aux Jupyter Notebooks) où la magie opère. Vous pouvez analyser des données et construire vos modèles directement sur la plateforme, sans rien avoir à installer. Mieux encore :</p>
+                            <ul class="list-disc list-inside space-y-2 mb-4 pl-4">
+                                <li><strong>Accès gratuit aux GPUs :</strong> Entraîner des modèles complexes, comme les réseaux de neurones, peut prendre des jours sur un ordinateur portable standard. Kaggle vous offre un accès gratuit à des accélérateurs matériels (GPU) qui peuvent réduire ce temps à quelques minutes ou heures.</li>
+                                <li><strong>Transparence et partage :</strong> La plupart des participants rendent leurs notebooks publics. Cela signifie que vous pouvez voir, ligne par ligne, comment les meilleurs data scientists du monde abordent un problème. Vous pouvez étudier leur code, comprendre leur raisonnement, et même copier ("forker") leur travail pour l'améliorer. C'est une source d'apprentissage sans équivalent.</li>
+                            </ul>
+                             <p class="text-justify">Voir comment un Grandmaster Kaggle nettoie ses données ou crée une nouvelle variable ("feature") est souvent plus formateur que de lire dix articles théoriques.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Anatomie d'une compétition Kaggle</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-8">
+                    <p class="text-lg text-justify">Le principe est presque toujours le même et suit un cycle précis. Prenons l'exemple de la compétition Titanic pour illustrer chaque étape :</p>
+
+                    <!-- Step 1: Data -->
+                    <div class="bg-gray-900/50 p-5 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-400 mb-2">1. Les Données : Le point de départ</h3>
+                        <p class="mb-4">On vous fournit deux fichiers principaux : <code>train.csv</code> et <code>test.csv</code>. Le premier est votre matériel d'étude, le second est votre examen.</p>
+                        <p class="mb-2"><strong><code>train.csv</code> (Les données d'entraînement) :</strong> Ce fichier contient les caractéristiques (features) des passagers, comme leur âge, leur sexe, leur classe, AINSI QUE la colonne que vous devez prédire (le label), ici 'Survived'. C'est avec ce fichier que votre modèle va apprendre les relations entre les caractéristiques d'un passager et ses chances de survie.</p>
+                        <pre><code>PassengerId,Survived,Pclass,Name,Sex,Age
+1,0,3,"Braund, Mr. Owen Harris",male,22
+2,1,1,"Cumings, Mrs. John Bradley",female,38</code></pre>
+                        <p class="mt-4 mb-2"><strong><code>test.csv</code> (Les données de test) :</strong> Ce fichier a exactement la même structure... à une différence cruciale près : la colonne 'Survived' est manquante. C'est normal, c'est à vous de la prédire !</p>
+                        <pre><code>PassengerId,Pclass,Name,Sex,Age
+892,3,"Kelly, Mr. James",male,34.5
+893,2,"Wilkes, Mrs. James",female,47</code></pre>
+                    </div>
+
+                    <!-- Step 2: Mission -->
+                    <div class="bg-gray-900/50 p-5 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-400 mb-2">2. Votre Mission : Prédire l'inconnu</h3>
+                        <p>Votre objectif est de construire et d'entraîner un modèle de machine learning sur <code>train.csv</code>. Le modèle va analyser ce fichier pour "comprendre" les motifs qui mènent à la survie. Par exemple, il pourrait apprendre que les femmes en première classe avaient plus de chances de survivre. Une fois entraîné, vous utiliserez ce modèle pour générer des prédictions de survie (0 ou 1) pour chaque passager dans <code>test.csv</code>.</p>
+                    </div>
+
+                    <!-- Step 3: Submission -->
+                    <div class="bg-gray-900/50 p-5 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-400 mb-2">3. La Soumission : Le bulletin de réponses</h3>
+                        <p class="mb-4">Après avoir généré vos prédictions, vous devez les formater dans un fichier <code>submission.csv</code>. Ce fichier doit suivre un format très strict, toujours décrit sur la page de la compétition. Pour le Titanic, il faut un fichier avec deux colonnes : 'PassengerId' (l'identifiant du passager du fichier test) et 'Survived' (votre prédiction).</p>
+                        <p class="italic text-gray-400 mb-2">Respecter ce format est crucial. Une virgule mal placée, un nom de colonne incorrect, et votre soumission sera refusée.</p>
+                        <pre><code>PassengerId,Survived
+892,0
+893,1</code></pre>
+                    </div>
+
+                    <!-- Step 4: Leaderboard -->
+                    <div class="bg-gray-900/50 p-5 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-400 mb-2">4. Le Leaderboard : Le classement</h3>
+                        <p class="mb-4">Vous téléchargez ce <code>submission.csv</code> sur Kaggle. La plateforme compare alors vos prédictions aux vraies réponses (qu'elle garde secrètes) et calcule votre score en utilisant une métrique d'évaluation précise (pour le Titanic, c'est l'<strong>accuracy</strong> : le pourcentage de prédictions correctes). Votre score vous place sur le "leaderboard" (tableau de classement) public, où vous pouvez vous comparer à des milliers d'autres participants.</p>
+                        <p class="text-justify italic text-gray-400 border-l-4 border-cyan-500 pl-4">
+                            <strong>La subtilité du double classement :</strong> Pour éviter que les participants "sur-optimisent" leur modèle pour qu'il soit parfait uniquement sur les données de test visibles (un phénomène appelé <i>overfitting</i>), le leaderboard public n'est calculé que sur une partie du fichier <code>test.csv</code> (ex: 30%). Le classement final, révélé à la toute fin, est calculé sur les 70% restants. Un bon modèle doit bien performer sur les deux, prouvant sa capacité à généraliser.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Vos premiers pas sur Kaggle : Le guide du débutant</h2>
+                <div class="space-y-6">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Créer un compte et explorer</h3>
+                        <p>Rendez-vous sur <a href="https://www.kaggle.com" target="_blank" class="text-cyan-400 hover:underline">kaggle.com</a> et créez un compte. Prenez 15 minutes pour vous familiariser avec l'interface. Sur la page d'accueil, vous verrez les compétitions populaires, les datasets tendances et des notebooks intéressants. Allez dans l'onglet "Competitions" et utilisez les filtres. Cochez la catégorie "Getting Started". Ce sont des compétitions sans date de fin, conçues pour l'apprentissage.</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. Choisir sa première compétition</h3>
+                        <p>La compétition <a href="https://www.kaggle.com/c/titanic" target="_blank" class="text-cyan-400 hover:underline">"Titanic: Machine Learning from Disaster"</a> est le rite de passage universel. Pourquoi ? Le problème ("prédire qui a survécu") est facile à comprendre, le dataset est petit et propre, et surtout, il existe des milliers de notebooks publics. C'est comme apprendre à nager dans une piscine surveillée avant de plonger dans l'océan.</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">3. Le secret pour apprendre : "Forker" un notebook</h3>
+                        <p class="mb-4">Au début, l'objectif n'est pas d'inventer une solution, mais de comprendre une solution qui existe déjà. La meilleure façon d'apprendre est de s'appuyer sur le travail des autres. C'est là que le "fork" entre en jeu.</p>
+                        <ul class="list-decimal list-inside space-y-3">
+                           <li><strong>Trouver un bon guide :</strong> Allez dans l'onglet "Code" de la compétition Titanic. Triez les notebooks par "Most Votes". Cherchez un notebook avec un titre clair comme "Titanic for Beginners" ou "Simple Random Forest". Lisez les premières lignes : si c'est bien expliqué, c'est un bon candidat.</li>
+                           <li><strong>Créer votre copie :</strong> En haut à droite du notebook, vous trouverez un bouton "Copy & Edit". Cliquer dessus va "forker" le notebook : Kaggle en crée une copie entièrement personnelle dans votre espace de travail. Le code, les commentaires, les données... tout est là, prêt pour vous.</li>
+                        </ul>
+                         <p class="mt-4">Vous vous retrouvez alors dans l'environnement de code de Kaggle. C'est une interface interactive, cellule par cellule, où vous pouvez exécuter du code et voir le résultat immédiatement en dessous. C'est votre laboratoire personnel.</p>
+                    </div>
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">4. Exécuter, modifier, et soumettre : Le cycle de l'apprentissage</h3>
+                        <p class="mb-4">Maintenant, le vrai travail commence. Suivez ce cycle itératif :</p>
+                        <ol class="list-decimal list-inside space-y-4">
+                           <li><strong>Exécuter et Comprendre :</strong> Ne vous contentez pas de cliquer sur "Run All". Exécutez le code cellule par cellule (avec le bouton play ou le raccourci <code>Shift+Entrée</code>). Lisez les commentaires. Observez les sorties. Demandez-vous : "Pourquoi l'auteur a-t-il fait ça ? À quoi sert cette ligne de code ?".</li>
+                           <li><strong>Modifier et Expérimenter :</strong> C'est l'étape la plus importante. Une fois que vous comprenez le code, faites une petite modification. N'essayez pas de tout réécrire. Changez un seul paramètre. Par exemple, si le code utilise <code>RandomForestClassifier(n_estimators=100)</code>, essayez avec <code>n_estimators=150</code>. Cela signifie que vous demandez à votre "forêt" d'arbres de décision d'avoir 150 arbres au lieu de 100. Votre hypothèse est que plus d'arbres pourraient donner une meilleure prédiction.</li>
+                           <li><strong>Commit & Sauvegarder :</strong> Pour valider votre changement, cliquez sur le bouton "Save Version" en haut à droite. Choisissez "Save & Run All (Commit)". Kaggle va alors lancer une nouvelle session et exécuter votre notebook du début à la fin. C'est une garantie de reproductibilité. Une fois terminé, si votre code a bien généré un fichier <code>submission.csv</code>, il apparaîtra dans la section "Output" de votre version.</li>
+                           <li><strong>Soumettre et Analyser :</strong> À côté de votre fichier de sortie, il y aura un bouton "Submit". Cliquez dessus ! Après quelques secondes, votre score apparaîtra sur le leaderboard. A-t-il augmenté ou diminué ? Pourquoi ? Votre petite modification a-t-elle eu l'effet escompté ? C'est en répondant à ces questions que vous apprendrez vraiment.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-cyan-500/50 shadow-lg">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous !</h2>
+                <p class="text-lg text-justify mb-4">
+                    Sur Kaggle, le but n'est pas de gagner du premier coup, mais de participer et d'apprendre par itération. Votre mission :
+                </p>
+                <div class="bg-gray-900/50 p-4 rounded-md">
+                    <ol class="list-decimal list-inside space-y-3">
+                        <li>Allez sur la page de la compétition <strong class="text-white">Titanic</strong>.</li>
+                        <li>Trouvez un notebook simple qui utilise une <strong class="text-white">Forêt Aléatoire (Random Forest)</strong> et "forkez-le".</li>
+                        <li>Exécutez-le une première fois sans rien changer pour bien comprendre le processus, puis commitez et soumettez pour obtenir un premier score de référence.</li>
+                        <li>Revenez dans votre notebook et ne changez qu'un seul paramètre dans le modèle <code>RandomForestClassifier</code> (par exemple, <code>n_estimators=200</code> ou <code>max_depth=5</code>).</li>
+                        <li>Re-commitez et re-soumettez.</li>
+                        <li>Allez voir votre nouvelle position sur le leaderboard.</li>
+                    </ol>
+                </div>
+                 <p class="mt-4 text-justify">
+                    Observez comment un simple changement peut influencer votre score. Lisez les onglets "Discussion" et regardez d'autres notebooks pour trouver de nouvelles idées. Bienvenue dans la communauté Kaggle !
+                </p>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est le principal objectif des compétitions Kaggle ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Gagner de l'argent</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Créer le modèle le plus performant pour un problème donné</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Télécharger le plus de datasets</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Partager le plus de notebooks</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Dans une compétition Kaggle, quel fichier contient les "bonnes réponses" pour l'entraînement ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) test.csv</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) submission.csv</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) train.csv</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) model.pkl</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Que signifie "forker" un notebook sur Kaggle ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Créer sa propre copie modifiable du notebook de quelqu'un d'autre</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Supprimer un notebook de la plateforme</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Noter le notebook d'un autre utilisateur</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Envoyer son notebook à un ami</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Pourquoi le leaderboard public n'est-il pas basé sur l'ensemble des données de test ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Pour économiser de la puissance de calcul</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour rendre la compétition plus difficile</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour éviter que les participants n'optimisent leurs modèles spécifiquement pour ce classement partiel</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Parce que les données de test complètes ne sont pas disponibles</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Quelle est la compétition recommandée pour un débutant sur Kaggle ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une compétition sur la reconnaissance d'images</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Titanic: Machine Learning from Disaster</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Une compétition de prévision de séries temporelles</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La compétition avec le plus gros prix</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Au-delà du score :</strong> En quoi le fait de participer à des compétitions Kaggle, même sans être dans le top du classement, peut-il être bénéfique pour une carrière en data science ?</p>
+                    <p><strong>2. La collaboration vs la compétition :</strong> Kaggle est un environnement compétitif, mais il encourage aussi fortement la collaboration (partage de notebooks, forums de discussion). Comment ces deux aspects apparemment opposés peuvent-ils coexister et même se renforcer mutuellement ?</p>
+                    <p><strong>3. L'ingénierie des features (Feature Engineering) :</strong> Dans beaucoup de compétitions, le choix de l'algorithme est moins important que la manière dont les données sont préparées. Pourquoi la création de nouvelles "features" (variables) à partir des données existantes est-elle souvent la clé pour améliorer radicalement son score ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let answered = false;
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (answered) return;
+                        answered = true;
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                            opt.classList.add('cursor-not-allowed');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

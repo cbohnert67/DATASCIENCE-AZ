@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 20: Le K-Means</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 20. Le K-Means - L'art de trouver des groupes cachés
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Regardez un nuage de points. Vos yeux voient instinctivement des groupes, des "clusters" qui sont proches. Mais comment apprendre à une machine à trouver ces mêmes groupes, sans aucune étiquette pour la guider ? C'est le but du clustering, la branche la plus connue de l'apprentissage non supervisé. Le clustering est partout : il segmente des clients, regroupe des articles de presse, ou compresse des images. Son algorithme roi est le K-Means.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'algorithme du K-Means : Une danse de centroïdes</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">
+                        Imaginez une salle de bal avec des danseurs immobiles (vos points de données). Vous voulez former K groupes de danse compacts. L'algorithme K-Means chorégraphie ce processus en quatre temps, une véritable "danse" entre les points et les centres des groupes.
+                    </p>
+                    [Image d'un diagramme animé des 4 étapes de l'algorithme K-Means]
+                    <div class="bg-gray-900/50 p-6 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Étape 1 : Initialisation</h3>
+                        <p class="text-justify">On commence par choisir le nombre de groupes (K) que l'on souhaite former. Ensuite, on demande à K volontaires de se placer au hasard sur la piste de danse. Ces volontaires sont nos premiers "centroïdes" (chefs de groupe). Leur position initiale est souvent aléatoire, ce qui peut influencer le résultat final (on verra comment y remédier).</p>
+                    </div>
+                    <div class="bg-gray-900/50 p-6 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Étape 2 : Assignation</h3>
+                        <p class="text-justify">On lance la musique ! Chaque danseur sur la piste regarde l'ensemble des K chefs de groupe et détermine lequel est le plus proche de lui (en calculant la distance euclidienne, comme la distance à vol d'oiseau). Chaque danseur est alors assigné au cluster de son chef de groupe le plus proche. À la fin de cette étape, nous avons K groupes provisoires, chaque danseur appartenant à un et un seul groupe.</p>
+                    </div>
+                    <div class="bg-gray-900/50 p-6 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Étape 3 : Mise à Jour</h3>
+                        <p class="text-justify">Maintenant, on demande à chaque chef de groupe de s'adapter. Il regarde tous les danseurs qui l'ont rejoint, calcule la position moyenne de tout ce groupe (le "centre de gravité" ou barycentre), et se déplace à cet endroit précis. Le centroïde devient ainsi le véritable centre de son cluster actuel.</p>
+                    </div>
+                     <div class="bg-gray-900/50 p-6 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Étape 4 : Répétition et Convergence</h3>
+                        <p class="text-justify">Les chefs de groupe ont bougé. Les danseurs pourraient donc maintenant être plus proches d'un autre chef de groupe ! On répète donc l'étape 2 (Assignation), puis l'étape 3 (Mise à jour). Cette "danse" continue : les points sont réassignés, les centres sont recalculés. À chaque cycle, les groupes deviennent de plus en plus compacts et les centroïdes se déplacent de moins en moins. L'algorithme s'arrête (il "converge") lorsque les centroïdes ne bougent quasiment plus, signifiant que les groupes sont stables.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La grande question : Comment choisir K ?</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">La plus grande difficulté du K-Means est que nous devons lui dire combien de clusters (K) chercher. Pour cela, la <strong>méthode du coude (Elbow Method)</strong> est l'outil le plus courant.</p>
+
+                    <div>
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Comprendre l'Inertie</h3>
+                        <p class="mb-4 text-justify">Au cœur de cette méthode se trouve l'<strong>inertie</strong>. C'est la somme des distances au carré entre chaque point de donnée et le centre de son propre cluster. On peut voir ça comme une mesure de la "compacité" des clusters :</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Inertie faible :</strong> Les clusters sont denses et bien séparés. Les points sont très proches de leur centroïde. C'est ce que l'on recherche.</li>
+                            <li><strong>Inertie élevée :</strong> Les clusters sont étalés et les points sont loin de leur centroïde.</li>
+                        </ul>
+                        <p class="mt-4 text-center text-lg">\[ \text{Inertie} = \sum_{i=1}^{n} (x_i - C_{k_i})^2 \]</p>
+                        <p class="mt-2 text-center text-sm italic text-gray-400">(Somme, pour chaque point \(x_i\), du carré de la distance à son centroïde \(C_{k_i}\))</p>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">La Logique du Coude</h3>
+                        <p class="mb-4 text-justify">L'idée est de calculer l'inertie pour différentes valeurs de K (par exemple, de K=1 à K=10) et de tracer le résultat. On observera toujours que l'inertie diminue à mesure que K augmente. C'est logique : plus on a de clusters, plus les points seront proches d'un centre. À l'extrême, si K est égal au nombre de points, chaque point est son propre cluster et l'inertie est de 0 ! Mais ce n'est pas utile.</p>
+                        <p class="mb-4 text-justify">Ce que nous cherchons, c'est le <strong>point d'inflexion</strong> sur le graphique, l'endroit où la courbe cesse de chuter brusquement et commence à s'aplatir. C'est le "coude".</p>
+                        
+                        [Image d'un graphique de la méthode du coude avec des annotations]
+                        
+                        <ul class="list-disc list-inside space-y-2 pl-4 mt-4">
+                           <li><strong>Avant le coude :</strong> Augmenter K apporte un gain significatif (une forte réduction de l'inertie). Chaque nouveau cluster permet de mieux séparer les données.</li>
+                           <li><strong>Au niveau du coude :</strong> C'est le point de "rendement décroissant". C'est le meilleur compromis entre un faible K et une faible inertie.</li>
+                           <li><strong>Après le coude :</strong> Augmenter K n'apporte plus qu'un gain marginal. On risque de commencer à sur-segmenter des groupes naturels.</li>
+                        </ul>
+                         <p class="mt-4 font-bold">Le "coude" nous indique donc le moment où ajouter plus de clusters n'est plus vraiment efficace.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Trouver des clusters avec Scikit-Learn</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p>Mettons en pratique l'algorithme K-Means et la méthode du coude avec Scikit-Learn.</p>
+                    
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">1. Générer des données synthétiques</h3>
+                        <p class="mb-3">Pour bien visualiser, nous allons créer des données artificielles avec `make_blobs`. Nous demandons explicitement 4 groupes de points distincts pour pouvoir vérifier si notre algorithme les retrouve bien.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.datasets</span> <span class="code-keyword">import</span> <span class="code-variable">make_blobs</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.cluster</span> <span class="code-keyword">import</span> <span class="code-variable">KMeans</span>
+
+<span class="code-variable">X</span>, <span class="code-variable">y_true</span> <span class="code-operator">=</span> <span class="code-function">make_blobs</span>(<span class="code-variable">n_samples</span><span class="code-operator">=</span><span class="code-number">300</span>, <span class="code-variable">centers</span><span class="code-operator">=</span><span class="code-number">4</span>, <span class="code-variable">cluster_std</span><span class="code-operator">=</span><span class="code-number">0.80</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">0</span>)</code></pre>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">2. Entraîner le modèle K-Means</h3>
+                        <p class="mb-3">Nous créons une instance de `KMeans` en lui disant de chercher 4 clusters. Le paramètre `n_init=10` est une sécurité importante : il exécute l'algorithme 10 fois avec des positions de départ aléatoires différentes et ne conserve que le meilleur résultat, ce qui le rend plus stable. La méthode `.fit_predict()` entraîne le modèle et nous renvoie directement le cluster d'appartenance de chaque point.</p>
+                        <pre><code><span class="code-variable">kmeans</span> <span class="code-operator">=</span> <span class="code-function">KMeans</span>(<span class="code-variable">n_clusters</span><span class="code-operator">=</span><span class="code-number">4</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">0</span>, <span class="code-variable">n_init</span><span class="code-operator">=</span><span class="code-string">'auto'</span>)
+<span class="code-variable">y_kmeans</span> <span class="code-operator">=</span> <span class="code-variable">kmeans</span>.<span class="code-function">fit_predict</span>(<span class="code-variable">X</span>)</code></pre>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">3. Visualiser les clusters trouvés</h3>
+                        <p class="mb-3">Nous utilisons Matplotlib pour afficher les points. L'astuce est d'utiliser le tableau `y_kmeans` (qui contient 0, 1, 2 ou 3 pour chaque point) pour colorer les points (`c=y_kmeans`). On affiche ensuite les centroïdes finaux (stockés dans `kmeans.cluster_centers_`) en rouge pour bien les voir.</p>
+                        <pre><code><span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">8</span>, <span class="code-number">6</span>))
+<span class="code-variable">plt</span>.<span class="code-function">scatter</span>(<span class="code-variable">X</span>[:, <span class="code-number">0</span>], <span class="code-variable">X</span>[:, <span class="code-number">1</span>], <span class="code-variable">c</span><span class="code-operator">=</span><span class="code-variable">y_kmeans</span>, <span class="code-variable">s</span><span class="code-operator">=</span><span class="code-number">50</span>, <span class="code-variable">cmap</span><span class="code-operator">=</span><span class="code-string">'viridis'</span>)
+<span class="code-variable">centers</span> <span class="code-operator">=</span> <span class="code-variable">kmeans</span>.<span class="code-variable">cluster_centers_</span>
+<span class="code-variable">plt</span>.<span class="code-function">scatter</span>(<span class="code-variable">centers</span>[:, <span class="code-number">0</span>], <span class="code-variable">centers</span>[:, <span class="code-number">1</span>], <span class="code-variable">c</span><span class="code-operator">=</span><span class="code-string">'red'</span>, <span class="code-variable">s</span><span class="code-operator">=</span><span class="code-number">200</span>, <span class="code-variable">alpha</span><span class="code-operator">=</span><span class="code-number">0.75</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"Clusters trouvés par K-Means"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="mt-3">Le résultat montre que l'algorithme a parfaitement retrouvé les 4 groupes que nous avions créés !</p>
+                    </div>
+                    
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">4. Appliquer la méthode du coude</h3>
+                        <p class="mb-3">Pour confirmer notre choix de K=4, nous créons une boucle qui entraîne un modèle K-Means pour chaque K de 1 à 10. Dans chaque boucle, nous stockons l'inertie du modèle (`.inertia_`) dans une liste. Enfin, nous traçons la liste des inerties.</p>
+                        <pre><code><span class="code-variable">inertia</span> <span class="code-operator">=</span> []
+<span class="code-variable">k_range</span> <span class="code-operator">=</span> <span class="code-function">range</span>(<span class="code-number">1</span>, <span class="code-number">11</span>)
+<span class="code-keyword">for</span> <span class="code-variable">k</span> <span class="code-keyword">in</span> <span class="code-variable">k_range</span>:
+    <span class="code-variable">kmeans_elbow</span> <span class="code-operator">=</span> <span class="code-function">KMeans</span>(<span class="code-variable">n_clusters</span><span class="code-operator">=</span><span class="code-variable">k</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">0</span>, <span class="code-variable">n_init</span><span class="code-operator">=</span><span class="code-string">'auto'</span>).<span class="code-function">fit</span>(<span class="code-variable">X</span>)
+    <span class="code-variable">inertia</span>.<span class="code-function">append</span>(<span class="code-variable">kmeans_elbow</span>.<span class="code-variable">inertia_</span>)
+
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">10</span>, <span class="code-number">6</span>))
+<span class="code-variable">plt</span>.<span class="code-function">plot</span>(<span class="code-variable">k_range</span>, <span class="code-variable">inertia</span>, <span class="code-variable">marker</span><span class="code-operator">=</span><span class="code-string">'o'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Méthode du coude'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">xlabel</span>(<span class="code-string">'Nombre de clusters (K)'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">ylabel</span>(<span class="code-string">'Inertie'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">xticks</span>(<span class="code-variable">k_range</span>)
+<span class="code-variable">plt</span>.<span class="code-function">grid</span>(<span class="code-constant">True</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="mt-3">Le graphique montre une cassure nette à K=4, confirmant que c'est le nombre optimal de clusters pour nos données. La pente se radoucit considérablement après ce point.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Challenge : L'importance de la mise à l'échelle</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-4">
+                    <p class="text-lg text-justify">Le K-Means calcule des distances. Il est donc très sensible à l'échelle des variables. Si une variable va de 0 à 1000 et une autre de 0 à 1, la première dominera complètement le calcul.</p>
+                    <div>
+                        <h3 class="font-bold text-cyan-300">Votre mission :</h3>
+                        <ul class="list-decimal list-inside pl-4 mt-2 space-y-1">
+                            <li>Créez des données non normalisées (avec `make_blobs` et en multipliant une colonne par 100). Appliquez K-Means.</li>
+                            <li>Utilisez le `StandardScaler` de Scikit-Learn pour normaliser vos données.</li>
+                            <li>Ré-appliquez K-Means sur les données normalisées. Les clusters sont-ils plus cohérents ?</li>
+                        </ul>
+                    </div>
+                    <details class="bg-gray-900/50 p-4 rounded-md cursor-pointer">
+                        <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                        <div class="mt-4">
+                            <pre><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.preprocessing</span> <span class="code-keyword">import</span> <span class="code-variable">StandardScaler</span>
+<span class="code-comment"># 1. Créer des données avec des échelles différentes</span>
+<span class="code-variable">X_unscaled</span>, <span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-function">make_blobs</span>(<span class="code-variable">n_samples</span><span class="code-operator">=</span><span class="code-number">300</span>, <span class="code-variable">centers</span><span class="code-operator">=</span><span class="code-number">4</span>, <span class="code-variable">cluster_std</span><span class="code-operator">=</span><span class="code-number">0.8</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">0</span>)
+<span class="code-variable">X_unscaled</span>[:, <span class="code-number">1</span>] <span class="code-operator">=</span> <span class="code-variable">X_unscaled</span>[:, <span class="code-number">1</span>] <span class="code-operator">*</span> <span class="code-number">100</span>
+<span class="code-comment"># K-Means sur données non normalisées</span>
+<span class="code-variable">y_unscaled_pred</span> <span class="code-operator">=</span> <span class="code-function">KMeans</span>(<span class="code-variable">n_clusters</span><span class="code-operator">=</span><span class="code-number">4</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">0</span>, <span class="code-variable">n_init</span><span class="code-operator">=</span><span class="code-number">10</span>).<span class="code-function">fit_predict</span>(<span class="code-variable">X_unscaled</span>)
+
+<span class="code-comment"># 2. Normaliser les données</span>
+<span class="code-variable">scaler</span> <span class="code-operator">=</span> <span class="code-function">StandardScaler</span>()
+<span class="code-variable">X_scaled</span> <span class="code-operator">=</span> <span class="code-variable">scaler</span>.<span class="code-function">fit_transform</span>(<span class="code-variable">X_unscaled</span>)
+<span class="code-comment"># 3. K-Means sur données normalisées</span>
+<span class="code-variable">y_scaled_pred</span> <span class="code-operator">=</span> <span class="code-function">KMeans</span>(<span class="code-variable">n_clusters</span><span class="code-operator">=</span><span class="code-number">4</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">0</span>, <span class="code-variable">n_init</span><span class="code-operator">=</span><span class="code-number">10</span>).<span class="code-function">fit_predict</span>(<span class="code-variable">X_scaled</span>)
+
+<span class="code-comment"># 4. Visualiser les deux résultats</span>
+<span class="code-variable">fig</span>, <span class="code-variable">axes</span> <span class="code-operator">=</span> <span class="code-variable">plt</span>.<span class="code-function">subplots</span>(<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">16</span>, <span class="code-number">7</span>))
+<span class="code-variable">axes</span>[<span class="code-number">0</span>].<span class="code-function">scatter</span>(<span class="code-variable">X_unscaled</span>[:, <span class="code-number">0</span>], <span class="code-variable">X_unscaled</span>[:, <span class="code-number">1</span>], <span class="code-variable">c</span><span class="code-operator">=</span><span class="code-variable">y_unscaled_pred</span>, <span class="code-variable">s</span><span class="code-operator">=</span><span class="code-number">50</span>, <span class="code-variable">cmap</span><span class="code-operator">=</span><span class="code-string">'viridis'</span>)
+<span class="code-variable">axes</span>[<span class="code-number">0</span>].<span class="code-function">set_title</span>(<span class="code-string">"K-Means sur données NON normalisées"</span>)
+<span class="code-variable">axes</span>[<span class="code-number">1</span>].<span class="code-function">scatter</span>(<span class="code-variable">X_scaled</span>[:, <span class="code-number">0</span>], <span class="code-variable">X_scaled</span>[:, <span class="code-number">1</span>], <span class="code-variable">c</span><span class="code-operator">=</span><span class="code-variable">y_scaled_pred</span>, <span class="code-variable">s</span><span class="code-operator">=</span><span class="code-number">50</span>, <span class="code-variable">cmap</span><span class="code-operator">=</span><span class="code-string">'viridis'</span>)
+<span class="code-variable">axes</span>[<span class="code-number">1</span>].<span class="code-function">set_title</span>(<span class="code-string">"K-Means sur données NORMALISÉES"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                            <div class="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-600">
+                                <h4 class="font-bold text-lg text-green-300">Interprétation :</h4>
+                                <p class="mt-2 text-justify">Oui, les clusters sont bien plus cohérents ! Avant la normalisation, l'algorithme ne voyait que la variation sur l'axe Y (étiré par 100) et a créé des bandes horizontales. Après normalisation, chaque variable a le même poids, et l'algorithme redécouvre les 4 groupes sphériques d'origine.</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. K-Means est un algorithme de...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Classification supervisée</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Régression</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Clustering non supervisé</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Apprentissage par renforcement</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Que représente K dans K-Means ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le nombre de points de données.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le nombre de clusters à trouver.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le nombre d'itérations de l'algorithme.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La distance maximale entre deux points.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. À quoi sert la méthode du coude (elbow method) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À mesurer la performance d'un modèle de classification.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À estimer le nombre optimal de clusters (K).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À initialiser les centroïdes.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À normaliser les données.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans l'algorithme K-Means, qu'est-ce qu'un "centroïde" ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Un point de donnée situé à la périphérie d'un cluster.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La distance entre deux clusters.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le centre géométrique (la moyenne) d'un cluster.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le point de donnée le plus important.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Pourquoi est-il souvent crucial de normaliser les données avant d'appliquer K-Means ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Parce que l'algorithme est sensible à l'échelle des variables à cause de son calcul de distance.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour que l'algorithme tourne plus vite.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour garantir que K sera égal à 3.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Pour éviter d'avoir à choisir K.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Les limites de K-Means :</strong> Le K-Means suppose que les clusters sont sphériques et de taille similaire. Pouvez-vous imaginer une forme de clusters (par exemple, deux "lunes" entrelacées) où K-Means échouerait complètement ?</p>
+                    <p><strong>2. Le piège de l'initialisation :</strong> L'étape d'initialisation aléatoire des centroïdes peut parfois mener à de mauvais résultats. Comment le paramètre `n_init=10` dans Scikit-Learn aide-t-il à combattre ce problème ?</p>
+                    <p><strong>3. Du non-supervisé au supervisé :</strong> Imaginez que vous avez un immense jeu de données sans aucune étiquette. Pourriez-vous utiliser K-Means pour vous aider à créer des étiquettes, puis utiliser ces étiquettes pour entraîner un modèle de classification supervisée comme une Forêt Aléatoire ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = "Bravo, c'est la bonne réponse !";
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

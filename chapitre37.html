@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 37: Travailler avec des séries temporelles</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 37. Travailler avec des séries temporelles - Prédire les tendances
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Ventes mensuelles, météo quotidienne, cours de la bourse à la seconde... De très nombreuses données ont une dimension temporelle fondamentale. On ne peut pas les analyser comme un simple tableau de chiffres, car l'ordre des points est crucial. L'analyse des séries temporelles est une branche spécialisée de la data science qui nous fournit les outils pour comprendre le passé, identifier des schémas récurrents et, bien sûr, prédire le futur.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Comprendre le rythme du temps</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Les composantes d'une série temporelle</h3>
+                        <p class="mb-4 text-justify">Analyser une série temporelle, c'est un peu comme être un détective. On cherche des indices pour comprendre l'histoire cachée dans les données. On peut la décomposer en trois éléments fondamentaux :</p>
+                        <ul class="list-disc list-inside space-y-4 pl-4">
+                           <li><strong>La Tendance (Trend) :</strong> C'est le mouvement de fond, la direction générale sur le long terme. <br> <em class="text-gray-400 ml-6">Exemple : La population mondiale a une tendance claire à la hausse depuis 100 ans.</em></li>
+                           <li><strong>La Saisonnalité (Seasonality) :</strong> Ce sont les cycles qui se répètent à des intervalles fixes et prévisibles. <br> <em class="text-gray-400 ml-6">Exemple : Les ventes de glaces augmentent chaque été (saisonnalité annuelle) et le trafic routier a des pics chaque matin et soir (saisonnalité journalière).</em></li>
+                           <li><strong>Le Résidu (Residual) :</strong> C'est le "bruit", l'imprévisible, ce qui reste quand on a enlevé la tendance et la saisonnalité. <br> <em class="text-gray-400 ml-6">Exemple : Une vague de chaleur surprise en octobre qui provoque un pic de ventes de glaces inattendu.</em></li>
+                        </ul>
+                         <div class="text-center my-4">[Image d'une décomposition de série temporelle montrant la tendance, la saisonnalité et les résidus]</div>
+                    </div>
+                    
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">L'importance de l'index temporel</h3>
+                        <p class="mb-4 text-justify">Pour que Pandas puisse comprendre que vos données sont liées au temps, il ne suffit pas d'avoir une colonne "Date". Il faut la définir comme un <strong>index temporel</strong> (<code>DatetimeIndex</code>). C'est ce qui débloque des fonctionnalités surpuissantes. Avec un tel index, vous pouvez littéralement parler à vos données :</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Sélection intuitive :</strong> <code>df['2023']</code> pour avoir toutes les données de 2023, ou <code>df['2023-05':'2023-08']</code> pour l'été.</li>
+                            <li><strong>Agrégation intelligente (Resampling) :</strong> <code>df.resample('M').sum()</code> pour passer de données journalières à des totaux mensuels.</li>
+                        </ul>
+                        <p class="mt-4 text-justify">Sans cet index, vous seriez obligé de faire des filtres manuels complexes. C'est la différence entre avoir un GPS et une simple liste de rues.</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le concept de stationnarité : Une condition pour prédire</h3>
+                        <p class="mb-4 text-justify">Imaginez que vous essayez de prédire la position d'une voiture. C'est beaucoup plus facile si elle roule à vitesse constante sur une route plate que si elle est sur des montagnes russes. En séries temporelles, une route plate, c'est une série <strong>stationnaire</strong> : ses propriétés statistiques (moyenne, variance) ne changent pas avec le temps. [Image d'une série temporelle stationnaire vs non-stationnaire]</p>
+                        <p class="mb-4 text-justify">La plupart des modèles de prévision (comme ARIMA) sont comme des physiciens : ils ont besoin de lois stables pour fonctionner. Une tendance (la route monte) ou une saisonnalité (la route ondule toujours de la même façon) brise cette stabilité.</p>
+                        <p class="text-justify">Pour rendre une série stationnaire, la technique la plus courante est la <strong>différenciation</strong> : au lieu de regarder la valeur elle-même (le nombre de passagers), on regarde la différence par rapport à la période précédente (la variation du nombre de passagers de mois en mois). Cela permet souvent d'effacer la tendance et de stabiliser la série.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Manipuler le temps avec Pandas et Statsmodels</h2>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-8">
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Mise en place : Création d'une série temporelle artificielle</h3>
+                        <p class="mb-4 text-justify">Pour commencer, nous allons créer une série temporelle de toutes pièces. Cela nous permet de contrôler parfaitement ses caractéristiques : une tendance linéaire croissante, une saisonnalité sinusoïdale (comme les températures au fil de l'année) et un peu de bruit aléatoire pour la rendre plus réaliste.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">from</span> <span class="code-variable">statsmodels.tsa.seasonal</span> <span class="code-keyword">import</span> <span class="code-variable">seasonal_decompose</span>
+
+<span class="code-comment"># Créer 36 périodes mensuelles à partir de janvier 2021</span>
+<span class="code-variable">dates</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">date_range</span>(<span class="code-variable">start</span><span class="code-operator">=</span><span class="code-string">'2021-01-01'</span>, <span class="code-variable">periods</span><span class="code-operator">=</span><span class="code-number">36</span>, <span class="code-variable">freq</span><span class="code-operator">=</span><span class="code-string">'M'</span>)
+
+<span class="code-comment"># Tendance (np.arange) + Saisonnalité (np.sin) + Bruit (np.random)</span>
+<span class="code-variable">data</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">arange</span>(<span class="code-number">1</span>, <span class="code-number">37</span>) <span class="code-operator">+</span> <span class="code-variable">np</span>.<span class="code-function">sin</span>(<span class="code-variable">np</span>.<span class="code-function">arange</span>(<span class="code-number">1</span>, <span class="code-number">37</span>)) <span class="code-operator">*</span> <span class="code-number">5</span> <span class="code-operator">+</span> <span class="code-variable">np</span>.<span class="code-variable">random</span>.<span class="code-function">randn</span>(<span class="code-number">36</span>) <span class="code-operator">*</span> <span class="code-number">2</span>
+<span class="code-variable">ts</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">Series</span>(<span class="code-variable">data</span>, <span class="code-variable">index</span><span class="code-operator">=</span><span class="code-variable">dates</span>)
+<span class="code-variable">ts</span>.<span class="code-function">plot</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">12</span>, <span class="code-number">6</span>), <span class="code-variable">title</span><span class="code-operator">=</span><span class="code-string">'Série Temporelle Artificielle'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">1. Resampling : Changer la fréquence</h3>
+                        <p class="mb-4 text-justify">Le "resampling" (ré-échantillonnage) nous permet de changer la granularité temporelle de nos données. Ici, nous passons de données mensuelles à des données trimestrielles en calculant la moyenne de chaque trimestre. C'est utile pour avoir une vue d'ensemble et réduire le bruit.</p>
+                        <pre><code><span class="code-comment"># 'Q' signifie "Quarter" (trimestre). On calcule la moyenne de chaque trimestre.</span>
+<span class="code-variable">quarterly_mean</span> <span class="code-operator">=</span> <span class="code-variable">ts</span>.<span class="code-function">resample</span>(<span class="code-string">'Q'</span>).<span class="code-function">mean</span>()
+<span class="code-builtin">print</span>(<span class="code-string">"--- Moyenne par trimestre ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">quarterly_mean</span>.<span class="code-function">head</span>())</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">2. Fenêtres Glissantes (Rolling Windows) : Lisser la série</h3>
+                        <p class="mb-4 text-justify">Une moyenne mobile calcule la moyenne sur une "fenêtre" de temps qui glisse le long de la série. C'est une technique de lissage très efficace pour faire ressortir la tendance sous-jacente en atténuant les fluctuations à court terme.</p>
+                        <pre><code><span class="code-comment"># window=3 signifie que chaque point est la moyenne de lui-même et des 2 précédents.</span>
+<span class="code-variable">rolling_mean</span> <span class="code-operator">=</span> <span class="code-variable">ts</span>.<span class="code-function">rolling</span>(<span class="code-variable">window</span><span class="code-operator">=</span><span class="code-number">3</span>).<span class="code-function">mean</span>()
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">12</span>, <span class="code-number">6</span>))
+<span class="code-variable">ts</span>.<span class="code-function">plot</span>(<span class="code-variable">style</span><span class="code-operator">=</span><span class="code-string">'--'</span>, <span class="code-variable">label</span><span class="code-operator">=</span><span class="code-string">'Série Originale'</span>)
+<span class="code-variable">rolling_mean</span>.<span class="code-function">plot</span>(<span class="code-variable">label</span><span class="code-operator">=</span><span class="code-string">'Moyenne Mobile (3 mois)'</span>, <span class="code-variable">color</span><span class="code-operator">=</span><span class="code-string">'red'</span>, <span class="code-variable">linewidth</span><span class="code-operator">=</span><span class="code-number">3</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Lissage par Moyenne Mobile'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">legend</span>()
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="mt-4 text-justify"><strong>Interprétation :</strong> La courbe rouge est beaucoup plus lisse que la courbe originale en pointillés. Elle suit la tendance générale mais gomme les petites variations, rendant la direction globale plus facile à voir.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">3. Décomposition : Isoler les composantes</h3>
+                        <p class="mb-4 text-justify">C'est ici que la magie opère. La fonction <code>seasonal_decompose</code> de la bibliothèque <code>statsmodels</code> va automatiquement tenter de séparer notre série en ses trois composantes : Tendance, Saisonnalité et Résidu. On précise <code>model='additive'</code> car on suppose que nos composantes s'additionnent (Valeur = Tendance + Saisonnalité + Résidu).</p>
+                        <pre><code><span class="code-comment"># Utiliser statsmodels pour décomposer la série</span>
+<span class="code-variable">decomposition</span> <span class="code-operator">=</span> <span class="code-function">seasonal_decompose</span>(<span class="code-variable">ts</span>, <span class="code-variable">model</span><span class="code-operator">=</span><span class="code-string">'additive'</span>)
+<span class="code-variable">fig</span> <span class="code-operator">=</span> <span class="code-variable">decomposition</span>.<span class="code-function">plot</span>()
+<span class="code-variable">fig</span>.<span class="code-function">set_size_inches</span>(<span class="code-number">12</span>, <span class="code-number">8</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="mt-4 text-justify"><strong>Interprétation :</strong> Le graphique de sortie est très parlant. Il montre clairement (de haut en bas) : la série originale, la tendance à la hausse extraite, le cycle saisonnier qui se répète, et le bruit résiduel qui semble aléatoire. Cela confirme que notre création de données artificielle a bien fonctionné et que l'outil a su retrouver les éléments que nous y avions mis.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-cyan-500/50 shadow-lg">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Analyser le trafic aérien</h2>
+                <p class="text-lg text-justify mb-4">
+                    Le jeu de données "Air Passengers" est un classique. Il contient le nombre mensuel de passagers d'une compagnie aérienne de 1949 à 1960. Votre mission :
+                </p>
+                <div class="bg-gray-900/50 p-4 rounded-md">
+                    <ol class="list-decimal list-inside space-y-3">
+                        <li>Chargez ce jeu de données. Il a deux colonnes : "Month" et "#Passengers".</li>
+                        <li>Convertissez la colonne "Month" en datetime et définissez-la comme index.</li>
+                        <li>Visualisez la série brute. Vous devriez voir une tendance à la hausse et une forte saisonnalité.</li>
+                        <li>Calculez et tracez une moyenne mobile sur 12 mois (<code>rolling(window=12).mean()</code>) sur le même graphique que la série originale.</li>
+                        <li>Que remarquez-vous ? La moyenne mobile a-t-elle réussi à lisser les variations saisonnières pour ne faire ressortir que la tendance à long terme ?</li>
+                    </ol>
+                </div>
+                 <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-6">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                    <pre class="mt-4"><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+
+<span class="code-comment"># 1. Charger les données</span>
+<span class="code-keyword">try</span>:
+    <span class="code-variable">url</span> <span class="code-operator">=</span> <span class="code-string">'https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv'</span>
+    <span class="code-variable">air_passengers</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-variable">url</span>)
+<span class="code-keyword">except</span> <span class="code-variable">Exception</span> <span class="code-keyword">as</span> <span class="code-variable">e</span>:
+    <span class="code-builtin">print</span>(<span class="code-string">f"Téléchargement échoué: {e}"</span>)
+    <span class="code-comment"># Créer un DataFrame de substitution si le téléchargement échoue</span>
+    <span class="code-variable">dates</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">date_range</span>(<span class="code-variable">start</span><span class="code-operator">=</span><span class="code-string">'1949-01-01'</span>, <span class="code-variable">periods</span><span class="code-operator">=</span><span class="code-number">144</span>, <span class="code-variable">freq</span><span class="code-operator">=</span><span class="code-string">'M'</span>)
+    <span class="code-variable">passengers</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">arange</span>(<span class="code-number">100</span>, <span class="code-number">100</span><span class="code-operator">+</span><span class="code-number">144</span><span class="code-operator">*</span><span class="code-number">2</span>, <span class="code-number">2</span>) <span class="code-operator">+</span> <span class="code-variable">np</span>.<span class="code-function">sin</span>(<span class="code-variable">np</span>.<span class="code-function">arange</span>(<span class="code-number">0</span>, <span class="code-number">144</span>) <span class="code-operator">/</span> <span class="code-number">6</span> <span class="code-operator">*</span> <span class="code-variable">np</span>.<span class="code-variable">pi</span>) <span class="code-operator">*</span> <span class="code-number">20</span>
+    <span class="code-variable">air_passengers</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">DataFrame</span>({<span class="code-string">'Month'</span>: <span class="code-variable">dates</span>.<span class="code-function">strftime</span>(<span class="code-string">'%Y-%m'</span>), <span class="code-string">'Passengers'</span>: <span class="code-variable">passengers</span>.<span class="code-function">astype</span>(<span class="code-string">int</span>)})
+
+<span class="code-comment"># 2. Préparer l'index temporel</span>
+<span class="code-variable">air_passengers</span>[<span class="code-string">'Month'</span>] <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">to_datetime</span>(<span class="code-variable">air_passengers</span>[<span class="code-string">'Month'</span>])
+<span class="code-variable">air_passengers</span>.<span class="code-function">set_index</span>(<span class="code-string">'Month'</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-variable">True</span>)
+<span class="code-variable">air_passengers</span>.<span class="code-variable">columns</span> <span class="code-operator">=</span> [<span class="code-string">'Passengers'</span>]
+
+<span class="code-comment"># 3. & 4. Visualiser et ajouter la moyenne mobile</span>
+<span class="code-variable">rolling_mean_12</span> <span class="code-operator">=</span> <span class="code-variable">air_passengers</span>[<span class="code-string">'Passengers'</span>].<span class="code-function">rolling</span>(<span class="code-variable">window</span><span class="code-operator">=</span><span class="code-number">12</span>).<span class="code-function">mean</span>()
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">14</span>, <span class="code-number">7</span>))
+<span class="code-variable">air_passengers</span>[<span class="code-string">'Passengers'</span>].<span class="code-function">plot</span>(<span class="code-variable">label</span><span class="code-operator">=</span><span class="code-string">'Série Originale'</span>)
+<span class="code-variable">rolling_mean_12</span>.<span class="code-function">plot</span>(<span class="code-variable">label</span><span class="code-operator">=</span><span class="code-string">'Moyenne Mobile (12 mois)'</span>, <span class="code-variable">color</span><span class="code-operator">=</span><span class="code-string">'red'</span>, <span class="code-variable">linewidth</span><span class="code-operator">=</span><span class="code-number">3</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Nombre de passagers aériens et tendance à long terme'</span>, <span class="code-variable">fontsize</span><span class="code-operator">=</span><span class="code-number">16</span>)
+<span class="code-variable">plt</span>.<span class="code-function">xlabel</span>(<span class="code-string">'Année'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">ylabel</span>(<span class="code-string">'Nombre de passagers'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">legend</span>()
+<span class="code-variable">plt</span>.<span class="code-function">grid</span>(<span class="code-variable">True</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+                    </code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Laquelle de ces affirmations décrit le mieux la "Tendance" (Trend) d'une série temporelle ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La direction générale de la série sur le long terme.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les fluctuations régulières et prévisibles.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le bruit aléatoire et imprévisible.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La valeur moyenne de la série.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Une série temporelle est dite "stationnaire" si...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) ...elle ne contient que des valeurs positives.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) ...elle montre une forte tendance à la hausse.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) ...sa moyenne et sa variance sont constantes dans le temps.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) ...elle est mesurée à intervalles de temps réguliers.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. En Pandas, quelle méthode est utilisée pour agréger des données temporelles à une fréquence différente (par exemple, de jours à mois) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) <code>.rolling()</code></button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) <code>.resample()</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) <code>.decompose()</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) <code>.shift()</code></button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Le calcul d'une moyenne mobile (rolling mean) a pour principal effet de :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Supprimer la tendance de la série.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Rendre la série stationnaire.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Lisser la série en réduisant le bruit et les fluctuations à court terme.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Prédire les futures valeurs de la série.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Laquelle de ces situations est un exemple de saisonnalité ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Les ventes de jouets qui culminent chaque année en décembre.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) L'augmentation constante du prix de l'immobilier sur 20 ans.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Une chute soudaine du marché boursier due à un événement inattendu.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Les petites variations quotidiennes du trafic sur un site web.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le futur est imprévisible :</strong> Les modèles de séries temporelles se basent sur les schémas du passé pour prédire le futur. Quelle est leur plus grande faiblesse face à des événements totalement nouveaux et imprévisibles (comme une pandémie ou une crise financière) ?</p>
+                    <p><strong>2. Choisir sa fenêtre :</strong> Dans le challenge, nous avons utilisé une fenêtre de 12 mois pour la moyenne mobile. Pourquoi ce choix est-il pertinent ? Que se passerait-il si nous avions choisi une fenêtre de 3 mois ? Et une fenêtre de 24 mois ?</p>
+                    <p><strong>3. Multiples saisonnalités :</strong> Nous avons vu des saisonnalités annuelles. Pouvez-vous donner un exemple de données qui pourraient avoir à la fois une saisonnalité hebdomadaire ET une saisonnalité annuelle ? (Indice : pensez à la consommation d'un certain service).</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let answered = false;
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (answered) return;
+                        answered = true;
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                            opt.classList.add('cursor-not-allowed');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

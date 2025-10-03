@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 14: La Régression Linéaire</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour les formules mathématiques -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E2D3B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 14. La Régression Linéaire - Prédire le futur avec une simple ligne droite
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Imaginez un nuage de points représentant le salaire de plusieurs employés en fonction de leurs années d'expérience. Lors de notre exploration des données du Titanic, nous avons vu des relations similaires. On voit bien une tendance : plus on a d'expérience, plus le salaire est élevé. Et si on pouvait tracer la "meilleure" ligne droite possible à travers ces points ? On pourrait alors l'utiliser pour prédire le salaire de quelqu'un qui a 10 ans d'expérience, même si cette personne n'est pas dans nos données initiales. C'est exactement ce que fait la régression linéaire. C'est notre premier véritable modèle de machine learning supervisé, et c'est un des outils les plus utilisés et les plus importants en data science.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'équation d'une prédiction</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="mb-4 text-justify">Vous vous souvenez peut-être de cette équation du collège ? En machine learning, elle devient notre première baguette magique. Elle modélise la relation entre nos données et ce que nous voulons prédire.</p>
+                        
+                        <p class="text-center my-4 text-3xl font-bold text-gray-200">
+                           $$ \hat{y} = mx + b $$
+                        </p>
+
+                        <div class="text-center my-4 p-4 border border-dashed border-gray-600 rounded-lg">
+                            <p class="text-gray-400 italic">[Image conceptuelle d'un graphique de régression linéaire avec la droite y=mx+b traversant un nuage de points]</p>
+                        </div>
+                        
+                        <p class="text-lg mb-6 text-justify">Décortiquons ensemble chaque élément de cette formule pour bien comprendre son rôle :</p>
+
+                        <ul class="space-y-6 text-lg">
+                            <li class="p-4 bg-gray-900/50 rounded-md border border-gray-700">
+                                <strong class="text-blue-400 font-bold">$$ \hat{y} $$ (y-hat) : La Prédiction</strong>
+                                <p class="mt-2 text-justify">C'est la <strong>valeur prédite</strong> par notre modèle. Le petit chapeau (hat) est une convention en statistiques et en machine learning pour indiquer qu'il s'agit d'une estimation ou d'une prédiction, et non de la vraie valeur (qui serait notée \(y\)).</p>
+                            </li>
+                            <li class="p-4 bg-gray-900/50 rounded-md border border-gray-700">
+                                <strong class="text-blue-400 font-bold">\(x\) : La Feature (Variable Indépendante)</strong>
+                                <p class="mt-2 text-justify">C'est l'<strong>indice</strong> que l'on utilise pour faire notre prédiction. Par exemple, pour prédire le salaire, la feature pourrait être le nombre d'années d'expérience.</p>
+                            </li>
+                            <li class="p-4 bg-gray-900/50 rounded-md border border-gray-700">
+                                <strong class="text-blue-400 font-bold">\(m\) : La Pente (Coefficient ou Poids)</strong>
+                                <p class="mt-2 text-justify">C'est le nombre le plus important car il <strong>quantifie la relation</strong> entre \(x\) et \(y\). Il nous dit de combien \(\hat{y}\) change lorsque \(x\) augmente d'une unité.<br>
+                                <em>Exemple :</em> Si nous prédisons le prix d'un appartement (\(\hat{y}\)) en fonction de sa surface en m² (\(x\)), et que notre modèle apprend \(m = 2500\), cela signifie que chaque mètre carré supplémentaire ajoute <strong>2500€</strong> au prix prédit.</p>
+                            </li>
+                            <li class="p-4 bg-gray-900/50 rounded-md border border-gray-700">
+                                <strong class="text-blue-400 font-bold">\(b\) : L'Ordonnée à l'Origine (Intercept ou Biais)</strong>
+                                <p class="mt-2 text-justify">C'est une sorte de <strong>valeur de base</strong>. C'est la valeur prédite \(\hat{y}\) lorsque notre feature \(x\) est égale à zéro. <br>
+                                <em>Exemple :</em> Dans notre cas de prédiction de salaire, \(b\) serait le salaire de base prédit pour une personne avec 0 année d'expérience. Si le modèle apprend \(b = 35000\), c'est le salaire de départ estimé.</p>
+                            </li>
+                        </ul>
+
+                        <div class="mt-8 bg-gray-700/70 p-4 rounded-lg">
+                            <h4 class="text-xl font-bold text-white mb-2">Mise en pratique :</h4>
+                            <p class="mb-2">Imaginons que notre modèle ait analysé des données et appris que pour prédire un salaire, la meilleure pente est \(m = 2000\) et l'ordonnée à l'origine est \(b = 38000\). Quelle serait la prédiction de salaire pour une personne avec 7 ans d'expérience ?</p>
+                            <p class="text-center font-mono text-xl bg-gray-800 p-3 rounded-md">
+                                $$ \hat{y} = (2000 \times 7) + 38000 = 14000 + 38000 = 52000 $$
+                            </p>
+                            <p class="mt-2">Notre modèle prédirait un salaire de 52 000€.</p>
+                        </div>
+
+                        <p class="mt-6 text-justify text-xl italic">"Entraîner" un modèle de régression linéaire, c'est donc lui faire analyser des tonnes d'exemples (\(x\), \(y\)) pour qu'il trouve les valeurs optimales de \(m\) et \(b\) qui rendent ses prédictions \(\hat{y}\) les plus justes possibles. Mais comment définit-on "le plus juste possible" ? C'est là que la notion d'erreur entre en jeu.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Comment le modèle apprend-il ? La quête du minimum d'erreur</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-lg text-justify">Un modèle apprend en comparant ses prédictions à la réalité et en essayant de réduire l'écart. Cet écart, c'est l'<strong>erreur</strong>. Pour un point de donnée unique, l'erreur, aussi appelée <strong>résidu</strong>, est simplement la différence entre la vraie valeur \(y\) et notre prédiction \(\hat{y}\).</p>
+
+                    <p class="text-center my-2 text-2xl font-bold text-gray-200">
+                        $$ \text{Erreur} = y - \hat{y} $$
+                    </p>
+
+                    <div class="text-center my-4 p-4 border border-dashed border-gray-600 rounded-lg">
+                        <p class="text-gray-400 italic">[Image d'un graphique de régression linéaire montrant les lignes verticales des résidus entre les points et la droite de prédiction]</p>
+                    </div>
+
+                    <p class="text-lg text-justify">On ne peut pas simplement additionner toutes les erreurs : une prédiction trop haute (+500€) et une prédiction trop basse (-500€) s'annuleraient, laissant croire à une erreur nulle alors que le modèle s'est trompé deux fois !</p>
+                    
+                    <div class="p-4 bg-gray-900/50 rounded-md border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La Fonction de Coût : Le Juge du Modèle</h3>
+                        <p class="mb-4 text-justify">Pour résoudre ce problème, on met chaque erreur au carré. Ainsi, une erreur de -500 devient 250 000, tout comme une erreur de +500. Cela a deux avantages : toutes les erreurs deviennent positives et les plus grosses erreurs sont pénalisées beaucoup plus lourdement.</p>
+                        <p class="mb-4 text-justify">En faisant la moyenne de toutes ces erreurs au carré pour l'ensemble de nos données, on obtient ce qu'on appelle la <strong>Fonction de Coût</strong> (ou *Cost Function*). Pour la régression linéaire, la plus célèbre est l'<strong>Erreur Quadratique Moyenne</strong> (MSE - Mean Squared Error).</p>
+                        
+                        <div class="bg-gray-800/80 p-4 rounded-lg my-4">
+                            <p class="text-center text-2xl font-bold text-gray-200">
+                                $$ \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+                            </p>
+                            <p class="mt-4 text-center">Soit, en remplaçant \(\hat{y}_i\) par son équation :</p>
+                             <p class="text-center text-2xl font-bold text-gray-200 mt-2">
+                                $$ \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - (mx_i + b))^2 $$
+                            </p>
+                        </div>
+                        <p class="text-justify">Ici, \(n\) est le nombre total de points dans notre jeu de données. Le but du jeu pour notre algorithme est de tester différentes valeurs de \(m\) et \(b\) pour trouver la combinaison qui rendra ce score MSE <strong>le plus petit possible</strong>.</p>
+                    </div>
+
+                    <div class="p-4 bg-gray-900/50 rounded-md border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La Descente de Gradient : Trouver le chemin</h3>
+                        <p class="text-justify">Ce processus de minimisation vous rappelle quelque chose ? C'est exactement le principe de la <strong>descente de gradient</strong> que nous avons vue au chapitre 6 ! Imaginez un paysage en 3D où les deux directions horizontales sont les valeurs de \(m\) et \(b\), et l'altitude est la valeur de la MSE. Ce paysage a la forme d'un grand bol. Notre objectif est de trouver le point le plus bas de ce bol.</p>
+                        <p class="mt-2 text-justify">L'algorithme commence avec des valeurs aléatoires pour \(m\) et \(b\) (un point au hasard sur la surface du bol). Ensuite, il regarde dans quelle direction la pente est la plus forte et fait un petit pas dans cette direction "vers le bas". Il répète ce processus encore et encore, ajustant petit à petit \(m\) et \(b\), jusqu'à ce qu'il ne puisse plus descendre : il a atteint le fond du bol, le point où l'erreur MSE est minimale. C'est la meilleure droite possible !</p>
+                    </div>
+                </div>
+            </section>
+
+             <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La Régression avec Scikit-Learn</h2>
+                <p class="text-lg mb-6">Assez de théorie, passons au code avec la bibliothèque de machine learning la plus populaire : Scikit-Learn.</p>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-3">1. Créer des données d'exemple (synthétiques)</h3>
+                        <pre><code><span class="code-comment"># Pour que l'exemple soit reproductible, on fixe la graine aléatoire</span>
+<span class="code-variable">np</span>.<span class="code-variable">random</span>.<span class="code-function">seed</span>(<span class="code-number">0</span>)
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-number">2</span> <span class="code-operator">*</span> <span class="code-variable">np</span>.<span class="code-variable">random</span>.<span class="code-function">rand</span>(<span class="code-number">100</span>, <span class="code-number">1</span>) <span class="code-comment"># Années d'expérience (100 exemples, 1 feature)</span>
+
+<span class="code-comment"># La vraie relation est y = 4 + 3*X + un peu de "bruit" aléatoire</span>
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-number">4</span> <span class="code-operator">+</span> <span class="code-number">3</span> <span class="code-operator">*</span> <span class="code-variable">X</span> <span class="code-operator">+</span> <span class="code-variable">np</span>.<span class="code-variable">random</span>.<span class="code-function">randn</span>(<span class="code-number">100</span>, <span class="code-number">1</span>) <span class="code-comment"># Salaire (en dizaines de milliers d'€)</span></code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-3">2. Diviser les données en ensembles d'entraînement et de test</h3>
+                        <p class="mb-2 italic text-gray-400">C'est une étape CRUCIALE. On entraîne le modèle sur une partie des données (le "cours") et on l'évalue sur une partie qu'il n'a jamais vue (l'"examen"). Cela permet de vérifier s'il a bien généralisé et pas juste "appris par cœur".</p>
+                        <pre><code><span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">test_size</span><span class="code-operator">=</span><span class="code-number">0.2</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-3">3. Créer et entraîner le modèle</h3>
+                        <pre><code><span class="code-comment"># On crée une instance du modèle</span>
+<span class="code-variable">model</span> <span class="code-operator">=</span> <span class="code-function">LinearRegression</span>()
+
+<span class="code-comment"># On l'entraîne sur les données d'entraînement avec la méthode .fit()</span>
+<span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+<span class="code-builtin">print</span>(<span class="code-string">"Le modèle a été entraîné !"</span>)</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-400 mb-3">4. Faire des prédictions et visualiser les résultats</h3>
+                         <p class="mb-2 italic text-gray-400">On utilise le modèle entraîné pour prédire les salaires sur l'ensemble de test, puis on regarde à quel point notre droite de régression correspond aux données réelles.</p>
+                        <pre><code><span class="code-comment"># Faire des prédictions sur les données de test (l'examen)</span>
+<span class="code-variable">y_pred</span> <span class="code-operator">=</span> <span class="code-variable">model</span>.<span class="code-function">predict</span>(<span class="code-variable">X_test</span>)
+
+<span class="code-comment"># Afficher les coefficients appris (on s'attend à m≈3 et b≈4)</span>
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Pente (m) apprise : {model.coef_[0][0]:.2f}"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Ordonnée à l'origine (b) apprise : {model.intercept_[0]:.2f}"</span>)
+
+<span class="code-comment"># Visualiser la droite de régression</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">10</span>, <span class="code-number">6</span>))
+<span class="code-variable">plt</span>.<span class="code-function">scatter</span>(<span class="code-variable">X_test</span>, <span class="code-variable">y_test</span>, <span class="code-variable">color</span><span class="code-operator">=</span><span class="code-string">'blue'</span>, <span class="code-variable">label</span><span class="code-operator">=</span><span class="code-string">'Données réelles (Test)'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">plot</span>(<span class="code-variable">X_test</span>, <span class="code-variable">y_pred</span>, <span class="code-variable">color</span><span class="code-operator">=</span><span class="code-string">'red'</span>, <span class="code-variable">linewidth</span><span class="code-operator">=</span><span class="code-number">2</span>, <span class="code-variable">label</span><span class="code-operator">=</span><span class="code-string">'Droite de régression (Prédictions)'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Régression Linéaire : Expérience vs Salaire'</span>, <span class="code-variable">fontsize</span><span class="code-operator">=</span><span class="code-number">16</span>)
+<span class="code-variable">plt</span>.<span class="code-function">xlabel</span>(<span class="code-string">"Années d'expérience"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">ylabel</span>(<span class="code-string">'Salaire (en dizaines de k€)'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">legend</span>()
+<span class="code-variable">plt</span>.<span class="code-function">grid</span>(<span class="code-literal">True</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="mt-4 text-center bg-gray-900 p-3 rounded-md">Résultat attendu : Le modèle a appris une pente de 2.93 et une ordonnée de 4.03, ce qui est très proche des vrais paramètres (m=3, b=4) que nous avions utilisés pour générer les données !</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Évaluer la performance du modèle</h2>
+                <p class="text-lg text-justify mb-4">
+                    Visualiser la droite, c'est bien. Quantifier sa performance, c'est mieux. Un bon data scientist doit savoir évaluer son modèle avec des métriques précises.
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Votre mission et la solution</summary>
+                    <div class="mt-4 space-y-4">
+                        <p class="font-semibold">Votre mission :</p>
+                        <ul class="list-disc list-inside">
+                             <li>Calculez l'Erreur Quadratique Moyenne (MSE - Mean Squared Error) et le score R² en utilisant les fonctions de Scikit-Learn sur vos données de test (<code>y_test</code>) et vos prédictions (<code>y_pred</code>).</li>
+                             <li>Pouvez-vous interpréter ces deux chiffres avec des mots simples ? Qu'est-ce qu'ils nous disent sur la qualité de notre modèle ?</li>
+                        </ul>
+                        <p class="font-semibold mt-4">Solution et Interprétation :</p>
+                        <pre><code><span class="code-comment"># Calcul des métriques d'évaluation</span>
+<span class="code-variable">mse</span> <span class="code-operator">=</span> <span class="code-function">mean_squared_error</span>(<span class="code-variable">y_test</span>, <span class="code-variable">y_pred</span>)
+<span class="code-variable">r2</span> <span class="code-operator">=</span> <span class="code-function">r2_score</span>(<span class="code-variable">y_test</span>, <span class="code-variable">y_pred</span>)
+
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"\\n--- Évaluation du Modèle ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Erreur Quadratique Moyenne (MSE) : {mse:.2f}"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score R² : {r2:.2f}"</span>)</code></pre>
+                        <div class="bg-gray-900 p-4 rounded-md">
+                            <p><strong>Interprétation :</strong></p>
+                            <p><strong>MSE (≈ 0.69) :</strong> C'est la moyenne des erreurs au carré. Plus ce chiffre est bas, mieux c'est. Il est difficile à interpréter seul, mais il est très utile pour comparer différents modèles entre eux.</p>
+                            <p><strong>Score R² (≈ 0.81) :</strong> C'est la métrique la plus importante ici. Elle indique la proportion de la variance de la variable cible (le salaire) qui est expliquée par notre modèle. Un R² de 0.81 signifie que notre modèle explique environ 81% des variations de salaire basées sur l'expérience. C'est un très bon score (un modèle parfait aurait un R² de 1) !</p>
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est l'objectif principal de la régression linéaire simple ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Classer les données en catégories.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Trouver la meilleure ligne droite pour modéliser la relation entre deux variables.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Regrouper les données en clusters.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Réduire le nombre de features.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Dans l'équation \( y = mx + b \), que représente le coefficient 'm' ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La valeur de départ quand x=0.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) L'erreur du modèle.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La pente de la droite, indiquant comment y change quand x augmente.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La valeur prédite.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Comment un modèle de régression linéaire "apprend-il" à trouver la meilleure droite ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) En minimisant la somme des carrés des résidus (erreurs).</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) En maximisant le nombre de points qui sont exactement sur la ligne.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) En choisissant une pente et une ordonnée au hasard.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) En ignorant les points les plus éloignés de la moyenne.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Pourquoi est-il essentiel d'utiliser `train_test_split` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Pour accélérer l'entraînement du modèle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour mélanger les données de manière aléatoire.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour s'assurer que les données contiennent des nombres.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Pour évaluer la performance du modèle sur des données qu'il n'a jamais vues.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Un score R² de 0.90 signifie que...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le modèle fait des prédictions correctes dans 90% des cas.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) L'erreur moyenne du modèle est de 0.90.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le modèle explique 90% de la variabilité des données cibles.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le modèle est 10% moins performant qu'un modèle parfait.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Les limites de la ligne droite :</strong> La régression linéaire suppose, par définition, une relation... linéaire. Que se passerait-il si la relation entre l'expérience et le salaire n'était pas une ligne droite (par exemple, si le salaire augmentait très vite au début, puis stagnait) ? Comment notre modèle se comporterait-il ?</p>
+                    <p><strong>2. L'importance de l'ordonnée à l'origine (b) :</strong> Dans notre exemple, <code>b</code> représente le salaire à 0 année d'expérience. Est-ce toujours une valeur interprétable ? Imaginez que l'on essaie de prédire le poids d'une personne en fonction de sa taille. Que représenterait <code>b</code> dans ce cas, et serait-ce une valeur réaliste ?</p>
+                    <p><strong>3. Plus de features pour plus de puissance :</strong> Nous n'avons utilisé qu'une seule feature (l'expérience) pour prédire le salaire. Dans la réalité, beaucoup d'autres facteurs entrent en jeu. Pouvez-vous nommer au moins trois autres features qui pourraient aider à construire un modèle de prédiction de salaire plus précis ? (C'est une introduction à la régression linéaire *multiple*).</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        // Désactiver tous les boutons pour cette question
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 21: Scikit-Learn</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-html.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 21. Scikit-Learn - La boîte à outils ultime du Data Scientist
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Tout au long de ce parcours, nous avons utilisé une multitude d'outils. La bibliothèque qui orchestre tout cet univers, c'est Scikit-Learn. Si la data science était un atelier, Scikit-Learn serait votre servante d'atelier complète : l'ensemble d'outils polyvalents, fiables et indispensables pour presque toutes les tâches. Faisons un tour du propriétaire de cette bibliothèque devenue le standard de l'industrie.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Une philosophie unifiée : La beauté de la cohérence</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">
+                        La beauté de Scikit-Learn réside dans son API (Interface de Programmation d'Application) unifiée. Que vous utilisiez un pré-processeur, un modèle de régression ou un algorithme de clustering, les commandes de base sont toujours les mêmes. C'est un "langage" que vous apprenez une seule fois et qui s'applique partout.
+                    </p>
+                    <p>Au cœur de cette philosophie se trouve l'objet <strong>Estimateur</strong>. Quasiment tout dans Scikit-Learn est un estimateur, et ils partagent tous les mêmes méthodes de base.</p>
+                    
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">1. La méthode <code>.fit()</code> : L'apprentissage</h3>
+                        <p class="mb-3 text-justify">C'est la commande pour entraîner l'estimateur. L'objet "apprend" des propriétés à partir de vos données. L'action exacte dépend de l'estimateur :</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li>Pour un <strong>modèle</strong> (ex: <code>LogisticRegression</code>), <code>.fit(X_train, y_train)</code> apprend les coefficients du modèle pour lier X à y.</li>
+                            <li>Pour un <strong>transformateur</strong> (ex: <code>StandardScaler</code>), <code>.fit(X_train)</code> apprend une statistique des données, comme la moyenne et l'écart-type. Notez qu'il n'a pas besoin de <code>y</code>.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">2. Les méthodes <code>.predict()</code> et <code>.transform()</code> : L'application</h3>
+                        <p class="mb-3 text-justify">Une fois l'estimateur "fitté" (entraîné), on peut l'utiliser pour faire quelque chose :</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li>Un <strong>modèle</strong> utilise <code>.predict(X_test)</code> pour générer des prédictions sur de nouvelles données.</li>
+                            <li>Un <strong>transformateur</strong> utilise <code>.transform(X_test)</code> pour appliquer la transformation apprise (ex: centrer et réduire les données en utilisant la moyenne et l'écart-type appris sur les données d'entraînement).</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">Exemple concret :</h3>
+                        <pre><code><span class="code-comment"># Création des objets</span>
+<span class="code-variable">scaler</span> <span class="code-operator">=</span> <span class="code-function">StandardScaler</span>()
+<span class="code-variable">model</span> <span class="code-operator">=</span> <span class="code-function">LogisticRegression</span>()
+
+<span class="code-comment"># 1. Apprentissage (fit) sur les données d'entraînement</span>
+<span class="code-variable">scaler</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>)
+<span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train_scaled</span>, <span class="code-variable">y_train</span>) <span class="code-comment"># Note : on entraîne le modèle sur les données transformées</span>
+
+<span class="code-comment"># 2. Application (transform/predict) sur les données de test</span>
+<span class="code-variable">X_test_scaled</span> <span class="code-operator">=</span> <span class="code-variable">scaler</span>.<span class="code-function">transform</span>(<span class="code-variable">X_test</span>)
+<span class="code-variable">predictions</span> <span class="code-operator">=</span> <span class="code-variable">model</span>.<span class="code-function">predict</span>(<span class="code-variable">X_test_scaled</span>)</code></pre>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">3. Le raccourci <code>.fit_transform()</code></h3>
+                        <p class="mb-3 text-justify">Pour les transformateurs, il est très courant de vouloir "fitter" et "transformer" les données d'entraînement en une seule fois. C'est à ça que sert <code>.fit_transform()</code>. <strong>Attention :</strong> on ne l'utilise que sur les données d'entraînement pour éviter toute fuite de données !</p>
+                        <pre><code><span class="code-comment"># Apprend la moyenne/écart-type de X_train ET transforme X_train</span>
+<span class="code-variable">X_train_scaled</span> <span class="code-operator">=</span> <span class="code-variable">scaler</span>.<span class="code-function">fit_transform</span>(<span class="code-variable">X_train</span>)
+
+<span class="code-comment"># Applique la transformation déjà apprise à X_test</span>
+<span class="code-variable">X_test_scaled</span> <span class="code-operator">=</span> <span class="code-variable">scaler</span>.<span class="code-function">transform</span>(<span class="code-variable">X_test</span>)</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Les Pipelines : L'automatisation du workflow</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">Un Pipeline est un objet Scikit-Learn qui permet d'enchaîner plusieurs étapes de traitement et de modélisation en un seul et unique estimateur. Pensez-y comme une chaîne de montage pour vos données.</p>
+
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">Raison n°1 : Simplification et Organisation</h3>
+                        <p class="mb-3 text-justify">Sans pipeline, votre code pour l'entraînement et la prédiction peut vite devenir répétitif et désordonné. Le pipeline encapsule toute la logique en un seul objet, rendant votre code beaucoup plus propre.</p>
+                    </div>
+                    
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-red-400 mb-2">Raison n°2 (La plus importante) : Prévention de la Fuite de Données (Data Leakage)</h3>
+                        <p class="mb-3 text-justify">C'est une erreur subtile mais fatale. La fuite de données se produit lorsque des informations de votre ensemble de test "contaminent" votre processus d'entraînement. Votre modèle obtient alors des scores artificiellement élevés, car il a "triché" en ayant un aperçu des réponses.</p>
+                        <h4 class="font-semibold text-white">Le Scénario Catastrophe :</h4>
+                        <p class="my-3 text-justify">Imaginez que vous mettez vos données à l'échelle (scaling) <i>avant</i> de les diviser en ensembles d'entraînement et de test. Le `StandardScaler` va calculer la moyenne et l'écart-type sur <strong>l'ensemble des données</strong>. Par conséquent, les informations du jeu de test (sa moyenne, sa variance) ont été utilisées pour transformer le jeu d'entraînement. Votre modèle n'est plus évalué sur des données véritablement "nouvelles".</p>
+                        <h4 class="font-semibold text-white mt-4">La Solution Pipeline :</h4>
+                        <p class="mt-3 text-justify">Un pipeline résout ce problème élégamment. Lorsque vous appelez <code>.fit()</code> sur un pipeline, il applique <code>.fit_transform()</code> <strong>uniquement sur les données d'entraînement</strong> pour chaque étape de pré-traitement. Puis, lorsque vous appelez <code>.score()</code> ou <code>.predict()</code>, il applique <strong>uniquement</strong> <code>.transform()</code> (sans ré-apprendre) sur les données de test. Cela garantit une séparation stricte et une évaluation honnête.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Construire un Pipeline complet</h2>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p>Mettons en place notre chaîne de montage. Nous allons enchaîner deux étapes : la mise à l'échelle des données, puis l'entraînement d'un modèle de Forêt Aléatoire.</p>
+                    
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg text-blue-300 mb-2">Étape par étape</h3>
+                        <ol class="list-decimal list-inside space-y-3 pl-4">
+                            <li><strong>Préparation :</strong> On importe les bibliothèques et on prépare nos données <code>X</code> et <code>y</code> comme d'habitude, puis on les divise en ensembles d'entraînement et de test.</li>
+                            <li><strong>Définition du Pipeline :</strong> C'est ici que la magie opère. On crée une instance de <code>Pipeline</code> qui prend une liste de tuples. Chaque tuple contient deux éléments : un nom que vous donnez à l'étape (ex: 'scaler'), et l'objet estimateur Scikit-Learn correspondant (ex: `StandardScaler()`). L'ordre est crucial !</li>
+                            <li><strong>Entraînement :</strong> On appelle <code>.fit()</code> sur l'objet pipeline. Scikit-Learn est intelligent : il va appeler <code>.fit_transform()</code> sur la première étape (`scaler`) avec les données d'entraînement, puis passer le résultat à l'étape suivante (`classifier`) et appeler <code>.fit()</code> sur celle-ci.</li>
+                            <li><strong>Évaluation :</strong> On appelle <code>.score()</code> sur le pipeline. De même, il va d'abord appeler <code>.transform()</code> sur le `scaler` avec les données de test, puis passer le résultat au <code>.score()</code> du classifieur.</li>
+                        </ol>
+                    </div>
+
+                     <pre><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.preprocessing</span> <span class="code-keyword">import</span> <span class="code-variable">StandardScaler</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.ensemble</span> <span class="code-keyword">import</span> <span class="code-variable">RandomForestClassifier</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.pipeline</span> <span class="code-keyword">import</span> <span class="code-variable">Pipeline</span>
+
+<span class="code-comment"># 1. Préparation des données</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>(), <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-constant">True</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Sex'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Sex'</span>].<span class="code-function">map</span>({<span class="code-string">'male'</span>: <span class="code-number">0</span>, <span class="code-string">'female'</span>: <span class="code-number">1</span>})
+<span class="code-variable">df</span>.<span class="code-function">drop</span>([<span class="code-string">'Cabin'</span>, <span class="code-string">'Name'</span>, <span class="code-string">'Ticket'</span>, <span class="code-string">'Embarked'</span>], <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-constant">True</span>)
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">drop</span>(<span class="code-string">'Survived'</span>, <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>)
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Survived'</span>]
+<span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">test_size</span><span class="code-operator">=</span><span class="code-number">0.3</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+
+<span class="code-comment"># 2. Créer le Pipeline</span>
+<span class="code-variable">pipe</span> <span class="code-operator">=</span> <span class="code-function">Pipeline</span>([
+    (<span class="code-string">'scaler'</span>, <span class="code-function">StandardScaler</span>()),  <span class="code-comment"># Première étape : mise à l'échelle</span>
+    (<span class="code-string">'classifier'</span>, <span class="code-function">RandomForestClassifier</span>(<span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)) <span class="code-comment"># Deuxième étape : classification</span>
+])
+
+<span class="code-comment"># 3. & 4. Entraîner et Évaluer le Pipeline</span>
+<span class="code-variable">pipe</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+<span class="code-variable">score</span> <span class="code-operator">=</span> <span class="code-variable">pipe</span>.<span class="code-function">score</span>(<span class="code-variable">X_test</span>, <span class="code-variable">y_test</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Score du Pipeline complet : {score:.4f}"</span>)</code></pre>
+                 </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Challenge : La validation croisée</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-4">
+                    <p class="text-lg text-justify">Utilisons une méthode d'évaluation encore plus fiable : la validation croisée.</p>
+                    <div>
+                        <h3 class="font-bold text-cyan-300">Votre mission :</h3>
+                        <ul class="list-decimal list-inside pl-4 mt-2 space-y-1">
+                            <li>Créez un pipeline qui gère les valeurs manquantes (`SimpleImputer`), met les données à l'échelle (`StandardScaler`), et applique une `LogisticRegression`.</li>
+                            <li>Évaluez ce pipeline avec la fonction `cross_val_score` (avec `cv=5`).</li>
+                        </ul>
+                    </div>
+                    <details class="bg-gray-900/50 p-4 rounded-md cursor-pointer">
+                        <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                        <div class="mt-4">
+                            <pre><code><span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.impute</span> <span class="code-keyword">import</span> <span class="code-variable">SimpleImputer</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.linear_model</span> <span class="code-keyword">import</span> <span class="code-variable">LogisticRegression</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">cross_val_score</span>
+
+<span class="code-comment"># On repart des données avec des valeurs manquantes pour l'âge</span>
+<span class="code-variable">df_challenge</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+<span class="code-variable">df_challenge</span>[<span class="code-string">'Sex'</span>] <span class="code-operator">=</span> <span class="code-variable">df_challenge</span>[<span class="code-string">'Sex'</span>].<span class="code-function">map</span>({<span class="code-string">'male'</span>: <span class="code-number">0</span>, <span class="code-string">'female'</span>: <span class="code-number">1</span>})
+<span class="code-variable">df_challenge</span>.<span class="code-function">drop</span>([<span class="code-string">'Cabin'</span>, <span class="code-string">'Name'</span>, <span class="code-string">'Ticket'</span>, <span class="code-string">'Embarked'</span>], <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-constant">True</span>)
+<span class="code-variable">X_challenge</span> <span class="code-operator">=</span> <span class="code-variable">df_challenge</span>.<span class="code-function">drop</span>(<span class="code-string">'Survived'</span>, <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>)
+<span class="code-variable">y_challenge</span> <span class="code-operator">=</span> <span class="code-variable">df_challenge</span>[<span class="code-string">'Survived'</span>]
+
+<span class="code-comment"># 1. Créer le pipeline à trois étapes</span>
+<span class="code-variable">challenge_pipe</span> <span class="code-operator">=</span> <span class="code-function">Pipeline</span>([
+    (<span class="code-string">'imputer'</span>, <span class="code-function">SimpleImputer</span>(<span class="code-variable">strategy</span><span class="code-operator">=</span><span class="code-string">'median'</span>)),
+    (<span class="code-string">'scaler'</span>, <span class="code-function">StandardScaler</span>()),
+    (<span class="code-string">'classifier'</span>, <span class="code-function">LogisticRegression</span>(<span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>))
+])
+
+<span class="code-comment"># 2. Évaluer avec la validation croisée</span>
+<span class="code-variable">scores</span> <span class="code-operator">=</span> <span class="code-function">cross_val_score</span>(<span class="code-variable">challenge_pipe</span>, <span class="code-variable">X_challenge</span>, <span class="code-variable">y_challenge</span>, <span class="code-variable">cv</span><span class="code-operator">=</span><span class="code-number">5</span>)
+
+<span class="code-builtin">print</span>(<span class="code-string">"--- Évaluation par Validation Croisée ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Scores pour les 5 'plis' : {np.round(scores, 3)}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Score moyen : {scores.mean():.4f}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Écart-type des scores : {scores.std():.4f}"</span>)</code></pre>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quelle méthode est utilisée pour entraîner un estimateur dans Scikit-Learn ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `.predict()`</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `.fit()`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `.transform()`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `.run()`</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Quel est le principal avantage d'utiliser un Pipeline ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Rendre le code plus complexe.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Accélérer l'entraînement du modèle.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Simplifier le code et prévenir la fuite de données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Obtenir toujours un meilleur score.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. À quoi sert `StandardScaler` dans un pipeline ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À mettre toutes les variables sur une échelle comparable.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À sélectionner les meilleures variables.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À entraîner le modèle de classification.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À imputer les valeurs manquantes.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Qu'est-ce que la validation croisée (cross-validation) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une méthode pour visualiser les données.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Une technique d'évaluation robuste qui entraîne et teste le modèle sur plusieurs découpages des données.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Un type de modèle de régression.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Une façon de gérer les valeurs manquantes.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Dans l'exemple du challenge, que signifie `cv=5` dans `cross_val_score` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Les données sont divisées en 5 "plis" (folds) pour l'évaluation.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le modèle est entraîné pendant 5 secondes.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le pipeline utilise 5 modèles différents.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La fonction renverra les 5 meilleures prédictions.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le piège de la fuite de données :</strong> Que se passerait-il si vous appliquiez le `StandardScaler` sur l'ensemble de vos données (X) <i>avant</i> de faire le `train_test_split` ? Pourquoi est-ce une erreur grave ?</p>
+                    <p><strong>2. Au-delà de l'exactitude :</strong> La fonction `cross_val_score` utilise l'exactitude par défaut pour la classification. Comment pourriez-vous lui demander de calculer une autre métrique, comme le F1-score, à la place ? (Indice : cherchez le paramètre `scoring` dans la documentation).</p>
+                    <p><strong>3. Optimisation d'hyperparamètres :</strong> Un pipeline peut avoir de nombreux "boutons de réglage" (hyperparamètres), comme le `C` de la `LogisticRegression` ou le `n_estimators` d'une `RandomForest`. Comment pourriez-vous utiliser les outils de Scikit-Learn (comme `GridSearchCV`) en combinaison avec un pipeline pour trouver automatiquement la meilleure combinaison de réglages ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = "Bravo, c'est la bonne réponse !";
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

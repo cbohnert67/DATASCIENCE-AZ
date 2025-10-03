@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 13: Introduction au Machine Learning</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 13. Machine Learning - Mon ordinateur peut-il vraiment apprendre ?
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Comment apprend-on à un très jeune enfant à reconnaître un chat ? On ne lui donne pas une liste de règles. À la place, on lui montre des exemples. On lui montre une photo et on lui dit "ça, c'est un chat". On lui montre un chien : "ça, ce n'est pas un chat". À force d'exemples, l'enfant finit par construire son propre modèle mental et par généraliser. Le Machine Learning (ou Apprentissage Automatique), c'est exactement la même idée : au lieu de programmer des instructions explicites, nous nourrissons un algorithme avec des données, et nous le laissons "apprendre" les règles par lui-même.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le vocabulaire indispensable de l'apprenti sorcier</h2>
+                <div class="space-y-8">
+                    <!-- Features -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Features (ou variables)</h3>
+                        <p class="mb-4 text-justify">Ce sont les "indices" ou les "caractéristiques" que nous donnons au modèle pour qu'il puisse prendre une décision. Ce sont les colonnes de notre jeu de données que nous utilisons comme entrées. Mathématiquement, on les représente souvent par un vecteur \(X\).</p>
+                        <p class="italic text-gray-400"><strong>Exemple Titanic :</strong> Pour un passager, les features pourraient être sa classe (Pclass), son sexe (Sex) et son âge (Age).</p>
+                        <pre><code><span class="code-comment"># 'X' est un DataFrame contenant nos features</span>
+<span class="code-variable">features</span> <span class="code-operator">=</span> [<span class="code-string">'Pclass'</span>, <span class="code-string">'Sex'</span>, <span class="code-string">'Age'</span>]
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-variable">features</span>]
+<span class="code-builtin">print</span>(<span class="code-variable">X</span>.<span class="code-function">head</span>())</code></pre>
+                    </div>
+                    <!-- Label -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Label (ou cible)</h3>
+                        <p class="mb-4 text-justify">C'est la "bonne réponse" que nous voulons que le modèle apprenne à prédire. C'est la colonne cible de notre analyse. Mathématiquement, on la représente souvent par un vecteur \(y\).</p>
+                        <p class="italic text-gray-400"><strong>Exemple Titanic :</strong> Le label est la colonne 'Survived', qui indique si le passager a survécu (1) ou non (0).</p>
+                        <pre><code><span class="code-comment"># 'y' est une Series contenant notre label</span>
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Survived'</span>]
+<span class="code-builtin">print</span>(<span class="code-variable">y</span>.<span class="code-function">head</span>())</code></pre>
+                    </div>
+                    <!-- Modèle -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Modèle</h3>
+                        <p class="mb-4 text-justify">C'est le "cerveau" que l'algorithme construit après avoir analysé les données. C'est une fonction mathématique \(f\) qui a appris à approximer la relation entre les features \(X\) et le label \(y\).</p>
+                        <p class="text-center my-4 text-xl">\[ y \approx f(X) \]</p>
+                        <p class="italic text-gray-400"><strong>Exemple :</strong> Dans une régression linéaire simple, le modèle est juste l'équation d'une droite \(y = ax + b\). L'algorithme apprend les meilleures valeurs pour \(a\) (la pente) et \(b\) (l'ordonnée à l'origine).</p>
+                    </div>
+                    <!-- Entraînement -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Entraînement (Training)</h3>
+                        <p class="mb-4 text-justify">C'est le processus durant lequel le modèle ajuste ses paramètres internes pour minimiser son erreur. C'est la phase où l'on montre les exemples (\(X\)) et les réponses (\(y\)) à l'algorithme. Il compare ses prédictions \(\hat{y} = f(X)\) aux vraies réponses \(y\) et ajuste \(f\) pour réduire l'écart, souvent via la descente de gradient.</p>
+                        <p class="italic text-gray-400"><strong>Exemple avec Scikit-learn :</strong> La méthode <code>.fit()</code> est la fonction qui lance tout le processus d'entraînement.</p>
+                        <pre><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.linear_model</span> <span class="code-keyword">import</span> <span class="code-variable">LogisticRegression</span>
+
+<span class="code-comment"># 1. Créer une instance du modèle</span>
+<span class="code-variable">model</span> <span class="code-operator">=</span> <span class="code-function">LogisticRegression</span>()
+
+<span class="code-comment"># 2. Entraîner le modèle en lui montrant les features (X) et le label (y)</span>
+<span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Les 3 grandes familles de l'apprentissage</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. L'Apprentissage Supervisé (Apprendre avec un professeur)</h3>
+                        <p class="mb-4 text-justify">C'est la méthode la plus courante. On entraîne un modèle sur des données où la "bonne réponse" (le label) est fournie. Le but est de généraliser pour pouvoir prédire le label de nouvelles données, jamais vues auparavant.</p>
+                        
+                        <div class="mt-6">
+                            <h4 class="text-xl font-semibold text-white mb-2">La Classification</h4>
+                            <p class="mb-4 text-justify">Le but est de prédire une <strong>catégorie</strong> discrète. La réponse est "quoi ?" ou "est-ce que ?". Exemples : Ce mail est-il un spam ou non ? Quelle est l'espèce de cette fleur ?</p>
+                            <p class="italic text-gray-400"><strong>Notre projet Titanic :</strong> Prédire si un passager a survécu (catégorie 1) ou non (catégorie 0).</p>
+                        </div>
+
+                        <div class="mt-6">
+                            <h4 class="text-xl font-semibold text-white mb-2">La Régression</h4>
+                            <p class="mb-4 text-justify">Le but est de prédire une <strong>valeur numérique continue</strong>. La réponse est "combien ?". Exemples : Quel sera le prix de cet appartement ? Quelle sera la température demain ?</p>
+                        </div>
+                        <div class="text-center my-4">[Image d'un graphique de classification vs régression]</div>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. L'Apprentissage Non Supervisé (Apprendre par soi-même)</h3>
+                        <p class="mb-4 text-justify">Ici, on ne donne pas les réponses (pas de labels). On donne au modèle des données brutes et on lui demande de trouver une structure cachée, de mettre de l'ordre dans le chaos. Le cas le plus courant est le <strong>clustering</strong>.</p>
+                        <p class="italic text-gray-400"><strong>Exemple :</strong> On donne à un modèle les données d'achat de milliers de clients. Le modèle va créer des groupes (clusters) de clients aux comportements similaires (les "acheteurs fréquents", les "chasseurs de promos") sans qu'on lui ait défini ces groupes au préalable.</p>
+                        <pre><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.cluster</span> <span class="code-keyword">import</span> <span class="code-variable">KMeans</span>
+<span class="code-comment"># X sont les données non étiquetées</span>
+<span class="code-variable">kmeans</span> <span class="code-operator">=</span> <span class="code-function">KMeans</span>(<span class="code-variable">n_clusters</span><span class="code-operator">=</span><span class="code-number">3</span>)
+<span class="code-variable">kmeans</span>.<span class="code-function">fit</span>(<span class="code-variable">X</span>) <span class="code-comment"># Notez qu'il n'y a pas de 'y' ici !</span>
+<span class="code-variable">clusters</span> <span class="code-operator">=</span> <span class="code-variable">kmeans</span>.<span class="code-function">predict</span>(<span class="code-variable">X</span>)</code></pre>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">3. L'Apprentissage par Renforcement (Apprendre par l'expérience)</h3>
+                        <p class="mb-4 text-justify">C'est le mode d'apprentissage le plus proche de la manière dont nous, humains, apprenons. L'algorithme ("l'agent") apprend par essais et erreurs. Il évolue dans un environnement, prend des actions, et reçoit en retour une récompense (positive) ou une punition (négative). Son seul but est de trouver une stratégie (une "politique") qui maximise la somme des récompenses sur le long terme.</p>
+                        <p class="italic text-gray-400"><strong>Exemple :</strong> Entraîner une IA à jouer à un jeu vidéo. L'IA essaie des actions au hasard. Si elle gagne des points (récompense), elle essaiera de refaire cette action dans une situation similaire. Si elle perd une vie (punition), elle évitera cette action à l'avenir.</p>
+                        <div class="text-center my-4">[Image du cycle de l'apprentissage par renforcement]</div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Identifier le type d'apprentissage</h2>
+                <p class="text-lg text-justify mb-4">
+                    Pour chacun des scénarios suivants, identifiez s'il s'agit d'apprentissage supervisé (classification ou régression), non supervisé ou par renforcement.
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir les scénarios et les solutions</summary>
+                    <ul class="list-decimal list-inside space-y-4 mt-4">
+                        <li><strong>Scénario :</strong> Un service météo veut prédire la température exacte de demain. <br>
+                            <strong>Solution :</strong> Supervisé (Régression) - On prédit une valeur numérique continue.</li>
+                        <li><strong>Scénario :</strong> Un site d'information veut regrouper des articles par sujet sans catégories prédéfinies.<br>
+                            <strong>Solution :</strong> Non Supervisé - On cherche une structure cachée (les sujets).</li>
+                        <li><strong>Scénario :</strong> On entraîne un robot à marcher en le récompensant pour chaque mètre parcouru sans tomber.<br>
+                            <strong>Solution :</strong> Par Renforcement - L'agent apprend par essais et erreurs avec des récompenses.</li>
+                        <li><strong>Scénario :</strong> Une banque veut détecter si une transaction est "frauduleuse" ou "légitime" en se basant sur des exemples passés.<br>
+                            <strong>Solution :</strong> Supervisé (Classification) - On prédit une catégorie (frauduleuse/légitime).</li>
+                    </ul>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Dans un projet de machine learning, comment appelle-t-on les "indices" ou les "caractéristiques" que l'on fournit au modèle ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Les features</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les labels</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Les modèles</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Les algorithmes</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Prédire le prix exact d'une maison en fonction de sa surface est un problème de :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Classification</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Apprentissage non supervisé</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Apprentissage par renforcement</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Régression</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Quelle famille d'apprentissage est utilisée pour la segmentation de clients en groupes non prédéfinis ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Apprentissage non supervisé</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Apprentissage supervisé</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Apprentissage par renforcement</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Régression</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Lequel de ces exemples relève de l'apprentissage par renforcement ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une IA apprenant à jouer aux échecs en jouant contre elle-même.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Un système qui prédit si une image contient un chat ou un chien.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Un algorithme qui recommande des films en se basant sur les notes passées.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Un programme qui groupe des documents similaires.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. La principale caractéristique de l'apprentissage supervisé est qu'il nécessite...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Un environnement avec des récompenses.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Des données sans aucune structure.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Des données étiquetées (avec les "bonnes réponses").</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Des algorithmes de clustering.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Les limites du supervisé :</strong> L'apprentissage supervisé est très puissant, mais quelle est sa plus grande contrainte dans le monde réel ? (Indice : pensez à la disponibilité des "bonnes réponses").</p>
+                    <p><strong>2. Hybridation :</strong> Pouvez-vous imaginer un scénario où l'on pourrait combiner l'apprentissage non supervisé et supervisé pour résoudre un problème ? (Indice : que faire si vous avez beaucoup de données, mais que très peu sont étiquetées ?)</p>
+                    <p><strong>3. Éthique du renforcement :</strong> L'apprentissage par renforcement optimise pour une récompense. Si on demande à une IA de "maximiser les clics sur une publicité", quels comportements non désirés pourrait-elle apprendre à adopter ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

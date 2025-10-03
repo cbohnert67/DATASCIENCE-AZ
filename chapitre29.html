@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 29: Introduction aux APIs</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; }
+        .code-function { color: #DCDCAA; }
+        .code-string { color: #CE9178; }
+        .code-comment { color: #6A9955; font-style: italic; }
+        .code-number { color: #B5CEA8; }
+        .code-builtin { color: #569CD6; }
+        .code-variable { color: #9CDCFE; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 29 : Introduction aux APIs - Collecter des données en temps réel sur le web
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Toutes les données ne sont pas sagement rangées dans des fichiers CSV statiques. Sur le web, les données sont vivantes : le cours d'une action change chaque seconde, la météo est mise à jour en permanence, de nouveaux tweets sont publiés constamment. Les APIs (Interfaces de Programmation d'Application) sont des ponts qui nous permettent de nous brancher directement sur ces services web pour obtenir des données fraîches en temps réel. Maîtriser les APIs, c'est passer du statut de consommateur de données passif à celui de collecteur actif.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Dialoguer avec le web</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Qu'est-ce qu'une API REST ?</h3>
+                        <p class="mb-4 text-justify">L'analogie du restaurant est parfaite pour comprendre. Une API est un intermédiaire structuré qui permet à deux applications de se parler sans avoir à connaître les détails complexes de l'autre.</p>
+                        <ul class="list-none space-y-2 text-lg bg-gray-900/50 p-4 rounded-md">
+                           <li><span class="font-bold text-cyan-300">Vous (le client)</span> = Votre script Python.</li>
+                           <li><span class="font-bold text-cyan-300">Le serveur (le waiter)</span> = L'API elle-même, qui reçoit vos requêtes.</li>
+                           <li><span class="font-bold text-cyan-300">La cuisine (le backend)</span> = Le serveur distant où les données sont stockées et traitées.</li>
+                           <li><span class="font-bold text-cyan-300">Le menu</span> = La documentation de l'API, qui vous dit quelles "commandes" (requêtes) vous pouvez passer.</li>
+                        </ul>
+                        [Image d'un diagramme du cycle requête-réponse d'une API]
+                        <p class="mt-4 text-justify">Une API <strong>REST</strong> est simplement une manière populaire et standardisée de construire ces "menus" et d'organiser ces "commandes" en utilisant le protocole HTTP standard du web, ce qui les rend universelles et faciles à utiliser.</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">L'anatomie d'une requête HTTP</h3>
+                        <p class="mb-4 text-justify">Chaque "commande" que vous passez à l'API est une requête HTTP. Prenons un exemple concret avec l'API météo : "Je veux la température horaire pour Paris".</p>
+                        <ul class="list-disc list-inside space-y-4">
+                            <li><strong>La méthode :</strong> Le verbe d'action. Ici, on veut <em>obtenir</em> des informations, donc on utilise <strong>`GET`</strong>. Si on voulait publier un tweet, on utiliserait `POST`.</li>
+                            <li><strong>L'URL (endpoint) :</strong> C'est l'adresse de la "cuisine" spécialisée dans les prévisions. Par exemple : `https://api.open-meteo.com/v1/forecast`.</li>
+                            <li><strong>Les paramètres :</strong> Ils précisent votre commande. On les ajoute après un `?` et on les sépare par des `&`.
+                                <ul class="list-inside list-disc ml-6 mt-2 bg-gray-900/50 p-3 rounded-md">
+                                    <li>Pour Paris : `latitude=48.85&longitude=2.35`</li>
+                                    <li>Pour la température horaire : `hourly=temperature_2m`</li>
+                                </ul>
+                                <p class="mt-2 font-mono text-sm break-all">URL complète : `https://api.open-meteo.com/v1/forecast?latitude=48.85&longitude=2.35&hourly=temperature_2m`</p>
+                            </li>
+                            <li><strong>Les en-têtes (headers) :</strong> Ce sont des instructions pour le serveur. La plus courante est la clé d'API pour l'authentification.
+                                <p class="mt-2 font-mono text-sm">`Authorization: Bearer VOTRE_CLÉ_SECRÈTE`</p>
+                                <p class="text-sm italic text-gray-400">(Heureusement, l'API météo de notre exemple n'en a pas besoin !)</p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La réponse du serveur</h3>
+                         <p class="mb-4 text-justify">Une fois la requête envoyée, le serveur vous renvoie votre "plat".</p>
+                         <div class="grid md:grid-cols-2 gap-6">
+                             <div class="bg-gray-900/50 p-4 rounded-lg">
+                                 <h4 class="font-semibold text-lg text-cyan-300 mb-2">1. Le code de statut</h4>
+                                 <p>C'est la première réponse du serveur : "J'ai bien reçu, voici le statut".</p>
+                                 <ul class="list-disc list-inside mt-2">
+                                     <li><strong class="text-green-400">200 OK</strong>: "Voici votre plat, tout est parfait."</li>
+                                     <li><strong class="text-yellow-400">404 Not Found</strong>: "Le plat que vous demandez n'est pas au menu."</li>
+                                     <li><strong class="text-red-400">403 Forbidden</strong>: "Vous n'êtes pas autorisé à commander dans cette section du restaurant."</li>
+                                 </ul>
+                             </div>
+                             <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-cyan-300 mb-2">2. Le corps (body) en JSON</h4>
+                                <p>Si tout va bien (code 200), voici les données, souvent au format JSON. C'est un format texte qui est presque identique à un dictionnaire Python.</p>
+                                <pre class="text-xs mt-2"><code>{
+  <span class="code-string">"latitude"</span>: <span class="code-number">48.85</span>,
+  <span class="code-string">"hourly"</span>: {
+    <span class="code-string">"time"</span>: [<span class="code-string">"2023-10-26T00:00"</span>, <span class="code-string">"..."</span>],
+    <span class="code-string">"temperature_2m"</span>: [<span class="code-number">12.5</span>, <span class="code-number">12.3</span>, <span class="code-string">"..."</span>]
+  }
+}</code></pre>
+                               <p class="text-sm mt-2">On voit bien la structure : une clé `"hourly"` qui contient un autre dictionnaire, avec des clés (`"time"`, `"temperature_2m"`) dont les valeurs sont des listes.</p>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Interroger une API Météo avec Python</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <p class="mb-4 text-justify">La bibliothèque `requests` est le moyen le plus simple et le plus populaire pour faire des requêtes HTTP. Voyons étape par étape comment l'utiliser pour obtenir les prévisions météo pour Paris.</p>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 1 : Définir la "commande"</h4>
+                            <p class="mb-2 text-justify">On prépare notre requête. On sépare l'URL de base des paramètres. C'est une bonne pratique qui rend le code plus lisible. La bibliothèque `requests` assemblera l'URL finale pour nous.</p>
+<pre><code><span class="code-keyword">import</span> <span class="code-variable">requests</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+
+<span class="code-variable">base_url</span> <span class="code-operator">=</span> <span class="code-string">"https://api.open-meteo.com/v1/forecast"</span>
+<span class="code-variable">params</span> <span class="code-operator">=</span> {
+    <span class="code-string">"latitude"</span>: <span class="code-number">48.85</span>,
+    <span class="code-string">"longitude"</span>: <span class="code-number">2.35</span>,
+    <span class="code-string">"hourly"</span>: <span class="code-string">"temperature_2m"</span>
+}</code></pre>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 2 : Envoyer la requête et gérer les erreurs</h4>
+                            <p class="mb-2 text-justify">On envoie la requête avec `requests.get()`. Le bloc `try...except` est une sécurité essentielle : si le site est en panne ou si notre connexion internet est coupée, le programme affichera un message d'erreur propre au lieu de planter. `response.raise_for_status()` est un garde-fou : il vérifiera si le code de statut est un code d'erreur (comme 404 ou 500) et, si c'est le cas, arrêtera le script en signalant l'erreur.</p>
+<pre><code><span class="code-keyword">try</span>:
+    <span class="code-variable">response</span> <span class="code-operator">=</span> <span class="code-variable">requests</span>.<span class="code-function">get</span>(<span class="code-variable">base_url</span>, <span class="code-variable">params</span><span class="code-operator">=</span><span class="code-variable">params</span>)
+    <span class="code-variable">response</span>.<span class="code-function">raise_for_status</span>()
+    <span class="code-comment"># ... la suite du code si tout va bien ...</span>
+<span class="code-keyword">except</span> <span class="code-variable">requests</span>.<span class="code-variable">exceptions</span>.<span class="code-variable">RequestException</span> <span class="code-keyword">as</span> <span class="code-variable">e</span>:
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Erreur lors de la requête : {e}"</span>)</code></pre>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 3 & 4 : Extraire et Structurer les données</h4>
+                            <p class="mb-2 text-justify">La réponse brute est du texte. `response.json()` la convertit en un dictionnaire Python. En inspectant ce dictionnaire, on voit que les données qui nous intéressent sont dans la clé `'hourly'`. On peut alors passer ce sous-dictionnaire directement à `pd.DataFrame()` pour le transformer en un tableau structuré. On en profite pour convertir la colonne 'time' en un vrai format de date, ce qui est crucial pour les graphiques et les analyses temporelles.</p>
+<pre><code>    <span class="code-variable">data</span> <span class="code-operator">=</span> <span class="code-variable">response</span>.<span class="code-function">json</span>()
+    <span class="code-variable">df_weather</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">DataFrame</span>(<span class="code-variable">data</span>[<span class="code-string">'hourly'</span>])
+    <span class="code-variable">df_weather</span>[<span class="code-string">'time'</span>] <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">to_datetime</span>(<span class="code-variable">df_weather</span>[<span class="code-string">'time'</span>])
+    <span class="code-builtin">print</span>(<span class="code-variable">df_weather</span>.<span class="code-function">head</span>())</code></pre>
+                        </div>
+                        <div>
+                             <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 5 : Analyser et Visualiser</h4>
+                             <p class="mb-2 text-justify">Maintenant que les données sont dans un DataFrame Pandas, le plus dur est fait ! On peut utiliser toutes les connaissances que nous avons acquises pour tracer des graphiques avec Matplotlib et analyser les tendances.</p>
+<pre><code>    <span class="code-comment"># ... code de visualisation Matplotlib ...</span>
+    <span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous !</h2>
+                <p class="text-lg text-justify mb-4">Les APIs permettent de faire des choses très amusantes. Utilisons "The Dog API" pour égayer notre journée.</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                    <p>Utilisez la bibliothèque `requests` pour interroger "The Dog API" afin de récupérer une image aléatoire d'une race de chien spécifique (par exemple, un Beagle). Ensuite, affichez cette image.</p>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour la solution</summary>
+<pre class="mt-2"><code><span class="code-keyword">import</span> <span class="code-variable">requests</span>
+<span class="code-keyword">from</span> <span class="code-variable">IPython.display</span> <span class="code-keyword">import</span> <span class="code-variable">Image</span>, <span class="code-variable">display</span>
+
+<span class="code-comment"># 1. Trouver l'ID de la race "Beagle"</span>
+<span class="code-variable">breeds_url</span> <span class="code-operator">=</span> <span class="code-string">"https://api.thedogapi.com/v1/breeds/search?q=beagle"</span>
+<span class="code-variable">breeds_response</span> <span class="code-operator">=</span> <span class="code-variable">requests</span>.<span class="code-function">get</span>(<span class="code-variable">breeds_url</span>)
+<span class="code-variable">beagle_id</span> <span class="code-operator">=</span> <span class="code-variable">breeds_response</span>.<span class="code-function">json</span>()[<span class="code-number">0</span>][<span class="code-string">'id'</span>]
+
+<span class="code-comment"># 2. Demander une image pour cet ID</span>
+<span class="code-variable">image_url</span> <span class="code-operator">=</span> <span class="code-function">f</span><span class="code-string">"https://api.thedogapi.com/v1/images/search?breed_ids={beagle_id}"</span>
+<span class="code-variable">image_response</span> <span class="code-operator">=</span> <span class="code-variable">requests</span>.<span class="code-function">get</span>(<span class="code-variable">image_url</span>)
+
+<span class="code-keyword">if</span> <span class="code-variable">image_response</span>.<span class="code-variable">status_code</span> <span class="code-operator">==</span> <span class="code-number">200</span>:
+    <span class="code-variable">random_beagle_url</span> <span class="code-operator">=</span> <span class="code-variable">image_response</span>.<span class="code-function">json</span>()[<span class="code-number">0</span>][<span class="code-string">'url'</span>]
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"URL de l'image : {random_beagle_url}"</span>)
+    <span class="code-comment"># 3. Afficher l'image</span>
+    <span class="code-function">display</span>(<span class="code-function">Image</span>(<span class="code-variable">url</span><span class="code-operator">=</span><span class="code-variable">random_beagle_url</span>))
+<span class="code-keyword">else</span>:
+    <span class="code-builtin">print</span>(<span class="code-string">"Erreur !"</span>)
+</code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quelle méthode HTTP est la plus couramment utilisée pour demander des données à une API ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) POST</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) GET</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) DELETE</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) UPDATE</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Quel code de statut HTTP indique que votre requête a réussi ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) 404</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) 500</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) 200</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) 403</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Quel est le format de données le plus couramment utilisé par les APIs pour renvoyer des informations ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) CSV</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) HTML</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) XML</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) JSON</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans la bibliothèque `requests` de Python, quelle fonction est utilisée pour transformer la réponse de l'API en dictionnaire ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `response.text()`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `response.content()`</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `response.json()`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `response.parse()`</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Que fait la ligne `response.raise_for_status()` dans un script Python ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Elle lève une exception si la requête a échoué (code 4xx ou 5xx).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Elle affiche le code de statut de la réponse.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Elle garantit que la réponse est au format JSON.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Elle ferme la connexion à l'API.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Clés d'API :</strong> La plupart des APIs demandent une "clé d'API" pour vous identifier. Pourquoi est-ce si courant et quel est l'intérêt pour le fournisseur de l'API ?</p>
+                    <p><strong>2. Limites de taux (Rate Limiting) :</strong> Les APIs ont souvent des "limites de taux" (ex: "pas plus de 60 requêtes par minute"). Pourquoi ces limites existent-elles et que se passe-t-il si vous les dépassez ?</p>
+                    <p><strong>3. API vs Web Scraping :</strong> Une autre façon de collecter des données sur le web est le "web scraping" (extraire l'information directement du HTML d'une page). Quels sont les avantages d'utiliser une API officielle par rapport au web scraping ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

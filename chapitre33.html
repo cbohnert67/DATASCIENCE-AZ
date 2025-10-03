@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 33: Docker pour la Data Science</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Dockerfile Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like FROM, RUN, COPY */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 33 : Docker pour la Data Science - "Mais ça marchait sur ma machine !"
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    "Mais, ça marchait sur ma machine !" C'est la phrase la plus redoutée en informatique, une source de frustration infinie quand un code qui fonctionne parfaitement chez vous plante chez un collègue ou sur un serveur. Ce problème, particulièrement critique en data science, vient souvent de différences d'environnement : une autre version de Python, une librairie manquante, une dépendance système incompatible... Docker est la solution ultime à ce problème. Il vous permet d'empaqueter votre code ET tout son environnement dans une boîte standardisée et isolée, un "conteneur", qui fonctionnera à l'identique partout. C'est la garantie de la reproductibilité.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'art d'empaqueter son environnement</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Machine Virtuelle (VM) vs. Conteneur</h3>
+                        <p class="mb-4 text-justify">
+                            Une <strong>Machine Virtuelle (VM)</strong> est un ordinateur complet émulé. Elle a son propre système d'exploitation (appelé "invité"), ce qui la rend lourde (plusieurs Go) et lente à démarrer (plusieurs minutes). C'est comme construire une <strong>maison entière</strong> (avec fondations, murs, toit) juste pour y installer une machine à café.
+                        </p>
+                        <p class="mb-4 text-justify">
+                            Un <strong>Conteneur Docker</strong> est beaucoup plus léger. Il partage le système d'exploitation de la machine hôte et n'empaquète que l'application et ses dépendances directes. C'est comme louer un <strong>appartement</strong> dans un immeuble existant : vous avez votre propre espace isolé et privé, mais vous partagez les infrastructures communes (le système d'exploitation de l'hôte). Il démarre en quelques secondes et ne pèse que quelques mégaoctets de plus que l'application elle-même.
+                        </p>
+                        <p class="mt-4 text-justify">Pour un data scientist, cela signifie que vous pouvez démarrer, tester et jeter des environnements en quelques secondes, au lieu de minutes, ce qui accélère énormément l'expérimentation.</p>
+                        [Image d'une comparaison visuelle entre Machine Virtuelle et Conteneur Docker]
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Image vs. Conteneur : La Recette et le Gâteau</h3>
+                        <p class="mb-4 text-justify">Cette distinction est fondamentale pour bien comprendre Docker.</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-cyan-300">Image Docker (La Recette)</h4>
+                                <p>C'est un fichier unique, un plan détaillé et immuable (en lecture seule) qui sert de modèle. Il est créé à partir d'un fichier spécial appelé <strong>Dockerfile</strong>. Pensez à l'image comme une pile de calques transparents : chaque instruction dans le `Dockerfile` (comme `COPY` ou `RUN`) ajoute un nouveau calque. C'est très efficace car Docker peut réutiliser les calques qui n'ont pas changé lors d'une nouvelle construction. Les images sont partagées via un registre comme <strong>Docker Hub</strong> (le "livre de recettes" communautaire).</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-cyan-300">Conteneur (Le Gâteau)</h4>
+                                <p>C'est ce que vous obtenez quand vous exécutez (`docker run`) une image. C'est un processus vivant, une instance de l'image. Il possède son propre système de fichiers isolé, ses propres processus et son propre réseau. Tout ce qui se passe à l'intérieur du conteneur y reste. Vous pouvez avoir plusieurs conteneurs (plusieurs gâteaux identiques) fonctionnant simultanément à partir de la même image (la même recette).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Construire son premier conteneur</h2>
+                 <p class="text-lg text-justify mb-6">Pour "dockeriser" notre application Flask, nous avons besoin de deux fichiers texte simples à la racine de notre projet.</p>
+                 <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Le fichier `requirements.txt` : La liste des courses</h3>
+                        <p class="mb-4 text-justify">C'est la liste de toutes les librairies Python externes dont notre projet a besoin. C'est la norme dans l'écosystème Python pour garantir que tout le monde utilise les mêmes versions des outils.</p>
+<pre><code>flask
+numpy
+scikit-learn
+gunicorn</code></pre>
+                        <p class="mt-4 italic text-gray-400"><strong>Pourquoi Gunicorn ?</strong> Le serveur web inclus avec Flask est excellent pour le développement, mais il n'est pas conçu pour gérer plusieurs utilisateurs en même temps. Gunicorn est un serveur de production robuste qui peut gérer de multiples requêtes simultanément.</p>
+                    </div>
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. Le `Dockerfile` : La recette de notre image</h3>
+                        <p class="mb-4 text-justify">Ce fichier est le plan de construction de notre image. Docker le lit ligne par ligne pour assembler l'environnement.</p>
+<pre><code><span class="code-comment"># Étape 1 : Choisir notre point de départ.</span>
+<span class="code-comment"># On ne part pas de zéro. On utilise une image officielle qui contient déjà Python 3.9.</span>
+<span class="code-comment"># La version "slim" est une version légère, optimisée pour la taille.</span>
+<span class="code-keyword">FROM</span> python:3.9-slim
+
+<span class="code-comment"># Étape 2 : Créer un dossier pour notre application à l'intérieur de l'image.</span>
+<span class="code-keyword">WORKDIR</span> /app
+
+<span class="code-comment"># Étape 3 : Copier la liste des courses. C'est une astuce d'optimisation.</span>
+<span class="code-comment"># Si ce fichier ne change pas, Docker n'exécutera pas l'étape suivante lors des prochains builds.</span>
+<span class="code-keyword">COPY</span> requirements.txt .
+
+<span class="code-comment"># Étape 4 : Installer les dépendances Python.</span>
+<span class="code-keyword">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="code-comment"># Étape 5 : Copier tout le reste de notre code (app.py, model.pkl, etc.).</span>
+<span class="code-keyword">COPY</span> . .
+
+<span class="code-comment"># Étape 6 : Indiquer que l'application à l'intérieur du conteneur écoutera sur le port 5000.</span>
+<span class="code-keyword">EXPOSE</span> 5000
+
+<span class="code-comment"># Étape 7 : Définir la commande à exécuter quand le conteneur démarre.</span>
+<span class="code-comment"># On lance Gunicorn pour qu'il serve notre application Flask.</span>
+<span class="code-comment"># "app:app" signifie : "Dans le fichier app.py, trouve l'objet Flask nommé app".</span>
+<span class="code-keyword">CMD</span> [<span class="code-string">"gunicorn"</span>, <span class="code-string">"--bind"</span>, <span class="code-string">"0.0.0.0:5000"</span>, <span class="code-string">"app:app"</span>]
+</code></pre>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">3. Construire l'image et lancer le conteneur</h3>
+                        <p class="mb-4 text-justify">Ces commandes sont à taper dans un terminal, à la racine de votre projet.</p>
+<pre><code><span class="code-comment"># Commande 1 : Construire l'image</span>
+<span class="code-comment"># `docker build` lit le Dockerfile.</span>
+<span class="code-comment"># `-t flask-api` donne un nom ("tag") simple à notre image.</span>
+<span class="code-comment"># `.` indique que le contexte (tous nos fichiers) se trouve dans le dossier actuel.</span>
+$ docker build -t flask-api .
+
+<span class="code-comment"># Commande 2 : Lancer le conteneur</span>
+<span class="code-comment"># `docker run` crée et démarre un conteneur à partir d'une image.</span>
+<span class="code-comment"># `-p 5000:5000` est crucial : il crée un pont. Le trafic arrivant sur le port 5000</span>
+<span class="code-comment"># de votre ordinateur sera redirigé vers le port 5000 à l'intérieur du conteneur.</span>
+$ docker run -p 5000:5000 flask-api
+</code></pre>
+                         <p class="mt-4 text-justify">À ce stade, votre API est en ligne, accessible sur `http://localhost:5000`, mais elle tourne dans un environnement parfaitement isolé et reproductible.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous !</h2>
+                <p class="text-lg text-justify mb-4">Il est temps de mettre en pratique la puissance de Docker.</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                    <ol class="list-decimal list-inside space-y-2">
+                        <li>Reprenez le projet de l'application Flask du chapitre 32 (`train.py`, `app.py`, `test_api.py`).</li>
+                        <li>Exécutez `train.py` pour générer le fichier `model.pkl`.</li>
+                        <li>Créez les fichiers `requirements.txt` et `Dockerfile` comme décrits ci-dessus.</li>
+                        <li>Construisez l'image Docker, lancez le conteneur.</li>
+                        <li>Prouvez que votre application fonctionne en utilisant `test_api.py` (depuis un autre terminal) pour interroger l'API qui tourne dans le conteneur.</li>
+                    </ol>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour la solution et l'interprétation</summary>
+                    <div class="mt-2 space-y-4">
+                        <p>Prérequis : Assurez-vous que les fichiers `app.py`, `model.pkl`, `requirements.txt` et `Dockerfile` sont dans le même dossier.</p>
+                        <div>
+                            <h4 class="font-semibold">Terminal 1 : Construire et Lancer</h4>
+<pre><code><span class="code-comment"># Construire l'image</span>
+$ docker build -t flask-api .
+
+<span class="code-comment"># Lancer le conteneur</span>
+$ docker run -p 5000:5000 flask-api
+</code></pre>
+                            <p>Vous devriez voir les logs de Gunicorn indiquant que le serveur est en écoute.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Terminal 2 : Tester</h4>
+<pre><code><span class="code-comment"># Exécuter le script de test du chapitre précédent</span>
+$ python test_api.py
+</code></pre>
+                            <p>Le script devrait afficher la même prédiction que lorsque vous faisiez tourner Flask directement : `Prédiction de l'API : 0`.</p>
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quelle est la principale différence entre une Machine Virtuelle (VM) et un conteneur Docker ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une VM est plus légère qu'un conteneur.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Un conteneur partage le système d'exploitation de l'hôte, une VM non.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Seules les VM peuvent faire tourner des applications Python.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Docker est un type de Machine Virtuelle.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Dans l'analogie de la cuisine, qu'est-ce qu'une "Image Docker" ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le gâteau final prêt à être mangé.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le cuisinier.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La recette pour préparer le gâteau.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le four.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Quelle commande du `Dockerfile` est utilisée pour installer les librairies listées dans `requirements.txt` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `COPY requirements.txt .`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `CMD ["pip", "install", "-r", "requirements.txt"]`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `FROM python:3.9-slim`</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `RUN pip install -r requirements.txt`</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Que fait la commande `docker run -p 8080:5000 my-api` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Elle lance deux conteneurs sur les ports 8080 et 5000.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Elle lie le port 8080 de la machine hôte au port 5000 du conteneur.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Elle construit une image nommée `my-api`.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Elle expose les ports 8080 et 5000 du conteneur.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Quel est le principal problème que Docker cherche à résoudre pour un data scientist ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le problème de la reproductibilité ("ça marchait sur ma machine").</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La lenteur de l'entraînement des modèles.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le manque de données pour un projet.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La difficulté à écrire du code Python.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Au-delà des librairies Python :</strong> Docker garantit que l'environnement est identique. Pourquoi est-ce plus fiable que de simplement partager un fichier `requirements.txt` avec un collègue ? (Pensez aux dépendances qui ne sont PAS des librairies Python, comme des outils système ou des versions spécifiques de logiciels).</p>
+                    <p><strong>2. La sécurité des images :</strong> Notre `Dockerfile` commence par `FROM python:3.9-slim`. Cela signifie que nous faisons confiance à l'image officielle de Python. Quelles pourraient être les implications en termes de sécurité si nous utilisions une image de base provenant d'une source inconnue sur Docker Hub ?</p>
+                    <p><strong>3. Gestion des données :</strong> Il est déconseillé d'inclure de gros fichiers de données dans une image Docker. Comment pourriez-vous faire pour que votre conteneur accède à un grand fichier de données qui se trouve sur votre machine, sans le copier dans l'image ? (Indice : recherchez les "volumes" Docker).</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

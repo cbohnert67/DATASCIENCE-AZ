@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 7: Les Probabilités pour la Data Science</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour le rendu des formules LaTeX -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 7. Les Probabilités pour la Data Science - Plus qu'un simple jeu de dés !
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Le Machine Learning ne prédit que très rarement des certitudes absolues. Un modèle ne vous dira pas "ce client va résilier à 100%", mais plutôt "il y a 85% de chances que ce client résilie". L'incertitude est au cœur de la data science, et les probabilités sont le langage que nous utilisons pour la mesurer, la comprendre et l'utiliser à notre avantage. Comprendre ce langage est donc la première étape pour maîtriser l'IA et interpréter correctement ses résultats. C'est l'art de quantifier le doute, de raisonner face à l'inconnu et de prendre des décisions éclairées à partir d'informations incomplètes.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le langage de l'incertitude</h2>
+                <p class="text-lg text-justify mb-6">
+                    Avant de plonger dans les calculs, posons quelques bases. Toute expérience aléatoire se déroule dans un <strong>univers</strong> (ou espace échantillonnal, noté \(\Omega\)), qui est l'ensemble de tous les résultats possibles. Pour un lancer de dé, l'univers est \(\Omega = \{1, 2, 3, 4, 5, 6\}\). Un <strong>événement</strong> (noté A, B, etc.) est un sous-ensemble de cet univers, par exemple "obtenir un nombre pair", ce qui correspond à l'événement \(A = \{2, 4, 6\}\).
+                </p>
+                
+                <h3 class="text-2xl font-bold text-blue-400 mb-3">Qu'est-ce qu'une probabilité ?</h3>
+                <p class="text-lg text-justify mb-6">
+                    Une probabilité est un nombre entre 0 (événement impossible) et 1 (événement certain) qui mesure la chance qu'un événement se produise. Dans le cas simple où chaque résultat de l'univers a la même chance de se produire (comme un dé équilibré), la formule est :
+                </p>
+                <p class="text-center my-4 text-xl bg-gray-800 p-4 rounded-lg">
+                    \[ P(A) = \frac{\text{Nombre de cas favorables à A}}{\text{Nombre total de cas possibles}} = \frac{|A|}{|\Omega|} \]
+                </p>
+                <p class="text-lg text-justify mb-6">Pour notre événement "obtenir un nombre pair" (A), il y a 3 cas favorables (2, 4, 6) sur 6 cas possibles. Donc, \(P(A) = 3/6 = 0.5\).</p>
+
+
+                <div class="space-y-6 mt-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h4 class="text-xl font-bold text-white mb-2">L'approche fréquentiste</h4>
+                        <p class="mb-4 text-justify">Basée sur la Loi des Grands Nombres, cette approche définit la probabilité comme la fréquence observée sur le long terme. Si on répète une expérience un très grand nombre de fois, la fréquence d'un événement se rapprochera de sa vraie probabilité.</p>
+                        <p class="text-center my-4">\[ P(A) \approx \frac{\text{Nombre de fois où A s'est produit}}{\text{Nombre total de répétitions}} \] </p>
+                        <pre><code><span class="code-comment"># Simuler 10,000 lancers de pièce (0=pile, 1=face)</span>
+<span class="code-variable">lancers</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">random</span>.<span class="code-function">randint</span>(<span class="code-number">0</span>, <span class="code-number">2</span>, <span class="code-variable">size</span><span class="code-operator">=</span><span class="code-number">10000</span>)
+<span class="code-variable">prob_face</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">sum</span>(<span class="code-variable">lancers</span> <span class="code-operator">==</span> <span class="code-number">1</span>) <span class="code-operator">/</span> <span class="code-number">10000</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"Fréquence de 'face' observée : {</span><span class="code-variable">prob_face</span><span class="code-string">:.4f}"</span>) <span class="code-comment"># Proche de 0.5</span></code></pre>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h4 class="text-xl font-bold text-white mb-2">L'approche bayésienne</h4>
+                        <p class="text-justify">Ici, une probabilité est une mesure de notre <strong>degré de croyance</strong> en une proposition. On part d'une croyance a priori (le "prior"), puis on l'observe avec de nouvelles données (la "preuve") pour obtenir une croyance a posteriori (le "posterior"). C'est une vision dynamique fondamentale pour comprendre comment un modèle "apprend" et ajuste ses certitudes au fur et à mesure qu'il voit des exemples.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Probabilité Conditionnelle et le Théorème de Bayes</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Probabilité Conditionnelle</h3>
+                        <p class="mb-4 text-justify">
+                           Les événements sont rarement isolés. La probabilité qu'il pleuve augmente s'il y a des nuages. C'est l'idée de la probabilité conditionnelle, notée \(P(A|B)\), qui se lit "la probabilité de A sachant B". Elle répond à la question : "sachant que l'événement B s'est déjà produit, quelle est la nouvelle probabilité de l'événement A ?". La formule est :
+                        </p>
+                        <p class="text-center my-4 text-xl">
+                            \[ P(A|B) = \frac{P(A \cap B)}{P(B)} \]
+                        </p>
+                        <p class="mb-4 text-justify">Où \(P(A \cap B)\) est la probabilité que A et B se produisent ensemble. Par exemple, avec un dé : quelle est la probabilité d'obtenir un "2" (événement A) sachant que le résultat est pair (événement B) ? \(P(A \cap B)\) est la probabilité d'obtenir "un 2 ET un nombre pair", ce qui est juste "obtenir un 2", donc \(1/6\). \(P(B)\) est la probabilité d'obtenir un nombre pair, soit \(3/6\). Donc, \(P(A|B) = (1/6) / (3/6) = 1/3\). L'information "le résultat est pair" a restreint notre univers de 6 à 3 possibilités, augmentant nos chances.</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le Théorème de Bayes</h3>
+                        <p class="mb-4 text-justify">Ce théorème, qui découle de la probabilité conditionnelle, est sans doute la formule la plus importante de la data science moderne. Il nous permet d'inverser les probabilités conditionnelles : si on connaît \(P(A|B)\), on peut trouver \(P(B|A)\). C'est le moteur de l'apprentissage bayésien.</p>
+                        <p class="text-center my-4 text-xl bg-gray-800/50 p-4 rounded-lg">
+                            \[ P(\text{Hypothèse}|\text{Preuve}) = \frac{P(\text{Preuve}|\text{Hypothèse}) \times P(\text{Hypothèse})}{P(\text{Preuve})} \]
+                        </p>
+                        <p class="mb-4 text-justify">Il nous permet de mettre à jour notre croyance en une hypothèse (\(P(\text{Hypothèse})\), le <em>prior</em>) après avoir observé une nouvelle preuve pour obtenir une croyance mise à jour (\(P(\text{Hypothèse}|\text{Preuve})\), le <em>posterior</em>).</p>
+                        <h4 class="text-lg font-bold text-white mt-6 mb-2">Exemple du test médical détaillé :</h4>
+                        <p>Imaginons un test pour une maladie qui touche 1% de la population. Le test est fiable à 99%.</p>
+                        <ul class="list-disc list-inside space-y-1 pl-4">
+                            <li>\(P(\text{Malade})\) = 0.01 (Prior)</li>
+                            <li>\(P(\text{Positif}|\text{Malade})\) = 0.99 (Vrai positif)</li>
+                            <li>\(P(\text{Positif}|\text{Sain})\) = 0.01 (Faux positif)</li>
+                        </ul>
+                        <p class="mt-4">On cherche \(P(\text{Malade}|\text{Positif})\). Avec le théorème de Bayes, on trouve que le résultat n'est que d'environ 50%. Ce résultat contre-intuitif s'explique par le grand nombre de personnes saines qui, même avec un faible taux de faux positifs, génèrent un nombre total de faux positifs comparable au nombre de vrais positifs.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Variables Aléatoires et Distributions</h2>
+                <p class="text-lg text-justify mb-6">
+                    Une <strong>variable aléatoire</strong> est une variable dont la valeur est le résultat numérique d'un phénomène aléatoire (ex: le résultat d'un lancer de dé). Ces variables suivent souvent des schémas reconnaissables, appelés <strong>distributions de probabilité</strong>. Voici les plus importantes :
+                </p>
+                <div class="space-y-8">
+                    <!-- Loi de Bernoulli -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">1. La Loi de Bernoulli</h3>
+                        <p class="mb-4">C'est la plus simple. Elle décrit une <strong>unique</strong> expérience avec seulement deux issues : succès (1) ou échec (0). Elle est définie par un seul paramètre \(p\), la probabilité de succès.</p>
+                        <p class="text-center my-4">\(P(X=k) = p^k (1-p)^{1-k}\) pour \(k \in \{0, 1\}\)</p>
+                        <pre><code><span class="code-comment"># Simuler un unique lancer de pièce truquée (70% de chance de faire face)</span>
+<span class="code-variable">p_face</span> <span class="code-operator">=</span> <span class="code-number">0.7</span>
+<span class="code-comment"># 1=face (succès), 0=pile (échec)</span>
+<span class="code-variable">resultat</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">random</span>.<span class="code-function">choice</span>([<span class="code-number">1</span>, <span class="code-number">0</span>], <span class="code-variable">p</span><span class="code-operator">=</span>[<span class="code-variable">p_face</span>, <span class="code-number">1</span><span class="code-operator">-</span><span class="code-variable">p_face</span>])
+<span class="code-builtin">print</span>(<span class="code-string">f"Résultat du lancer : {</span><span class="code-string">'Face'</span> <span class="code-keyword">if</span> <span class="code-variable">resultat</span> <span class="code-operator">==</span> <span class="code-number">1</span> <span class="code-keyword">else</span> <span class="code-string">'Pile'</span><span class="code-string">}"</span>)</code></pre>
+                    </div>
+                    <!-- Loi Binomiale -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">2. La Loi Binomiale</h3>
+                        <p class="mb-4">Elle étend la loi de Bernoulli. Elle décrit le nombre de succès \(k\) après avoir répété \(n\) fois une expérience de Bernoulli de manière indépendante. Elle est définie par deux paramètres : \(n\) (le nombre d'essais) et \(p\) (la probabilité de succès de chaque essai).</p>
+                        <p class="text-center my-4">\(P(X=k) = \binom{n}{k} p^k (1-p)^{n-k}\)</p>
+                        <pre><code><span class="code-comment"># Simuler le nombre de "face" obtenus sur 10 lancers (pièce équilibrée)</span>
+<span class="code-variable">n_lancers</span> <span class="code-operator">=</span> <span class="code-number">10</span>
+<span class="code-variable">p_face</span> <span class="code-operator">=</span> <span class="code-number">0.5</span>
+<span class="code-variable">nombre_de_faces</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">random</span>.<span class="code-function">binomial</span>(<span class="code-variable">n_lancers</span>, <span class="code-variable">p_face</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Sur {</span><span class="code-variable">n_lancers</span><span class="code-string">} lancers, on a obtenu {</span><span class="code-variable">nombre_de_faces</span><span class="code-string">} faces."</span>)</code></pre>
+                    </div>
+                    <!-- Loi Normale -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">3. La Loi Normale (ou Courbe de Gauss)</h3>
+                        <p class="mb-4">C'est la reine des distributions pour les variables continues. De très nombreux phénomènes naturels (taille, poids, erreurs de mesure...) suivent cette fameuse courbe en cloche. Elle est définie par sa moyenne \(\mu\) (le centre de la cloche) et son écart-type \(\sigma\) (la largeur de la cloche).</p>
+                        <p class="text-center my-4">\[ f(x | \mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \]</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>
+<span class="code-comment"># Générer 1000 points suivant une loi normale (moyenne=0, écart-type=1)</span>
+<span class="code-variable">donnees_normales</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">random</span>.<span class="code-function">randn</span>(<span class="code-number">1000</span>)
+<span class="code-variable">sns</span>.<span class="code-function">histplot</span>(<span class="code-variable">donnees_normales</span>, <span class="code-variable">kde</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"Distribution Normale Standard"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                         <p class="text-center my-2">[Image d'une courbe de Gauss en cloche]</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Le Problème de Monty Hall</h2>
+                <p class="text-lg text-justify mb-4">
+                    Face à 3 portes (une voiture, deux chèvres), vous en choisissez une. L'animateur ouvre une autre porte avec une chèvre. Devez-vous changer votre choix ? Écrivez un script Python pour simuler 10 000 parties et le découvrir !
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la conclusion de la simulation</summary>
+                    <p class="mt-4">
+                        La simulation montre sans ambiguïté qu'en changeant de porte, on gagne environ 66.7% du temps (\(2/3\)), alors qu'en gardant son choix, on ne gagne qu'environ 33.3% du temps (\(1/3\)). Changer double vos chances de gagner !
+                    </p>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Laquelle de ces approches définit la probabilité comme un "degré de croyance" mis à jour par de nouvelles preuves ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) L'approche fréquentiste</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) L'approche bayésienne</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La Loi des Grands Nombres</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La Loi Normale</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Que représente \(P(A|B)\) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La probabilité que A et B se produisent.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La probabilité que A ou B se produise.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La probabilité que A se produise sachant que B s'est produit.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La probabilité que B se produise sachant que A s'est produit.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Quelle distribution est la plus appropriée pour modéliser le nombre de "succès" dans une série de N essais indépendants avec deux résultats possibles ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La Loi de Bernoulli</button>
+                             <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La Loi Binomiale</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La Loi Normale</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le Théorème de Bayes</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans l'exemple du test médical, pourquoi la probabilité d'être malade après un test positif est-elle bien plus basse que 99% ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le test n'est pas fiable.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À cause du grand nombre de personnes saines qui génèrent des faux positifs.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La maladie est très répandue.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le calcul avec le théorème de Bayes est incorrect.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Dans le problème de Monty Hall, que démontre la simulation ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Il est toujours préférable de garder son choix initial.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Changer ou garder son choix ne change rien aux chances de gagner (50/50).</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Changer de porte double les chances de gagner.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le jeu est truqué par l'animateur.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le paradoxe des anniversaires :</strong> Dans un groupe de 23 personnes, la probabilité que deux d'entre elles partagent le même anniversaire est de plus de 50%. Pourquoi ce résultat est-il si contre-intuitif ? Comment pourriez-vous le vérifier avec une simulation Python ?</p>
+                    <p><strong>2. Spam ou pas spam ?</strong> Votre filtre anti-spam utilise le théorème de Bayes. Si un email contient le mot "gratuit", le filtre met à jour sa "croyance" que cet email est un spam. Quelles sont les probabilités \(P(\text{Spam}|\text{"gratuit"})\), \(P(\text{"gratuit"}|\text{Spam})\), et \(P(\text{Spam})\) dans ce contexte ?</p>
+                    <p><strong>3. Loi Normale partout ?</strong> La Loi Normale est très puissante, mais peut-elle tout modéliser ? Donnez un exemple de phénomène du monde réel qui ne suivrait probablement PAS une distribution normale, et expliquez pourquoi.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

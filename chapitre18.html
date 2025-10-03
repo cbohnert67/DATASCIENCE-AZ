@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 18: Les Arbres de Décision</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour les formules mathématiques -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E2D3B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 18. Les Arbres de Décision - Le Machine Learning pour tous
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Vous souvenez-vous du jeu "Qui est-ce ?" ? Vous posez une série de questions "oui/non" pour deviner le personnage de votre adversaire : "Votre personnage a-t-il des lunettes ?", "Est-ce un homme ?", "Porte-t-il un chapeau ?". Chaque question réduit le champ des possibilités jusqu'à ce qu'il n'en reste plus qu'une. Un arbre de décision fait exactement la même chose avec les données. C'est un modèle si visuel que vous pourriez le dessiner et l'expliquer à votre grand-mère. C'est l'antithèse de la "boîte noire" : ici, chaque décision est transparente.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'art de poser les bonnes questions</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">
+                        Comment l'arbre choisit-il la meilleure question à poser à chaque étape ? Il ne le fait pas au hasard. Il cherche la question la plus efficace, celle qui sépare le mieux les données en groupes les plus <strong>homogènes</strong> possible.
+                    </p>
+                    <p class="text-justify">
+                        Imaginez que vous avez un panier de 10 fruits : 6 pommes et 4 bananes. Ce groupe est "impur" car il contient deux classes différentes. Une bonne question serait "Le fruit est-il jaune ?". La réponse "oui" pourrait vous donner un groupe de 4 bananes et 1 pomme, et la réponse "non" un groupe de 5 pommes et 0 banane. Vous avez créé des groupes bien plus "purs" qu'au départ. Mais comment mesurer cela précisément ?
+                    </p>
+                    
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Mesurer le désordre : L'Impureté de Gini</h3>
+                        <p class="text-justify mb-4">L'Impureté de Gini est une métrique qui mesure la probabilité de se tromper en classifiant un élément au hasard d'un groupe, si on le classifiait en se basant sur la distribution des classes dans ce groupe. Un score de Gini de 0 signifie une pureté parfaite (tous les éléments du groupe appartiennent à la même classe).</p>
+                        <div class="bg-gray-800/70 p-4 rounded-md text-center my-4">
+                            <p class="text-xl font-bold text-gray-200">$$ Gini = 1 - \sum_{i=1}^{C} (p_i)^2 $$</p>
+                            <p class="text-sm text-gray-400 italic mt-2">Où \(p_i\) est la probabilité de la classe \(i\) dans le groupe.</p>
+                        </div>
+                        <p class="text-justify"><strong>Exemple avec notre panier de fruits :</strong></p>
+                        <ul class="list-disc list-inside space-y-2 pl-4 mt-2">
+                            <li><strong>Avant la question (nœud parent) :</strong> 6 pommes (60%), 4 bananes (40%).
+                                <br>Impureté Gini = \(1 - (0.6^2 + 0.4^2) = 1 - (0.36 + 0.16) = 0.48\)</li>
+                            <li><strong>Après la question "non" (enfant 1) :</strong> 5 pommes (100%), 0 banane (0%).
+                                <br>Impureté Gini = \(1 - (1^2 + 0^2) = 0\). Ce nœud est pur !</li>
+                            <li><strong>Après la question "oui" (enfant 2) :</strong> 1 pomme (20%), 4 bananes (80%).
+                                <br>Impureté Gini = \(1 - (0.2^2 + 0.8^2) = 1 - (0.04 + 0.64) = 0.32\)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                         <h3 class="font-bold text-xl text-blue-300 mb-3">Maximiser le Gain d'Information</h3>
+                         <p class="text-justify mb-4">L'arbre ne choisit pas une question pour sa beauté, mais pour sa capacité à <strong>réduire l'impureté</strong>. Cette réduction est appelée le Gain d'Information (ou Gini Gain). L'algorithme calcule l'impureté pondérée des enfants et la soustrait de l'impureté du parent. Il choisira la question qui donne le plus grand gain.</p>
+                         <p class="text-justify">
+                         L'algorithme va donc tester toutes les questions possibles ("Le fruit pèse-t-il plus de 150g ?", "Sa largeur est-elle inférieure à 8cm ?", etc.) et choisir celle qui maximise ce gain. Il répète ce processus à chaque nouvelle branche, en choisissant toujours la meilleure option localement, d'où le terme d'approche "gourmande" (greedy).
+                         </p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Avantages et Inconvénients : Le Bilan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-green-500/10 p-6 rounded-lg border border-green-500/30 space-y-4">
+                        <h3 class="text-2xl font-bold text-green-400 mb-3">Avantages 👍</h3>
+                        <div>
+                            <h4 class="font-bold text-lg text-white">Interprétabilité totale (Boîte Blanche)</h4>
+                            <p class="text-sm text-justify">Contrairement à un réseau de neurones, vous pouvez visualiser l'arbre et suivre chaque décision. C'est idéal pour expliquer les prédictions à un non-expert ou pour des domaines où la justification est cruciale (médecine, finance).</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-white">Aucune préparation de données</h4>
+                            <p class="text-sm text-justify">Pas besoin de centrer-réduire (scaler) vos données. L'arbre fonctionne avec des seuils (ex: `Age > 30`), donc l'échelle des variables n'a pas d'importance.</p>
+                        </div>
+                         <div>
+                            <h4 class="font-bold text-lg text-white">Capture les relations non-linéaires</h4>
+                            <p class="text-sm text-justify">Un modèle linéaire aurait du mal avec une règle comme "si l'âge est inférieur à 10 ou supérieur à 65". Un arbre peut facilement créer deux branches distinctes pour capturer cette relation complexe.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-white">Polyvalence</h4>
+                            <p class="text-sm text-justify">Il fonctionne nativement pour la classification (prédire la classe majoritaire de la feuille finale) et la régression (prédire la moyenne des valeurs de la feuille finale).</p>
+                        </div>
+                    </div>
+                    <div class="bg-red-500/10 p-6 rounded-lg border border-red-500/30 space-y-4">
+                        <h3 class="text-2xl font-bold text-red-400 mb-3">Inconvénients 👎</h3>
+                        <div>
+                            <h4 class="font-bold text-lg text-white">Tendance à l'overfitting</h4>
+                            <p class="text-sm text-justify">Sans contraintes (comme `max_depth`), un arbre continuera de se diviser jusqu'à ce que chaque feuille soit pure. Il apprendra le bruit par cœur et ne généralisera pas bien (haute variance).</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-white">Instabilité</h4>
+                            <p class="text-sm text-justify">Un petit changement dans les données d'entraînement (ajouter ou enlever quelques points) peut entraîner la construction d'un arbre complètement différent. Ce manque de robustesse est un vrai problème.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-white">Biais envers les classes majoritaires</h4>
+                            <p class="text-sm text-justify">Si une classe est beaucoup plus fréquente, l'arbre sera incité à la prédire plus souvent car cela réduit rapidement l'impureté globale. Il faut souvent utiliser des techniques de rééquilibrage.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg text-white">Frontières en "escalier"</h4>
+                            <p class="text-sm text-justify">Les questions de l'arbre sont toujours perpendiculaires aux axes des features. Il ne peut pas créer de frontières de décision diagonales, ce qui peut être très inefficace pour séparer certains types de données.
+                            <br>[Image d'une frontière de décision en escalier vs diagonale]
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Visualiser les décisions avec le dataset Iris</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">Utilisons le célèbre jeu de données "Iris" pour entraîner un arbre. Ce dataset contient des mesures (longueur/largeur des pétales et sépales) pour trois espèces de fleurs d'iris (Setosa, Versicolor, Virginica). Le but est de prédire l'espèce à partir des mesures.</p>
+                    
+                    <div>
+                        <h3 class="font-bold text-xl text-blue-300 mb-3">Le Code, Étape par Étape</h3>
+                        <p class="mb-4">Voici comment nous allons construire et visualiser notre arbre avec Scikit-Learn.</p>
+                        <pre><code><span class="code-comment"># Imports nécessaires</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.datasets</span> <span class="code-keyword">import</span> <span class="code-variable">load_iris</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.tree</span> <span class="code-keyword">import</span> <span class="code-variable">DecisionTreeClassifier, plot_tree</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split</span>
+
+<span class="code-comment"># 1. Charger les données</span>
+<span class="code-variable">iris</span> <span class="code-operator">=</span> <span class="code-function">load_iris</span>()
+<span class="code-variable">X</span>, <span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">iris</span>.<span class="code-variable">data</span>, <span class="code-variable">iris</span>.<span class="code-variable">target</span>
+
+<span class="code-comment"># 2. Séparer en ensembles d'entraînement et de test</span>
+<span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+
+<span class="code-comment"># 3. Créer et entraîner le modèle</span>
+<span class="code-variable">tree_clf</span> <span class="code-operator">=</span> <span class="code-function">DecisionTreeClassifier</span>(<span class="code-variable">max_depth</span><span class="code-operator">=</span><span class="code-number">3</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+<span class="code-variable">tree_clf</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+
+<span class="code-comment"># 4. Visualiser l'arbre</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">20</span>, <span class="code-number">10</span>))
+<span class="code-function">plot_tree</span>(<span class="code-variable">tree_clf</span>, <span class="code-variable">feature_names</span><span class="code-operator">=</span><span class="code-variable">iris</span>.<span class="code-variable">feature_names</span>, <span class="code-variable">class_names</span><span class="code-operator">=</span><span class="code-variable">iris</span>.<span class="code-variable">target_names</span>, <span class="code-variable">filled</span><span class="code-operator">=</span><span class="code-keyword">True</span>, <span class="code-variable">rounded</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+
+<span class="code-comment"># 5. Évaluer le modèle</span>
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score du modèle sur les données de test : {tree_clf.score(X_test, y_test):.2%}"</span>)
+</code></pre>
+                    </div>
+                    
+                    <div class="my-6">
+                         [Image d'un arbre de décision visualisé pour le dataset Iris]
+                    </div>
+
+                    <div class="bg-gray-900/50 p-6 rounded-lg border border-cyan-500/50">
+                        <h3 class="font-bold text-xl text-cyan-300 mb-3">Interpréter l'Arbre : Suivons une Fleur !</h3>
+                        <p class="mb-4 text-justify">Imaginons une nouvelle fleur avec les caractéristiques suivantes : <strong>largeur de pétale = 1.5 cm</strong> et <strong>longueur de pétale = 4.5 cm</strong>. Voyons comment notre arbre la classifie :</p>
+                        <ol class="list-decimal list-inside space-y-3">
+                            <li><strong>Nœud Racine (tout en haut) :</strong> La première question est "largeur de pétale ≤ 0.8 cm ?". Notre fleur a 1.5 cm, donc la réponse est <strong>Faux</strong>. On suit la branche de droite.</li>
+                            <li><strong>Nœud Suivant :</strong> La nouvelle question est "largeur de pétale ≤ 1.75 cm ?". Notre fleur a 1.5 cm, donc la réponse est <strong>Vrai</strong>. On suit la branche de gauche.</li>
+                            <li><strong>Troisième Nœud :</strong> La question est "longueur de pétale ≤ 4.95 cm ?". Notre fleur a 4.5 cm, donc la réponse est <strong>Vrai</strong>. On suit la branche de gauche.</li>
+                            <li><strong>Feuille Finale :</strong> On arrive à un nœud terminal (une "feuille"). Le champ `class` indique `versicolor`. Le modèle a parlé ! Il prédit que notre fleur est une <strong>Iris versicolor</strong>.</li>
+                        </ol>
+                        <p class="mt-4 text-justify">Le score final de <strong>100%</strong> sur les données de test montre que, pour ce problème particulier et avec cette séparation des données, notre arbre simple a parfaitement réussi à généraliser et à classifier correctement toutes les fleurs qu'il n'avait jamais vues.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Challenge : Moins, c'est mieux ?</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-4">
+                    <p class="text-lg text-justify">Le dataset Iris a 4 "features". Que se passe-t-il si on en utilise moins ? Moins d'informations mène-t-il forcément à un moins bon modèle ?</p>
+                    <div>
+                        <h3 class="font-bold text-cyan-300">Votre mission :</h3>
+                        <ul class="list-decimal list-inside pl-4 mt-2 space-y-1">
+                            <li>Entraînez un nouvel arbre de décision en n'utilisant que deux features : `petal length (cm)` et `petal width (cm)`. Gardez `max_depth=3`.</li>
+                            <li>Visualisez ce nouvel arbre.</li>
+                            <li>Comparez son score de performance sur l'ensemble de test à celui de l'arbre complet.</li>
+                        </ul>
+                    </div>
+                    <details class="bg-gray-900/50 p-4 rounded-md cursor-pointer">
+                        <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                        <div class="mt-4">
+                            <pre><code><span class="code-comment"># 1. Entraîner un nouvel arbre avec seulement 2 features</span>
+<span class="code-comment"># X contient les 4 colonnes, on sélectionne les 2 dernières (indices 2 et 3)</span>
+<span class="code-variable">X_simple</span> <span class="code-operator">=</span> <span class="code-variable">iris</span>.<span class="code-variable">data</span>[:, <span class="code-number">2</span>:] 
+<span class="code-variable">y_simple</span> <span class="code-operator">=</span> <span class="code-variable">iris</span>.<span class="code-variable">target</span>
+<span class="code-variable">feature_names_simple</span> <span class="code-operator">=</span> <span class="code-variable">iris</span>.<span class="code-variable">feature_names</span>[<span class="code-number">2</span>:]
+
+<span class="code-variable">X_train_s</span>, <span class="code-variable">X_test_s</span>, <span class="code-variable">y_train_s</span>, <span class="code-variable">y_test_s</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X_simple</span>, <span class="code-variable">y_simple</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+
+<span class="code-variable">simple_tree_clf</span> <span class="code-operator">=</span> <span class="code-function">DecisionTreeClassifier</span>(<span class="code-variable">max_depth</span><span class="code-operator">=</span><span class="code-number">3</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+<span class="code-variable">simple_tree_clf</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train_s</span>, <span class="code-variable">y_train_s</span>)
+
+<span class="code-comment"># 2. Visualiser le nouvel arbre (code omis pour la concision)</span>
+
+<span class="code-comment"># 3. Comparer les performances</span>
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score de l'arbre simple (2 features) : {simple_tree_clf.score(X_test_s, y_test_s):.2%}"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score de l'arbre complet (4 features) : {tree_clf.score(X_test, y_test):.2%}"</span>)
+</code></pre>
+                            <div class="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-600">
+                                <h4 class="font-bold text-lg text-green-300">Interprétation :</h4>
+                                <p class="mt-2 text-justify">Intéressant ! Le score de l'arbre simple est de 100%, tout comme celui de l'arbre complet. Cela nous apprend une leçon cruciale : toutes les features ne sont pas égales. Parfois, un sous-ensemble de variables très informatives est suffisant pour obtenir d'excellentes performances, et ajouter plus de variables n'aide pas forcément (et peut même parfois augmenter le risque d'overfitting).</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est l'objectif principal d'un arbre de décision à chaque étape ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Poser une question au hasard.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Trouver la question qui rend les groupes résultants les plus purs possible.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Créer le plus de branches possible.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Utiliser toutes les variables disponibles dans chaque question.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Qu'indique un score d'impureté de Gini de 0.0 ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le groupe de données est parfaitement mélangé.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le modèle est en situation de surapprentissage.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le groupe de données ne contient qu'une seule classe (pureté parfaite).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le modèle n'est pas encore entraîné.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Lequel de ces énoncés est un inconvénient majeur des arbres de décision ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Ils sont difficiles à interpréter.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Ils sont très sujets à l'overfitting.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Ils ne peuvent pas gérer de données numériques.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Ils nécessitent une mise à l'échelle des données.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans la visualisation `plot_tree`, que représente le champ "value" dans un nœud ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La question posée par le nœud.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le score d'impureté de Gini.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le nombre total d'échantillons dans le nœud.</button>
+                             <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La répartition des échantillons entre les différentes classes.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Un arbre de décision peut-il être utilisé pour prédire le prix d'une maison ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Oui, il peut être utilisé pour des problèmes de régression.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Non, il ne fonctionne que pour la classification.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Seulement si le prix est une catégorie (ex: "cher", "pas cher").</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Non, car le prix est une valeur continue.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Stabilité :</strong> Si vous changiez légèrement les données d'entraînement (en enlevant ou ajoutant quelques fleurs), l'arbre de décision que nous avons construit changerait-il beaucoup ? Pourquoi est-ce un problème potentiel ?</p>
+                    <p><strong>2. Au-delà de Gini :</strong> L'impureté de Gini n'est pas la seule métrique. Une autre, appelée "entropie", est souvent utilisée. En quoi le choix de la métrique d'impureté pourrait-il influencer la structure de l'arbre final ?</p>
+                    <p><strong>3. Les limites orthogonales :</strong> Les arbres de décision créent des frontières de décision "en escalier" (orthogonales aux axes). Pouvez-vous imaginer un type de données où cette approche serait très inefficace ? (Indice : pensez à des données qui sont séparées par une ligne diagonale).</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = "Bravo, c'est la bonne réponse !";
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

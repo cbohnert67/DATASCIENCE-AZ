@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 10: Seaborn pour la Visualisation Statistique</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour le rendu des formules LaTeX -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 10. Seaborn - Des graphiques statistiques magnifiques en une seule ligne de code
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Dans le chapitre précédent, nous avons appris à construire des graphiques avec Matplotlib, le moteur de la visualisation en Python. Si Matplotlib est le moteur — puissant, flexible et vous donnant un contrôle total —, alors Seaborn est le tableau de bord, beau, convivial et intelligent. Seaborn est une bibliothèque qui s'appuie sur Matplotlib pour nous permettre de créer des graphiques statistiques époustouflants avec un minimum d'effort. Son objectif n'est pas de remplacer Matplotlib, mais de le compléter en simplifiant la création de visualisations complexes et esthétiques, souvent en une seule ligne de code.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Pourquoi utiliser Seaborn ?</h2>
+                <p class="text-lg text-justify mb-6">
+                    Seaborn n'est pas un simple "relooking" de Matplotlib. Il apporte une véritable intelligence statistique à vos visualisations.
+                </p>
+                <ul class="list-disc list-inside space-y-3 text-lg text-justify">
+                    <li><strong>Fonctions de plus haut niveau :</strong> Seaborn propose des fonctions dédiées à des types de graphiques spécifiques (boîtes à moustaches, cartes de chaleur, etc.). Vous lui demandez de "montrer la distribution de cette variable", et il s'occupe de la construction.</li>
+                    <li><strong>Esthétique par défaut supérieure :</strong> Seaborn applique automatiquement un style plus moderne et plus lisible, avec des palettes de couleurs intelligentes.</li>
+                    <li><strong>Intégration parfaite avec les DataFrames Pandas :</strong> C'est le super-pouvoir de Seaborn. Il est conçu pour fonctionner directement avec les DataFrames, vous permettant de spécifier les colonnes par leur nom.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Un tour d'horizon des graphiques Seaborn</h2>
+                <div class="space-y-8">
+                    <!-- Section 1 : Distributions -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">1. Visualiser les distributions</h3>
+                        <p class="mb-4">Comparer la distribution d'une variable numérique à travers différentes catégories est une tâche fondamentale. Seaborn excelle dans ce domaine.</p>
+                        
+                        <div>
+                            <h4 class="text-lg font-semibold text-blue-300">Boîte à moustaches (<code>boxplot</code>)</h4>
+                            <p class="mb-2">Idéale pour une vue compacte de la distribution, montrant la médiane, les quartiles et les valeurs aberrantes.</p>
+                             <p class="text-center my-2">[Image d'une boîte à moustaches annotée]</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <h4 class="text-lg font-semibold text-blue-300">Graphique en violon (<code>violinplot</code>)</h4>
+                            <p class="mb-2">C'est une boîte à moustaches améliorée. Il combine un boxplot avec une estimation de la densité de la distribution (Kernel Density Estimate) de chaque côté, montrant où les données sont les plus concentrées.</p>
+                             <p class="text-center my-2">[Image d'un graphique en violon]</p>
+                        </div>
+                        
+                        <pre class="mt-4"><code><span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">12</span>, <span class="code-number">7</span>))
+<span class="code-variable">sns</span>.<span class="code-function">violinplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-string">'Pclass'</span>, <span class="code-variable">y</span><span class="code-operator">=</span><span class="code-string">'Age'</span>, <span class="code-variable">data</span><span class="code-operator">=</span><span class="code-variable">df</span>, <span class="code-variable">palette</span><span class="code-operator">=</span><span class="code-string">'viridis'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"Distribution de l'âge par classe de passager"</span>, <span class="code-variable">fontsize</span><span class="code-operator">=</span><span class="code-number">16</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="mt-4"><strong>Analyse :</strong> Ce graphique montre que l'âge médian diminue avec la classe, mais aussi que la 1ère classe comptait de nombreux passagers d'âge moyen, tandis que la 3ème classe avait une forte concentration de jeunes adultes.</p>
+                    </div>
+
+                    <!-- Section 2 : Relations -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">2. Visualiser les relations</h3>
+                        
+                        <div class="mt-4">
+                            <h4 class="text-lg font-semibold text-blue-300">Carte de chaleur (<code>heatmap</code>)</h4>
+                            <p class="mb-2">Parfaite pour visualiser une matrice de données, où les valeurs sont représentées par des couleurs. On l'utilise très souvent pour afficher les <strong>matrices de corrélation</strong>, qui mesurent la force de la relation linéaire entre deux variables (de -1 à +1).</p>
+                             <pre><code><span class="code-comment"># Calculer la matrice de corrélation sur les colonnes numériques</span>
+<span class="code-variable">numeric_df</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[[<span class="code-string">'Survived'</span>, <span class="code-string">'Pclass'</span>, <span class="code-string">'Age'</span>, <span class="code-string">'SibSp'</span>, <span class="code-string">'Parch'</span>, <span class="code-string">'Fare'</span>]]
+<span class="code-variable">correlation_matrix</span> <span class="code-operator">=</span> <span class="code-variable">numeric_df</span>.<span class="code-function">corr</span>()
+
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">10</span>, <span class="code-number">8</span>))
+<span class="code-comment"># annot=True affiche les valeurs, cmap='coolwarm' est une palette intuitive</span>
+<span class="code-variable">sns</span>.<span class="code-function">heatmap</span>(<span class="code-variable">correlation_matrix</span>, <span class="code-variable">annot</span><span class="code-operator">=</span><span class="code-keyword">True</span>, <span class="code-variable">cmap</span><span class="code-operator">=</span><span class="code-string">'coolwarm'</span>, <span class="code-variable">fmt</span><span class="code-operator">=</span><span class="code-string">'.2f'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"Matrice de corrélation des variables du Titanic"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                             <p class="mt-4"><strong>Analyse :</strong> On voit immédiatement une corrélation négative forte entre <code>Pclass</code> et <code>Fare</code> (logique : classe inférieure = tarif bas), et une corrélation négative entre <code>Pclass</code> et <code>Survived</code>.</p>
+                        </div>
+                        
+                        <div class="mt-6">
+                             <h4 class="text-lg font-semibold text-blue-300">Graphique par paires (<code>pairplot</code>)</h4>
+                            <p class="mb-2">Un outil d'exploration incroyable. Il crée une grille de graphiques montrant la relation (via un nuage de points) entre chaque paire de variables, et la distribution de chaque variable sur la diagonale.</p>
+                             <pre><code><span class="code-comment"># Utiliser hue='Survived' pour colorer les points selon la survie</span>
+<span class="code-variable">sns</span>.<span class="code-function">pairplot</span>(<span class="code-variable">df</span>[[<span class="code-string">'Survived'</span>, <span class="code-string">'Age'</span>, <span class="code-string">'Fare'</span>, <span class="code-string">'Pclass'</span>]], <span class="code-variable">hue</span><span class="code-operator">=</span><span class="code-string">'Survived'</span>, <span class="code-variable">palette</span><span class="code-operator">=</span><span class="code-string">'husl'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                            <p class="mt-4"><strong>Analyse :</strong> Ce seul graphique révèle des dizaines de relations. On voit sur l'histogramme de <code>Fare</code> que les survivants (orange) sont sur-représentés dans les tarifs élevés.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Analyse des pourboires</h2>
+                <p class="text-lg text-justify mb-4">
+                    Seaborn est livré avec des jeux de données pour s'entraîner. Votre mission : chargez le dataset "tips", puis créez un graphique en violon qui montre la distribution de l'addition totale ('total_bill') pour chaque jour de la semaine ('day'), en séparant les distributions par le sexe du client ('sex').
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution</summary>
+                    <pre class="mt-4"><code><span class="code-comment"># 1. Charger le jeu de données</span>
+<span class="code-variable">tips_df</span> <span class="code-operator">=</span> <span class="code-variable">sns</span>.<span class="code-function">load_dataset</span>(<span class="code-string">'tips'</span>)
+
+<span class="code-comment"># 2. Créer le graphique</span>
+<span class="code-variable">sns</span>.<span class="code-function">violinplot</span>(
+    <span class="code-variable">x</span><span class="code-operator">=</span><span class="code-string">'day'</span>,
+    <span class="code-variable">y</span><span class="code-operator">=</span><span class="code-string">'total_bill'</span>,
+    <span class="code-variable">hue</span><span class="code-operator">=</span><span class="code-string">'sex'</span>,
+    <span class="code-variable">data</span><span class="code-operator">=</span><span class="code-variable">tips_df</span>,
+    <span class="code-variable">split</span><span class="code-operator">=</span><span class="code-keyword">True</span> <span class="code-comment"># Joindre les violons</span>
+)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+</code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est le principal avantage de Seaborn par rapport à Matplotlib ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Il est plus rapide pour les calculs.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Il simplifie la création de graphiques statistiques complexes et esthétiques.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Il peut créer des graphiques 3D, contrairement à Matplotlib.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Il ne nécessite pas l'importation de Matplotlib.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Pour visualiser une matrice de corrélation, quel graphique Seaborn est le plus approprié ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) <code>pairplot</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) <code>violinplot</code></button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) <code>heatmap</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) <code>boxplot</code></button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. À quoi sert le paramètre <code>hue</code> dans de nombreuses fonctions Seaborn ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À changer la taille du graphique.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À modifier la police du titre.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À colorer les éléments du graphique en fonction d'une variable catégorielle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À ajouter des annotations sur le graphique.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Un graphique en violon (<code>violinplot</code>) combine une boîte à moustaches avec quelle autre information ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Une estimation de la densité de la distribution.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Un nuage de points.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Une ligne de régression.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Un diagramme à barres.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Quel est l'avantage principal d'un <code>pairplot</code> ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Il est très rapide à générer.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Il ne montre que les corrélations positives.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Il permet de visualiser rapidement les relations entre de nombreuses paires de variables et leurs distributions.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Il est spécialisé dans l'affichage des données temporelles.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Matplotlib + Seaborn :</strong> Puisque Seaborn est basé sur Matplotlib, vous pouvez utiliser les deux ensemble. Comment utiliseriez-vous des commandes Matplotlib (comme <code>plt.title()</code> ou <code>ax.set_xlabel()</code>) pour personnaliser un graphique généré avec une seule ligne de code Seaborn ?</p>
+                    <p><strong>2. Choisir la bonne palette :</strong> Le choix des couleurs n'est pas qu'esthétique, il peut guider l'interprétation. Cherchez les "palettes de couleurs Seaborn". Quand utiliseriez-vous une palette "séquentielle" (un dégradé d'une seule couleur) par opposition à une palette "divergente" (deux couleurs qui s'éloignent d'un point central) ?</p>
+                    <p><strong>3. Au-delà de l'exploration :</strong> La visualisation n'est pas seulement pour l'exploration initiale. Comment pourriez-vous utiliser des graphiques pour diagnostiquer la performance d'un modèle de machine learning (par exemple, en comparant les valeurs prédites aux valeurs réelles) ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 11: Nettoyage de Données</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 11. Votre Premier Projet de A à Z (Partie 1) - Trouver et Nettoyer les Données
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    La théorie, c'est bien, mais la data science est un sport qui se pratique. Après avoir exploré les concepts et les outils fondamentaux, il est temps de mettre les mains dans le cambouis avec un véritable projet de A à Z. Et pour cela, nous allons utiliser le défi le plus célèbre pour les débutants : prédire la survie sur le Titanic. Cette première étape n'est pas la plus glamour, mais elle est de loin la plus importante et représente souvent jusqu'à 80% du temps d'un projet. Bienvenue dans le monde du nettoyage de données.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le Workflow du Data Scientist</h2>
+                <p class="text-lg text-justify mb-6">
+                    Un projet de data science suit généralement un cycle de vie bien défini. Pensez-y comme à une enquête policière, où chaque étape nous rapproche de la résolution de l'énigme.
+                </p>
+                <div class="space-y-6">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">1. La Question (L'énigme)</h3>
+                        <p class="mb-4 text-justify">Tout commence par une question claire et un objectif mesurable. C'est l'étape la plus stratégique. Une question mal définie mène à un projet sans direction.</p>
+                        <p class="italic text-gray-400"><strong>Exemple Titanic :</strong> La question est un problème de classification binaire. "En se basant sur les caractéristiques d'un passager (âge, classe, sexe...), peut-on construire un modèle qui prédit s'il a survécu (1) ou non (0) ?"</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">2. La Collecte (Les indices)</h3>
+                        <p class="mb-4 text-justify">Cette phase consiste à rassembler les données nécessaires. Elles peuvent provenir de fichiers (CSV, Excel), de bases de données (SQL), d'APIs ou du web (scraping).</p>
+                        <p class="italic text-gray-400"><strong>Exemple Titanic :</strong> Les données nous sont fournies dans un simple fichier CSV, ce qui simplifie grandement cette étape.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)</code></pre>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">3. Le Nettoyage (L'analyse forensique)</h3>
+                        <p class="mb-4 text-justify">C'est notre focus aujourd'hui. On s'assure que les indices sont fiables : gestion des valeurs manquantes, correction des types de données, traitement des doublons et des outliers.</p>
+                        <p class="italic text-gray-400"><strong>Exemple Titanic :</strong> On a vu que les colonnes 'Age' et 'Cabin' ont des valeurs manquantes. Une action est nécessaire.</p>
+                        <pre><code><span class="code-comment"># Identifier les valeurs manquantes</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">isnull</span>().<span class="code-function">sum</span>())</code></pre>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">4. L'Exploration (L'interrogatoire)</h3>
+                        <p class="mb-4 text-justify">C'est l'Analyse Exploratoire des Données (EDA). On utilise des statistiques descriptives et des visualisations pour "interroger" les données, découvrir des tendances, des corrélations et formuler des hypothèses.</p>
+                        <p class="italic text-gray-400"><strong>Exemple Titanic :</strong> On pourrait visualiser le taux de survie par sexe pour voir si les femmes ont eu plus de chances de survivre.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>
+<span class="code-variable">sns</span>.<span class="code-function">countplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-string">'Survived'</span>, <span class="code-variable">hue</span><span class="code-operator">=</span><span class="code-string">'Sex'</span>, <span class="code-variable">data</span><span class="code-operator">=</span><span class="code-variable">df</span>)</code></pre>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">5. La Modélisation (La reconstitution)</h3>
+                        <p class="mb-4 text-justify">C'est ici qu'on choisit, entraîne et évalue un ou plusieurs modèles de machine learning. Cela implique de séparer les données en un ensemble d'entraînement et un ensemble de test pour évaluer la performance du modèle sur des données qu'il n'a jamais vues.</p>
+                        <p class="italic text-gray-400"><strong>Exemple Titanic :</strong> On pourrait entraîner un modèle de Régression Logistique ou de Forêt Aléatoire pour prédire la colonne 'Survived'.</p>
+                         <pre><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split</span>
+<span class="code-comment"># X contient les features (Age, Pclass, ...), y est la cible (Survived)</span>
+<span class="code-comment"># X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)</span></code></pre>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">6. La Communication (Le rapport final)</h3>
+                        <p class="mb-4 text-justify">Un projet n'est terminé que lorsque ses conclusions sont partagées. Cela peut prendre la forme d'un rapport, d'un tableau de bord interactif ou d'une présentation qui résume les découvertes de manière claire et actionnable pour un public technique ou non.</p>
+                        <p class="italic text-gray-400"><strong>Exemple Titanic :</strong> Créer un graphique à barres montrant l'importance de chaque caractéristique (sexe, classe, âge) dans la prédiction de la survie.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Pourquoi le nettoyage est-il si crucial ?</h2>
+                <p class="text-lg text-justify mb-6">
+                    Il existe un adage en informatique : "Garbage In, Garbage Out" (Déchets en entrée, déchets en sortie). Vous pouvez avoir le meilleur algorithme du monde, si vous le nourrissez avec des données de mauvaise qualité, ses prédictions seront au mieux inutiles, au pire dangereuses. Un modèle de diagnostic médical entraîné sur des données erronées pourrait poser un mauvais diagnostic ; un modèle financier pourrait causer des pertes colossales. Le nettoyage des données est la garantie que les analyses futures reposeront sur des fondations solides.
+                </p>
+                <h3 class="text-2xl font-bold text-blue-400 mb-4">Tâches courantes de nettoyage :</h3>
+                <div class="space-y-6">
+                    <!-- Gérer les valeurs manquantes -->
+                    <div class="bg-gray-800/50 p-4 rounded-lg">
+                        <h4 class="text-xl font-semibold">1. Gérer les valeurs manquantes</h4>
+                        <p class="mt-2 mb-4">Que faire quand des informations sont absentes (représentées par <code>NaN</code>) ?</p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Supprimer :</strong> Si peu de lignes sont concernées, on peut les supprimer. Si une colonne est presque vide, on la supprime.</li>
+                            <li><strong>Imputer :</strong> Remplacer les vides par une valeur logique. Pour les nombres, on utilise souvent la <strong>moyenne</strong> ou la <strong>médiane</strong> ; pour les catégories, la valeur la plus fréquente (le <strong>mode</strong>).</li>
+                        </ul>
+                        <pre class="mt-4"><code><span class="code-comment"># Supprimer toutes les lignes avec au moins une valeur manquante</span>
+<span class="code-variable">df_sans_nan</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">dropna</span>()
+
+<span class="code-comment"># Imputer l'âge avec la médiane (plus robuste aux outliers que la moyenne)</span>
+<span class="code-variable">median_age</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>()
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">median_age</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)</code></pre>
+                    </div>
+                    <!-- Corriger les types de données -->
+                    <div class="bg-gray-800/50 p-4 rounded-lg">
+                        <h4 class="text-xl font-semibold">2. Corriger les types de données</h4>
+                        <p class="mt-2 mb-4">Il est crucial de s'assurer que Pandas a bien interprété chaque colonne. On ne peut pas calculer la moyenne d'une colonne de prix si elle est de type <code>object</code> (texte).</p>
+                        <pre><code><span class="code-comment"># Imaginons une colonne 'Prix' mal formatée</span>
+<span class="code-variable">df_prix</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">DataFrame</span>({<span class="code-string">'Prix'</span>: [<span class="code-string">'1,250.50 €'</span>, <span class="code-string">'800.00 €'</span>]})
+<span class="code-builtin">print</span>(<span class="code-variable">df_prix</span>.<span class="code-variable">dtypes</span>) <span class="code-comment"># Affiche 'object'</span>
+
+<span class="code-comment"># Nettoyer et convertir en nombre</span>
+<span class="code-variable">df_prix</span>[<span class="code-string">'Prix_propre'</span>] <span class="code-operator">=</span> <span class="code-variable">df_prix</span>[<span class="code-string">'Prix'</span>].<span class="code-function">str</span>.<span class="code-function">replace</span>(<span class="code-string">' €'</span>, <span class="code-string">''</span>).<span class="code-function">str</span>.<span class="code-function">replace</span>(<span class="code-string">','</span>, <span class="code-string">''</span>).<span class="code-function">astype</span>(<span class="code-string">'float'</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df_prix</span>.<span class="code-variable">dtypes</span>) <span class="code-comment"># Affiche 'float64'</span></code></pre>
+                    </div>
+                    <!-- Gérer les outliers -->
+                    <div class="bg-gray-800/50 p-4 rounded-lg">
+                        <h4 class="text-xl font-semibold">3. Gérer les outliers (valeurs aberrantes)</h4>
+                        <p class="mt-2 mb-4">Un outlier est une valeur qui s'écarte de manière significative des autres observations. Une méthode courante pour les détecter est la règle de l'écart interquartile (IQR).</p>
+                        <p class="text-center my-4">\[ \text{IQR} = Q3 - Q1 \] </p>
+                        <p class="text-center my-4">Limite inférieure = \(Q1 - 1.5 \times \text{IQR}\) <br> Limite supérieure = \(Q3 + 1.5 \times \text{IQR}\)</p>
+                         <p>Toute valeur en dehors de ces limites est considérée comme un outlier potentiel.</p>
+                        <pre><code><span class="code-variable">Q1</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Fare'</span>].<span class="code-function">quantile</span>(<span class="code-number">0.25</span>)
+<span class="code-variable">Q3</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Fare'</span>].<span class="code-function">quantile</span>(<span class="code-number">0.75</span>)
+<span class="code-variable">IQR</span> <span class="code-operator">=</span> <span class="code-variable">Q3</span> <span class="code-operator">-</span> <span class="code-variable">Q1</span>
+<span class="code-variable">limite_sup</span> <span class="code-operator">=</span> <span class="code-variable">Q3</span> <span class="code-operator">+</span> <span class="code-number">1.5</span> <span class="code-operator">*</span> <span class="code-variable">IQR</span>
+
+<span class="code-comment"># Afficher les outliers</span>
+<span class="code-variable">outliers</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-variable">df</span>[<span class="code-string">'Fare'</span>] <span class="code-operator">></span> <span class="code-variable">limite_sup</span>]
+<span class="code-builtin">print</span>(<span class="code-string">f"Nombre d'outliers pour 'Fare': {</span><span class="code-function">len</span>(<span class="code-variable">outliers</span>)<span class="code-string">}"</span>)</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le grand nettoyage du Titanic</h2>
+                <p class="text-lg text-justify mb-6">
+                    Mettons en pratique les tâches de nettoyage sur un vrai jeu de données. Notre objectif : rendre le dataset du Titanic propre et prêt pour l'analyse.
+                </p>
+                <div class="space-y-8">
+                    <!-- Étape 1 : Inspection -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">1. Inspection initiale : Trouver les problèmes</h3>
+                        <p class="mb-4">La première étape est toujours de charger les données et de faire un état des lieux. Les fonctions <code>.info()</code> et <code>.isnull().sum()</code> sont nos meilleures amies ici.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+
+<span class="code-comment"># Compte précis du nombre de valeurs manquantes par colonne</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">isnull</span>().<span class="code-function">sum</span>())</code></pre>
+                        <p class="mt-4"><strong>Analyse du résultat :</strong> La sortie nous indique que les colonnes <code>Age</code> (177 valeurs manquantes), <code>Cabin</code> (687 valeurs manquantes) et <code>Embarked</code> (2 valeurs manquantes) ont des problèmes.</p>
+                    </div>
+
+                    <!-- Étape 2 : Visualisation -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">2. Visualiser les données manquantes</h3>
+                        <p class="mb-4">Une carte de chaleur (heatmap) est un excellent moyen de visualiser la répartition des données manquantes dans tout le dataset. Les lignes jaunes représentent les données manquantes.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-variable">plt</span>.<span class="code-function">figure</span>(<span class="code-variable">figsize</span><span class="code-operator">=</span>(<span class="code-number">12</span>, <span class="code-number">7</span>))
+<span class="code-variable">sns</span>.<span class="code-function">heatmap</span>(<span class="code-variable">df</span>.<span class="code-function">isnull</span>(), <span class="code-variable">cbar</span><span class="code-operator">=</span><span class="code-keyword">False</span>, <span class="code-variable">cmap</span><span class="code-operator">=</span><span class="code-string">'viridis'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">"Visualisation des valeurs manquantes"</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="mt-4"><strong>Analyse :</strong> Le graphique confirme nos soupçons. Le grand vide jaune dans la colonne <code>Cabin</code> montre qu'elle est majoritairement vide. La colonne <code>Age</code> a un motif plus dispersé de valeurs manquantes. La colonne <code>Embarked</code> a si peu de manques qu'ils sont à peine visibles.</p>
+                    </div>
+
+                    <!-- Étape 3 : Stratégie de nettoyage -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">3. Stratégie de nettoyage, étape par étape</h3>
+                        <p class="mb-4">Basé sur notre analyse, nous pouvons maintenant agir.</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-lg font-semibold text-blue-300">a) Imputer l'Âge (<code>Age</code>) avec la médiane</h4>
+                                <p class="mb-2">L'âge est une information trop importante pour être supprimée. Nous allons remplacer les âges manquants par l'âge médian du dataset, car il est moins sensible aux âges extrêmes que la moyenne.</p>
+                                <pre><code><span class="code-variable">age_median</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>()
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">age_median</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Les âges manquants ont été remplacés par la médiane : {</span><span class="code-variable">age_median</span><span class="code-string">:.2f} ans."</span>)</code></pre>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-blue-300">b) Supprimer la colonne 'Cabin'</h4>
+                                <p class="mb-2">Avec plus de 77% de valeurs manquantes, il est plus sûr de supprimer cette colonne que de spéculer sur son contenu.</p>
+                                <pre><code><span class="code-comment"># axis=1 précise qu'on supprime une colonne, pas une ligne.</span>
+<span class="code-variable">df</span>.<span class="code-function">drop</span>(<span class="code-string">'Cabin'</span>, <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-builtin">print</span>(<span class="code-string">"La colonne 'Cabin' a été supprimée."</span>)</code></pre>
+                            </div>
+                             <div>
+                                <h4 class="text-lg font-semibold text-blue-300">c) Remplir 'Embarked' avec le mode</h4>
+                                <p class="mb-2">Il ne manque que deux valeurs. Pour une variable catégorielle, la meilleure stratégie est de la remplir avec la valeur la plus fréquente (le mode).</p>
+                                <pre><code><span class="code-comment"># .mode() renvoie une Série, on prend le premier élément [0]</span>
+<span class="code-variable">embarked_mode</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">mode</span>()[<span class="code-number">0</span>]
+<span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">fillna</span>(<span class="code-variable">embarked_mode</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Ports manquants remplacés par le mode : '{</span><span class="code-variable">embarked_mode</span><span class="code-string">}'."</span>)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Étape 4 : Vérification -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                         <h3 class="text-xl font-bold text-white mb-2">4. Vérification finale</h3>
+                        <p class="mb-4">Vérifions que notre travail a porté ses fruits. Il ne devrait plus y avoir de valeurs manquantes.</p>
+                        <pre><code><span class="code-builtin">print</span>(<span class="code-string">"\\nVérification finale des valeurs manquantes :"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">isnull</span>().<span class="code-function">sum</span>())</code></pre>
+                        <p class="mt-4"><strong>Mission accomplie !</strong> Notre jeu de données est maintenant propre et complet, prêt pour la prochaine étape : l'exploration.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Le "Feature Engineering"</h2>
+                <p class="text-lg text-justify mb-4">
+                    Parfois, le nettoyage se transforme en création de nouvelles informations. La colonne 'Name' contient des titres ('Mr.', 'Mrs.', etc.). Votre mission : créez une nouvelle colonne 'Title' en extrayant ces titres.
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution</summary>
+                    <pre class="mt-4"><code><span class="code-comment"># Créer la colonne 'Title' en extrayant le titre de 'Name'</span>
+<span class="code-variable">df</span>[<span class="code-string">'Title'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Name'</span>].<span class="code-function">str</span>.<span class="code-function">extract</span>(<span class="code-string">' ([A-Za-z]+)\\.'</span>, <span class="code-variable">expand</span><span class="code-operator">=</span><span class="code-keyword">False</span>)
+
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>[<span class="code-string">'Title'</span>].<span class="code-function">value_counts</span>())
+</code></pre>
+                    <p class="mt-4">Cette simple opération a transformé une colonne de noms en une source d'information structurée, très utile pour la modélisation !</p>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Selon l'adage "Garbage In, Garbage Out", que se passe-t-il si on entraîne un excellent algorithme sur des données de mauvaise qualité ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) L'algorithme corrigera automatiquement les données.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le modèle produit sera de mauvaise qualité.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) L'algorithme prendra plus de temps mais donnera un bon résultat.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le processus de nettoyage deviendra inutile.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Quelle est la meilleure stratégie pour gérer une colonne avec plus de 77% de valeurs manquantes, comme la colonne 'Cabin' ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Remplir les vides avec la moyenne.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Remplir les vides avec la médiane.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Supprimer la colonne.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Remplir les vides avec une valeur aléatoire.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Pourquoi utilise-t-on la médiane plutôt que la moyenne pour imputer les âges manquants dans le dataset du Titanic ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La médiane est plus facile à calculer.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La moyenne ne fonctionne que sur les entiers.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La médiane est plus robuste aux valeurs extrêmes (très jeunes ou très âgés).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La médiane est toujours un nombre entier.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Pour imputer les valeurs manquantes d'une colonne catégorielle comme 'Embarked', quelle est la méthode la plus appropriée ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Remplacer par le mode (la valeur la plus fréquente).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Remplacer par la moyenne.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Supprimer les lignes.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Remplacer par "Inconnu".</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. L'extraction des titres ('Mr.', 'Miss.', etc.) de la colonne 'Name' est un exemple de :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Imputation de données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Suppression de colonne.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Feature engineering (création de nouvelles variables).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Correction de type de données.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Imputation intelligente :</strong> Nous avons remplacé l'âge manquant par la médiane globale. Comment pourriez-vous rendre cette imputation plus précise ? (Indice : pensez à grouper les passagers avant de calculer la médiane).</p>
+                    <p><strong>2. Le cas des "outliers" :</strong> Le box plot de la colonne 'Fare' (tarif) montre de nombreuses valeurs extrêmes. Faut-il les supprimer ? Quelles pourraient être les conséquences (positives ou négatives) de la suppression de ces "outliers" sur notre futur modèle ?</p>
+                    <p><strong>3. Au-delà des titres :</strong> En plus du titre, quelles autres informations pourriez-vous extraire de la colonne 'Name' pour créer de nouvelles variables potentiellement utiles ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

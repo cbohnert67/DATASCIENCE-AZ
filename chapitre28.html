@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 28: SQL pour la Data Science</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for SQL Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like SELECT, FROM, JOIN */
+        .code-function { color: #DCDCAA; } /* Yellow for function names like SUM() */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-operator { color: #569CD6; } /* Blue for operators like = */
+        .code-variable { color: #9CDCFE; } /* Light blue for column/table names */
+        .code-datatype { color: #4EC9B0; } /* Teal for data types */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 28 : SQL pour la Data Science - Pourquoi vous ne pouvez pas l'ignorer
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Jusqu'à présent, nous avons principalement travaillé avec des fichiers CSV. C'est pratique pour apprendre, mais dans le monde réel, les données vivent rarement dans de simples fichiers. Le plus souvent, elles sont stockées, organisées et protégées dans des bases de données. Pour interroger ces bases de données, extraire les informations dont vous avez besoin et les préparer pour vos modèles, il n'y a qu'un seul langage universel : le SQL (Structured Query Language). L'ignorer, c'est se priver d'un accès direct à la source de vérité de l'entreprise. Maîtriser SQL, c'est avoir les clés du royaume des données.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le langage des bases de données</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Structure d'une base de données relationnelle</h3>
+                        <p class="mb-4 text-justify">Imaginez une base de données comme une collection de tableaux Excel très organisés et interconnectés. Chaque "tableau" est une <strong>table</strong>, et les connexions entre eux sont des <strong>relations</strong>.</p>
+                        
+                        <ul class="list-disc list-inside space-y-4">
+                           <li>
+                               <strong>Tables :</strong> Une table stocke des informations sur un sujet unique et bien défini. Par exemple, une table `Clients` ne contiendra que des informations sur les clients, et une table `Commandes` que des informations sur les commandes.
+                           </li>
+                           <li>
+                               <strong>Clé Primaire (Primary Key) :</strong> C'est le "numéro de sécurité sociale" d'une ligne. C'est une colonne (ou un groupe de colonnes) dont la valeur est <strong>unique</strong> pour chaque ligne de la table. Dans notre table `Clients`, `ClientID` est la clé primaire. Il ne peut pas y avoir deux clients avec le même `ClientID`.
+                           </li>
+                           <li>
+                               <strong>Clé Étrangère (Foreign Key) :</strong> C'est le "pont" entre deux tables. C'est une colonne dans une table qui contient une valeur correspondant à la clé primaire d'une autre table. Dans notre table `Commandes`, la colonne `ClientID` est une clé étrangère qui fait référence à la clé primaire `ClientID` de la table `Clients`. C'est ce qui nous permet de savoir <em>quel client</em> a passé <em>quelle commande</em>.
+                           </li>
+                        </ul>
+                        [Image d'un schéma de base de données relationnelle]
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Les commandes SQL fondamentales</h3>
+                        <p class="mb-4 text-justify">Une requête SQL se lit presque comme une phrase en anglais et est composée de "clauses" qui s'exécutent dans un ordre précis.</p>
+                        
+                        <div class="space-y-4">
+                            <p><strong><code>FROM Clients</code></strong> : D'abord, on spécifie la table sur laquelle on travaille.</p>
+                            <p><strong><code>WHERE Ville = 'Paris'</code></strong> : Ensuite, on applique des filtres pour ne garder que les lignes qui nous intéressent.</p>
+                            <p><strong><code>GROUP BY Ville</code></strong> : Puis, on peut regrouper les lignes restantes. Par exemple, toutes les lignes de 'Paris' ensemble, toutes celles de 'Lyon' ensemble.</p>
+                             <p><strong><code>SELECT Nom, COUNT(*)</code></strong> : C'est seulement maintenant qu'on choisit les colonnes à afficher et qu'on effectue les calculs sur les groupes (comme compter le nombre de clients par ville).</p>
+                            <p><strong><code>ORDER BY Nom DESC</code></strong> : Enfin, on trie le résultat final.</p>
+                        </div>
+
+                        <div class="mt-6 bg-gray-900/50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-lg text-cyan-300 mb-2">Exemple complet</h4>
+                            <p>Pour "Afficher le nombre de clients par ville, pour les villes de Paris et Lyon, trié par ordre alphabétique de la ville" :</p>
+<pre><code class="mt-2"><span class="code-keyword">SELECT</span> <span class="code-variable">Ville</span>, <span class="code-function">COUNT</span>(<span class="code-variable">ClientID</span>) <span class="code-keyword">AS</span> <span class="code-variable">NombreDeClients</span>
+<span class="code-keyword">FROM</span> <span class="code-variable">Clients</span>
+<span class="code-keyword">WHERE</span> <span class="code-variable">Ville</span> <span class="code-keyword">IN</span> (<span class="code-string">'Paris'</span>, <span class="code-string">'Lyon'</span>)
+<span class="code-keyword">GROUP BY</span> <span class="code-variable">Ville</span>
+<span class="code-keyword">ORDER BY</span> <span class="code-variable">Ville</span>;
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La véritable puissance de SQL : Les JOINs</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <p class="mb-4 text-justify">Isoler les tables, c'est bien, mais la vraie magie opère quand on les connecte. La clause `JOIN` est le cœur battant de SQL, vous permettant de tisser des liens entre vos données pour révéler des informations cachées.</p>
+                    
+                    <div class="space-y-8 mt-6">
+                        <div>
+                            <h4 class="text-xl font-bold text-blue-400 mb-2">INNER JOIN : Le Club des Correspondances</h4>
+                            <p class="mb-3 text-justify">Pensez à l'INNER JOIN comme à l'intersection de deux cercles. Il ne retourne que les lignes pour lesquelles il existe une correspondance <strong>dans les deux tables</strong>. Si un client n'a jamais commandé, il n'apparaîtra pas dans le résultat.</p>
+                            <p class="italic">Question : "Montre-moi les noms des clients et les montants de chaque commande qu'ils ont passée."</p>
+<pre><code class="mt-2"><span class="code-keyword">SELECT</span> <span class="code-variable">c.Nom</span>, <span class="code-variable">cmd.Montant</span>
+<span class="code-keyword">FROM</span> <span class="code-variable">Clients</span> <span class="code-keyword">AS</span> <span class="code-variable">c</span>
+<span class="code-keyword">INNER JOIN</span> <span class="code-variable">Commandes</span> <span class="code-keyword">AS</span> <span class="code-variable">cmd</span> <span class="code-keyword">ON</span> <span class="code-variable">c.ClientID</span> <span class="code-operator">=</span> <span class="code-variable">cmd.ClientID</span>;
+</code></pre>
+                            <p class="font-semibold mt-3">Résultat attendu :</p>
+                            <div class="bg-gray-900/50 p-3 rounded-md text-sm font-mono">
+                                Alice | 50.0<br>
+                                Bob   | 75.5<br>
+                                Alice | 25.0<br>
+                                Charlie | 120.0<br>
+                                Bob   | 30.0<br>
+                                <span class="code-comment">-- Remarquez que David est absent car il n'a aucune commande.</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xl font-bold text-blue-400 mb-2">LEFT JOIN : La Liste Complète, Enrichie</h4>
+                            <p class="mb-3 text-justify">Le LEFT JOIN est l'outil de l'explorateur. Il dit : "Prends <strong>toutes</strong> les lignes de la table de gauche (celle après `FROM`), et si tu trouves une correspondance dans la table de droite (celle après `LEFT JOIN`), ajoute ses informations. Sinon, indique simplement qu'il n'y a rien (`NULL`)."</p>
+                            <p class="italic">Question : "Montre-moi TOUS mes clients, et s'ils ont passé des commandes, montre-les aussi."</p>
+<pre><code class="mt-2"><span class="code-keyword">SELECT</span> <span class="code-variable">c.Nom</span>, <span class="code-variable">cmd.CommandeID</span>, <span class="code-variable">cmd.Montant</span>
+<span class="code-keyword">FROM</span> <span class="code-variable">Clients</span> <span class="code-keyword">AS</span> <span class="code-variable">c</span>
+<span class="code-keyword">LEFT JOIN</span> <span class="code-variable">Commandes</span> <span class="code-keyword">AS</span> <span class="code-variable">cmd</span> <span class="code-keyword">ON</span> <span class="code-variable">c.ClientID</span> <span class="code-operator">=</span> <span class="code-variable">cmd.ClientID</span>;
+</code></pre>
+                            <p class="font-semibold mt-3">Résultat attendu :</p>
+                            <div class="bg-gray-900/50 p-3 rounded-md text-sm font-mono">
+                                Alice   | 101   | 50.0<br>
+                                Alice   | 103   | 25.0<br>
+                                Bob     | 102   | 75.5<br>
+                                Bob     | 105   | 30.0<br>
+                                Charlie | 104   | 120.0<br>
+                                David   | NULL  | NULL<br>
+                                <span class="code-comment">-- David est inclus, avec NULL car il n'a pas de correspondance dans Commandes.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">SQL en action avec Python</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <p class="mb-4 text-justify">La beauté de l'écosystème Python est qu'il s'intègre parfaitement avec SQL. Nous allons utiliser la bibliothèque `sqlite3` pour créer une mini-base de données et `pandas` pour transformer le résultat de nos requêtes directement en DataFrames, prêts pour l'analyse.</p>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 1 : Connexion et Création</h4>
+                            <p class="mb-2">On établit la connexion à la base. `:memory:` crée une base temporaire qui n'existera que pendant l'exécution du script. Le `cursor` est notre "main" pour exécuter des commandes. On crée ensuite nos tables avec la commande SQL `CREATE TABLE`, en définissant les colonnes, leurs types (`INT`, `TEXT`, `REAL`) et les relations (`PRIMARY KEY`, `FOREIGN KEY`).</p>
+                            <pre><code><span class="code-keyword">import</span> <span class="code-variable">sqlite3</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-variable">conn</span> <span class="code-operator">=</span> <span class="code-variable">sqlite3</span>.<span class="code-function">connect</span>(<span class="code-string">':memory:'</span>)
+<span class="code-variable">cursor</span> <span class="code-operator">=</span> <span class="code-variable">conn</span>.<span class="code-function">cursor</span>()
+<span class="code-comment"># ... code de création des tables ...</span></code></pre>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 2 : Insertion et Validation</h4>
+                            <p class="mb-2">On peuple nos tables avec `INSERT INTO`. `conn.commit()` est crucial : il valide et enregistre de manière permanente toutes les modifications que nous avons faites.</p>
+                             <pre><code><span class="code-comment"># ... code d'insertion des données ...</span>
+<span class="code-variable">conn</span>.<span class="code-function">commit</span>()</code></pre>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 3 : Requêtes avec Pandas</h4>
+                            <p class="mb-2">C'est ici que la magie opère. La fonction `pd.read_sql_query()` prend une requête SQL et la connexion à la base de données en arguments, et retourne un DataFrame Pandas propre. C'est le pont parfait entre le monde des bases de données et celui de la data science.</p>
+                             <pre><code><span class="code-comment"># Exemple 1 : Simple filtre</span>
+<span class="code-variable">query1</span> <span class="code-operator">=</span> <span class="code-string">"SELECT * FROM Clients WHERE Ville = 'Paris'"</span>
+<span class="code-variable">df_paris</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_sql_query</span>(<span class="code-variable">query1</span>, <span class="code-variable">conn</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df_paris</span>)</code></pre>
+                        </div>
+                        <div>
+                             <h4 class="text-xl font-semibold text-blue-400 mb-2">Étape 4 : Nettoyage</h4>
+                             <p class="mb-2">Il est important de fermer la connexion à la fin pour libérer les ressources.</p>
+                             <pre><code><span class="code-variable">conn</span>.<span class="code-function">close</span>()</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous !</h2>
+                <p class="text-lg text-justify mb-4">Mettez vos nouvelles compétences SQL à l'épreuve.</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                    <p>À partir des deux tables que nous avons créées (`Clients` et `Commandes`), écrivez une seule requête SQL qui retourne le top 2 des clients ayant dépensé le plus, en affichant leur nom et le montant total de leurs dépenses, trié par ordre décroissant.</p>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour la solution</summary>
+                    <p class="mt-4">La requête combine `JOIN`, `GROUP BY`, `ORDER BY` et une nouvelle clause : `LIMIT`.</p>
+<pre class="mt-2"><code><span class="code-comment">-- Reconnexion à la base de données pour exécuter la requête</span>
+<span class="code-comment">-- ... (le code de création et d'insertion est supposé déjà exécuté) ...</span>
+<span class="code-variable">challenge_query</span> <span class="code-operator">=</span> <span class="code-string">"""
+SELECT
+    c.Nom,
+    SUM(cmd.Montant) AS TotalDepense
+FROM
+    Commandes cmd
+JOIN
+    Clients c ON cmd.ClientID = c.ClientID
+GROUP BY
+    c.Nom
+ORDER BY
+    TotalDepense DESC
+LIMIT 2
+"""</span>
+<span class="code-comment"># Le résultat affichera Charlie (120.0) et Bob (105.5)</span>
+</code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quelle commande SQL est utilisée pour spécifier les colonnes à afficher dans le résultat ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) FROM</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) WHERE</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) SELECT</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) JOIN</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Pour combiner les tables `Clients` et `Commandes`, sur quelle paire de colonnes la jointure (`JOIN`) doit-elle se faire ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `Commandes.CommandeID` et `Clients.Nom`</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `Commandes.ClientID` et `Clients.ClientID`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `Commandes.Montant` et `Clients.Ville`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Il n'est pas possible de les joindre.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Quelle clause permet de filtrer les lignes pour ne garder que les clients de la ville de 'Lyon' ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `GROUP BY Ville = 'Lyon'`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `SELECT Ville = 'Lyon'`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `ORDER BY Ville = 'Lyon'`</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `WHERE Ville = 'Lyon'`</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Si on veut calculer le montant total dépensé par chaque client, quelle combinaison de clauses est la plus appropriée ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) `SELECT` et `WHERE`</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) `SUM(Montant)` et `GROUP BY ClientID`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) `COUNT(Montant)` et `ORDER BY ClientID`</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) `LEFT JOIN` et `WHERE`</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Un `LEFT JOIN` de `Clients` vers `Commandes` affichera :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Uniquement les clients qui ont passé une commande.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Uniquement les commandes qui correspondent à un client.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Tous les clients, avec les détails de leurs commandes s'ils existent.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Uniquement les clients qui n'ont pas passé de commande.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le choix du JOIN :</strong> Pourquoi un `LEFT JOIN` est-il souvent plus utile pour une analyse exploratoire qu'un `INNER JOIN` ? (Pensez à ce que vous pourriez manquer si vous n'utilisiez que `INNER JOIN`).</p>
+                    <p><strong>2. Au-delà de `SUM()` :</strong> Outre `SUM()`, quelles autres fonctions d'agrégation (`COUNT()`, `AVG()`, `MIN()`, `MAX()`) pourraient être utiles pour analyser la table `Commandes` et quelles questions business permettraient-elles de répondre ?</p>
+                    <p><strong>3. SQL vs Pandas :</strong> Pour filtrer et agréger des données, on peut utiliser SQL ou Pandas. Selon vous, quels sont les avantages de faire ces opérations directement en SQL avant de charger les données dans un DataFrame Pandas ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

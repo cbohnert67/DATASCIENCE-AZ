@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 16: Évaluer son modèle</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour les formules mathématiques -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E2D3B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 16. Évaluer son modèle - Comment savoir si votre IA dit n'importe quoi ?
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Une exactitude (accuracy) de 99% est-elle toujours excellente ? Imaginez un test pour une maladie rare qui touche 1 personne sur 1000. Un modèle paresseux qui prédit systématiquement "non malade" aura une exactitude de 99.9%, mais il est complètement inutile pour détecter la maladie ! Cet exemple montre que l'exactitude seule peut être une métrique très trompeuse, surtout lorsque les classes sont déséquilibrées. Pour vraiment juger un modèle, nous avons besoin d'outils plus fins, d'un véritable tableau de bord.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Au-delà de l'exactitude : Le tableau de bord du Data Scientist</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La Matrice de Confusion : Notre tour de contrôle</h3>
+                        <p class="mb-4 text-justify">C'est l'outil fondamental pour comprendre les erreurs de votre modèle de classification. Plutôt qu'un simple pourcentage, elle nous donne une vue détaillée de ses succès et de ses échecs. Imaginons que sur notre ensemble de test du Titanic de 268 passagers, il y avait en réalité 111 survivants et 157 non-survivants. Après prédiction, notre modèle nous donne les résultats suivants :</p>
+                        
+                        <!-- Matrice de confusion visuelle -->
+                        <div class="my-6">
+                            <div class="flex justify-center">
+                                <div class="w-24"></div>
+                                <div class="w-48 text-center font-bold">Valeur Prédite par le Modèle</div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-24 h-32 flex items-center justify-center transform -rotate-90 font-bold">Valeur Réelle</div>
+                                <div class="flex-grow">
+                                    <div class="grid grid-cols-3">
+                                        <div class="p-2"></div>
+                                        <div class="p-2 border-b border-gray-600 text-center font-semibold text-cyan-300">Non-survivant (0)</div>
+                                        <div class="p-2 border-b border-gray-600 text-center font-semibold text-cyan-300">Survivant (1)</div>
+                                    </div>
+                                    <div class="grid grid-cols-3">
+                                        <div class="border-r border-gray-600 flex items-center justify-center font-semibold text-blue-300">Non-survivant (0)</div>
+                                        <div class="p-4 text-center text-2xl font-bold bg-green-900/40 rounded-tl-lg">135 (VN)</div>
+                                        <div class="p-4 text-center text-2xl font-bold bg-red-900/40 rounded-tr-lg">22 (FP)</div>
+                                    </div>
+                                    <div class="grid grid-cols-3">
+                                        <div class="border-r border-gray-600 flex items-center justify-center font-semibold text-blue-300">Survivant (1)</div>
+                                        <div class="p-4 text-center text-2xl font-bold bg-red-900/40 rounded-bl-lg">46 (FN)</div>
+                                        <div class="p-4 text-center text-2xl font-bold bg-green-900/40 rounded-br-lg">65 (VP)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="mb-4 text-justify">Analysons chaque case :</p>
+                        <ul class="list-none space-y-4">
+                            <li class="p-4 bg-green-500/10 border-l-4 border-green-400 rounded-r-md"><strong>Vrai Positif (VP) : 65</strong><br>Le modèle a prédit "Survivant", et la réalité était "Survivant". C'est un succès direct !</li>
+                            <li class="p-4 bg-green-500/10 border-l-4 border-green-400 rounded-r-md"><strong>Vrai Négatif (VN) : 135</strong><br>Le modèle a prédit "Non-survivant", et la réalité était "Non-survivant". Un autre succès !</li>
+                            <li class="p-4 bg-red-500/10 border-l-4 border-red-400 rounded-r-md"><strong>Faux Positif (FP) : 22</strong><br>Le modèle a prédit "Survivant", mais la réalité était "Non-survivant". C'est une <strong>fausse alarme</strong>. On a cru à un survivant qui n'existait pas. C'est aussi appelé erreur de type I.</li>
+                            <li class="p-4 bg-red-500/10 border-l-4 border-red-400 rounded-r-md"><strong>Faux Négatif (FN) : 46</strong><br>Le modèle a prédit "Non-survivant", mais la réalité était "Survivant". C'est un <strong>oubli impardonnable</strong>. Le modèle a manqué un vrai survivant. C'est aussi appelé erreur de type II.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Précision, Rappel et le grand compromis</h2>
+                <p class="text-lg mb-6">À partir de la matrice de confusion, nous pouvons calculer des métriques bien plus fines qui nous racontent une histoire plus complète sur la performance de notre modèle.</p>
+                <div class="space-y-8">
+                    <!-- Précision -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La Précision (Precision)</h3>
+                        <p class="mb-4 text-justify">Elle répond à la question : <strong>"Parmi toutes les fois où le modèle a prédit 'Survivant', combien de fois avait-il raison ?"</strong>. Une haute précision signifie que le modèle ne commet que très peu de fausses alarmes.</p>
+                        <div class="bg-gray-900/50 p-4 rounded-md text-center">
+                            <p class="text-2xl font-bold text-gray-200">$$ \text{Précision} = \frac{VP}{VP + FP} $$</p>
+                        </div>
+                        <div class="mt-4 bg-gray-700/70 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-white">Application au Titanic :</h4>
+                            <p class="text-center font-mono text-lg bg-gray-800 p-3 rounded-md mt-2">$$ \text{Précision} = \frac{65}{65 + 22} = \frac{65}{87} \approx 0.747 \text{ (soit 74.7%)} $$</p>
+                            <p class="mt-2 text-justify"><strong>Interprétation :</strong> Quand notre modèle prédit qu'un passager a survécu, il a raison dans environ 75% des cas. Les 25% restants sont des fausses alarmes.</p>
+                        </div>
+                        <p class="mt-4 italic text-gray-400"><strong>Contexte :</strong> La précision est cruciale quand le coût d'un Faux Positif est élevé. Exemple : marquer un e-mail important comme spam.</p>
+                    </div>
+
+                    <!-- Rappel -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le Rappel (Recall ou Sensibilité)</h3>
+                        <p class="mb-4 text-justify">Il répond à la question : <strong>"Sur tous les vrais survivants qui existaient, quel pourcentage le modèle a-t-il réussi à identifier ?"</strong>. Un haut rappel signifie que le modèle manque très peu de vrais positifs.</p>
+                        <div class="bg-gray-900/50 p-4 rounded-md text-center">
+                            <p class="text-2xl font-bold text-gray-200">$$ \text{Rappel} = \frac{VP}{VP + FN} $$</p>
+                        </div>
+                         <div class="mt-4 bg-gray-700/70 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-white">Application au Titanic :</h4>
+                            <p class="text-center font-mono text-lg bg-gray-800 p-3 rounded-md mt-2">$$ \text{Rappel} = \frac{65}{65 + 46} = \frac{65}{111} \approx 0.585 \text{ (soit 58.5%)} $$</p>
+                            <p class="mt-2 text-justify"><strong>Interprétation :</strong> Notre modèle n'a trouvé que 58.5% de tous les survivants réels. Il en a donc manqué plus de 40% (les 46 Faux Négatifs).</p>
+                        </div>
+                        <p class="mt-4 italic text-gray-400"><strong>Contexte :</strong> Le rappel est vital quand le coût d'un Faux Négatif est élevé. Exemple : un test médical qui ne détecte pas une maladie grave.</p>
+                    </div>
+                    
+                    <!-- F1-Score et Compromis -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                         <h3 class="text-2xl font-bold text-blue-400 mb-3">Le F1-Score et le Grand Compromis</h3>
+                         <p class="mb-4 text-justify">On aimerait avoir une précision et un rappel de 100%, mais en pratique, améliorer l'un se fait souvent au détriment de l'autre. C'est le <strong>compromis Précision-Rappel</strong>. Le F1-Score est la moyenne harmonique des deux, offrant une seule métrique pour juger de cet équilibre.</p>
+                         <div class="bg-gray-900/50 p-4 rounded-md text-center">
+                            <p class="text-2xl font-bold text-gray-200">$$ \text{F1-Score} = 2 \times \frac{\text{Précision} \times \text{Rappel}}{\text{Précision} + \text{Rappel}} $$</p>
+                        </div>
+                        <div class="mt-4 bg-gray-700/70 p-4 rounded-lg">
+                            <h4 class="text-lg font-semibold text-white">Application au Titanic :</h4>
+                            <p class="text-center font-mono text-lg bg-gray-800 p-3 rounded-md mt-2">$$ \text{F1-Score} \approx 2 \times \frac{0.747 \times 0.585}{0.747 + 0.585} \approx 0.656 $$</p>
+                            <p class="mt-2 text-justify"><strong>Interprétation :</strong> Le F1-Score de 0.656 nous donne une mesure unique de la performance, qui est pénalisée par notre faible rappel. C'est souvent plus utile que l'exactitude, surtout avec des classes déséquilibrées.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Évaluer notre modèle du Titanic en détail</h2>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <p class="mb-4 text-justify">Mettons la théorie en pratique. Nous reprenons notre modèle du chapitre 15 et utilisons Scikit-Learn pour générer un rapport d'évaluation complet. C'est ici que les chiffres nous révèlent la véritable performance de notre modèle.</p>
+                    
+                    <h3 class="text-xl font-bold text-blue-400 mt-6 mb-3">Le Code d'Évaluation</h3>
+                    <pre><code><span class="code-comment"># On suppose que les variables model, X_test, y_test et predictions</span>
+<span class="code-comment"># du chapitre 15 sont déjà chargées.</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.metrics</span> <span class="code-keyword">import</span> <span class="code-variable">accuracy_score</span>, <span class="code-variable">confusion_matrix</span>, <span class="code-variable">classification_report</span>
+
+<span class="code-comment"># 1. Score d'exactitude (Accuracy)</span>
+<span class="code-variable">accuracy</span> <span class="code-operator">=</span> <span class="code-function">accuracy_score</span>(<span class="code-variable">y_test</span>, <span class="code-variable">predictions</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Exactitude (Accuracy) : {accuracy:.2%}\\n"</span>)
+
+<span class="code-comment"># 2. Matrice de Confusion</span>
+<span class="code-variable">conf_matrix</span> <span class="code-operator">=</span> <span class="code-function">confusion_matrix</span>(<span class="code-variable">y_test</span>, <span class="code-variable">predictions</span>)
+<span class="code-builtin">print</span>(<span class="code-string">"Matrice de Confusion :"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">conf_matrix</span>)
+<span class="code-builtin">print</span>(<span class="code-string">"\\n"</span>)
+
+<span class="code-comment"># 3. Rapport de Classification détaillé</span>
+<span class="code-variable">class_report</span> <span class="code-operator">=</span> <span class="code-function">classification_report</span>(<span class="code-variable">y_test</span>, <span class="code-variable">predictions</span>, <span class="code-variable">target_names</span><span class="code-operator">=</span>[<span class="code-string">'Non-survivant'</span>, <span class="code-string">'Survivant'</span>])
+<span class="code-builtin">print</span>(<span class="code-string">"Rapport de Classification :"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">class_report</span>)</code></pre>
+                    
+                    <h3 class="text-xl font-bold text-blue-400 mt-8 mb-3">Interprétation des Résultats</h3>
+                    <p class="mb-4">Voici à quoi ressemble la sortie de ce code, et ce que chaque partie signifie :</p>
+                    
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <pre class="bg-transparent text-sm"><code>Exactitude (Accuracy) : 74.63%
+
+Matrice de Confusion :
+[[135  22]
+ [ 46  65]]
+
+Rapport de Classification :
+               precision    recall  f1-score   support
+
+Non-survivant       0.75      0.86      0.80       157
+    Survivant       0.75      0.59      0.66       111
+
+     accuracy                           0.75       268
+    macro avg       0.75      0.72      0.73       268
+ weighted avg       0.75      0.75      0.74       268
+</code></pre>
+                    </div>
+
+                    <div class="mt-6 space-y-4 text-justify">
+                        <p><strong>Pour la classe 'Non-survivant' :</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>Précision (0.75) :</strong> Quand notre modèle prédit 'Non-survivant', il a raison 75% du temps.</li>
+                            <li><strong>Rappel (0.86) :</strong> Il a correctement identifié 86% de toutes les personnes qui n'ont réellement pas survécu. C'est une bonne performance.</li>
+                        </ul>
+                         <p><strong>Pour la classe 'Survivant' :</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>Précision (0.75) :</strong> Quand il prédit 'Survivant', il a également raison 75% du temps.</li>
+                            <li><strong>Rappel (0.59) :</strong> <strong>C'est ici que le bât blesse.</strong> Le modèle n'a trouvé que 59% des vrais survivants. Il en a donc manqué 41%.</li>
+                        </ul>
+                        <p><strong>Conclusion :</strong> Ce rapport détaillé est bien plus parlant que l'exactitude seule. Il nous montre que si notre modèle est efficace pour identifier les non-survivants, il est médiocre pour retrouver tous les survivants. C'est une information cruciale qui va guider nos prochaines étapes pour tenter d'améliorer le modèle.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Pourquoi l'exactitude (accuracy) peut-elle être une métrique trompeuse pour un jeu de données déséquilibré ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Parce qu'elle est trop compliquée à calculer.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Un modèle peut obtenir un score élevé en prédisant toujours la classe la plus fréquente.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Elle ne fonctionne que pour la régression.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Elle ne prend pas en compte les vrais positifs.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Dans le contexte d'un diagnostic médical, qu'est-ce qu'un "Faux Négatif" (FN) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le modèle diagnostique une maladie chez un patient sain.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le modèle prédit correctement qu'un patient est sain.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le modèle prédit correctement qu'un patient est malade.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le modèle ne détecte pas la maladie chez un patient qui est réellement malade.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Si l'on veut s'assurer que presque toutes les prédictions positives de notre modèle sont correctes, quelle métrique doit-on maximiser ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La Précision</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le Rappel</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le F1-Score</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) L'Exactitude</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Lequel de ces scénarios demande un rappel (recall) très élevé ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Filtrer les e-mails de spam.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Recommander des vidéos sur YouTube.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Détecter des transactions bancaires frauduleuses.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Prédire si un client va cliquer sur une publicité.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. La fonction `classification_report` de Scikit-Learn nous donne :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Uniquement le score d'exactitude.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Uniquement la matrice de confusion.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La précision, le rappel et le F1-score pour chaque classe.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Un graphique de la performance du modèle.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le compromis Précision-Rappel :</strong> Pourquoi est-il souvent difficile d'améliorer la précision et le rappel en même temps ? Pouvez-vous imaginer un scénario où augmenter l'un ferait presque certainement baisser l'autre ?</p>
+                    <p><strong>2. Au-delà de la classification :</strong> Nous avons parlé de l'évaluation des modèles de classification. Quelles métriques utiliseriez-vous pour évaluer un modèle de régression (qui prédit une valeur continue, comme un prix) ? L'exactitude a-t-elle un sens dans ce contexte ?</p>
+                    <p><strong>3. L'interprétation métier :</strong> Imaginez que vous présentez votre rapport de classification du Titanic à une compagnie maritime. Comment traduiriez-vous les scores de précision et de rappel en recommandations concrètes pour leur politique de sécurité ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        // Désactiver tous les boutons pour cette question
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

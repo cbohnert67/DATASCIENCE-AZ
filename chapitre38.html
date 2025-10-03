@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 38: Le test A/B</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 38. Le test A/B - Comment prendre des décisions basées sur des preuves
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Comment savoir si la nouvelle version de votre site web, avec son bouton vert, est réellement meilleure que l'ancienne, avec son bouton bleu ? On ne devine pas, on teste ! Le test A/B est la méthode scientifique rigoureuse utilisée par les entreprises du monde entier (de Netflix à Amazon) pour prendre des décisions basées sur des données et des preuves, plutôt que sur l'intuition ou l'opinion de la personne la plus haut gradée. C'est le processus qui permet de prouver qu'un changement a un impact mesurable.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le framework du test d'hypothèse</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le Tribunal de la Statistique</h3>
+                        <p class="mb-4 text-justify">Le test A/B est une application pratique du test d'hypothèse statistique. Le but est de déterminer si une différence observée entre deux groupes est "réelle" (statistiquement significative) ou si elle est simplement due au hasard. Pour cela, on met en place une sorte de procès :</p>
+                        <ul class="list-none space-y-4 pl-4">
+                           <li><strong>L'accusé (présumé innocent) :</strong> C'est l'idée qu'il ne se passe rien, que tout est comme avant. C'est l'<strong>hypothèse nulle (H0)</strong>. Elle affirme toujours qu'il n'y a <strong>aucune différence</strong>, aucun effet. <br><em class="text-gray-400 ml-6">Exemple H0 : "Le nouveau bouton vert n'a aucun effet sur le taux de clics par rapport au bouton bleu."</em></li>
+                           <li><strong>L'accusation (ce qu'on veut prouver) :</strong> C'est l'idée que notre changement a eu un effet. C'est l'<strong>hypothèse alternative (H1)</strong>. Elle affirme qu'il <strong>existe une différence</strong>. <br><em class="text-gray-400 ml-6">Exemple H1 : "Le nouveau bouton vert a un taux de clics différent de celui du bouton bleu."</em></li>
+                           <li><strong>Les preuves :</strong> Ce sont les données que nous collectons pendant le test (nombre de visiteurs, nombre de clics).</li>
+                           <li><strong>Le jury (c'est vous !) :</strong> Votre rôle n'est pas de prouver que l'accusation (H1) est vraie, mais de décider si les preuves sont suffisantes pour rejeter la présomption d'innocence (H0).</li>
+                        </ul>
+                        <p class="mt-4 text-justify">Notre objectif est donc de rassembler suffisamment de preuves pour pouvoir dire : "L'idée qu'il n'y a aucune différence (H0) est tellement improbable au vu de ce que nous avons observé, que nous devons la rejeter."</p>
+                        [Image d'un concept de test A/B]
+                    </div>
+                    
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La p-value : Le Verdict du Juge</h3>
+                        <p class="mb-4 text-justify">La p-value est le chiffre qui va sceller le sort de notre hypothèse nulle. C'est un concept subtil. Imaginez un "surprise-o-mètre" :</p>
+                        <p class="mb-4 text-justify"><strong>Définition :</strong> La p-value est la probabilité d'obtenir les résultats que nous avons vus (ou des résultats encore plus extrêmes) <strong>en supposant que le changement n'a eu aucun effet (que H0 est vraie).</strong></p>
+                        <ul class="list-none space-y-3 pl-4">
+                            <li><strong class="text-red-400">Petite p-value (ex: 0.01) :</strong> "Wow ! Si le bouton n'avait vraiment aucun effet, il n'y aurait que 1% de chance de voir une telle différence de clics. C'est très surprenant !" Cette surprise nous pousse à rejeter l'hypothèse nulle. Le résultat est dit <strong>statistiquement significatif.</strong></li>
+                            <li><strong class="text-green-400">Grande p-value (ex: 0.50) :</strong> "Bof. Si le bouton n'avait aucun effet, il y aurait 50% de chance d'observer cette différence juste par hasard. Ce n'est pas surprenant du tout." Nous n'avons donc pas de raison de douter de H0, et nous ne la rejetons pas.</li>
+                        </ul>
+                         <p class="mt-4 text-justify">Le seuil de <strong>alpha (α)</strong>, généralement fixé à 0.05, est notre niveau de "doute raisonnable" défini avant le procès. Si la p-value est inférieure à alpha, nous avons assez de preuves pour rejeter H0. C'est notre règle de décision.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Mener un test A/B en Python</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+                    <p class="text-justify">Imaginons que nous testons deux versions d'une page web. La version B semble meilleure, mais cette différence de 25% est-elle statistiquement significative ou est-ce juste de la chance ? Passons au code pour le vérifier.</p>
+                    
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 1 : Définir les données et observer</h3>
+                        <p class="mb-4 text-justify">On commence par définir les résultats de notre expérience : le nombre de visiteurs et le nombre de conversions (clics) pour chaque groupe. On calcule ensuite les taux de conversion observés pour avoir une première idée de la performance.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-keyword">from</span> <span class="code-variable">statsmodels.stats.proportion</span> <span class="code-keyword">import</span> <span class="code-variable">proportions_ztest</span>
+
+<span class="code-comment"># Données brutes de notre test</span>
+<span class="code-variable">visiteurs_A</span>, <span class="code-variable">clics_A</span> <span class="code-operator">=</span> <span class="code-number">1000</span>, <span class="code-number">100</span>  <span class="code-comment"># Version A (Contrôle)</span>
+<span class="code-variable">visiteurs_B</span>, <span class="code-variable">clics_B</span> <span class="code-operator">=</span> <span class="code-number">1000</span>, <span class="code-number">125</span>  <span class="code-comment"># Version B (Variante)</span>
+
+<span class="code-comment"># Calcul des taux de conversion observés</span>
+<span class="code-variable">taux_conversion_A</span> <span class="code-operator">=</span> <span class="code-variable">clics_A</span> <span class="code-operator">/</span> <span class="code-variable">visiteurs_A</span>
+<span class="code-variable">taux_conversion_B</span> <span class="code-operator">=</span> <span class="code-variable">clics_B</span> <span class="code-operator">/</span> <span class="code-variable">visiteurs_B</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"Taux de conversion A: {taux_conversion_A:.2%}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Taux de conversion B: {taux_conversion_B:.2%}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Amélioration observée: {(taux_conversion_B / taux_conversion_A - 1):.2%}"</span>)</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 2 : Lancer le test statistique</h3>
+                        <p class="mb-4 text-justify">C'est ici que nous demandons au "juge" (la fonction <code>proportions_ztest</code>) de nous donner son verdict. Nous lui fournissons le nombre de succès (clics) et le nombre total d'essais (visiteurs) pour chaque groupe. La fonction va calculer la p-value pour nous.</p>
+                        <pre><code><span class="code-comment"># Formater les données pour la fonction de test</span>
+<span class="code-variable">nombre_de_clics</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([<span class="code-variable">clics_A</span>, <span class="code-variable">clics_B</span>])
+<span class="code-variable">nombre_de_visiteurs</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([<span class="code-variable">visiteurs_A</span>, <span class="code-variable">visiteurs_B</span>])
+
+<span class="code-comment"># H0: Les taux de conversion sont égaux. H1: Ils sont différents.</span>
+<span class="code-variable">stat</span>, <span class="code-variable">p_value</span> <span class="code-operator">=</span> <span class="code-function">proportions_ztest</span>(<span class="code-variable">count</span><span class="code-operator">=</span><span class="code-variable">nombre_de_clics</span>, <span class="code-variable">nobs</span><span class="code-operator">=</span><span class="code-variable">nombre_de_visiteurs</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"\nP-value calculée : {p_value:.4f}"</span>)</code></pre>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-blue-400 mb-2">Étape 3 : Interpréter le verdict</h3>
+                        <p class="mb-4 text-justify">Maintenant, nous comparons la p-value à notre seuil de significativité (alpha). Si la p-value est plus petite, nous avons suffisamment de preuves pour rejeter l'hypothèse nulle et conclure que notre changement a eu un effet réel.</p>
+                        <pre><code><span class="code-variable">alpha</span> <span class="code-operator">=</span> <span class="code-number">0.05</span>  <span class="code-comment"># Notre seuil de significativité</span>
+<span class="code-keyword">if</span> <span class="code-variable">p_value</span> <span class="code-operator">&lt;</span> <span class="code-variable">alpha</span>:
+    <span class="code-builtin">print</span>(<span class="code-string">"Verdict : Résultat statistiquement significatif. On rejette l'hypothèse nulle."</span>)
+    <span class="code-builtin">print</span>(<span class="code-string">"Conclusion : Nous avons des preuves solides que la version B a un taux de conversion différent de la version A."</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-builtin">print</span>(<span class="code-string">"Verdict : Résultat non significatif. On ne peut pas rejeter l'hypothèse nulle."</span>)
+    <span class="code-builtin">print</span>(<span class="code-string">"Conclusion : La différence observée pourrait être simplement due au hasard."</span>)
+                </code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-cyan-500/50 shadow-lg">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Le test a-t-il assez duré ?</h2>
+                 <p class="text-lg text-justify mb-4">
+                    Imaginons que nous soyons impatients et que nous arrêtions le test après seulement 100 visiteurs dans chaque groupe, en gardant les mêmes taux de clics.
+                </p>
+                <div class="bg-gray-900/50 p-4 rounded-md">
+                   <p>Votre mission : Copiez le code ci-dessus, mais changez le nombre de visiteurs et de clics :</p>
+                    <ul class="list-disc list-inside space-y-2 mt-2">
+                        <li>Version A : 100 visiteurs, 10 clics.</li>
+                        <li>Version B : 100 visiteurs, 12 clics (pour garder un taux proche de 12.5%).</li>
+                    </ul>
+                     <p class="mt-2">Relancez le test statistique. La conclusion est-elle la même ? Que nous apprend cela sur l'importance de la taille de l'échantillon ?</p>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Que représente l'hypothèse nulle (H0) dans un test A/B ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Que la version B est meilleure que la version A.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Qu'il n'y a aucune différence réelle entre les versions A et B.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Que la version A est meilleure que la version B.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Que le test est statistiquement significatif.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Si vous obtenez une p-value de 0.03, que devriez-vous conclure (avec un seuil alpha de 0.05) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) On ne peut pas rejeter l'hypothèse nulle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) L'hypothèse nulle est prouvée vraie.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le test a échoué.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) On rejette l'hypothèse nulle, le résultat est significatif.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. À quoi sert principalement un test A/B ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À collecter le plus de données possible.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À prouver que son intuition était la bonne.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À prendre des décisions basées sur des preuves statistiques.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À améliorer l'esthétique d'un site web.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Une grande p-value (par ex. 0.45) signifie que :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) L'hypothèse alternative est vraie.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les résultats observés sont plausibles sous l'hypothèse nulle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Les deux versions sont identiques.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le test a été mal mené.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Dans notre exemple de code, que teste la fonction `proportions_ztest` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Si le nombre de visiteurs est le même dans les deux groupes.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Si la différence entre les taux de conversion est statistiquement significative.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Lequel des deux taux de conversion est le plus élevé.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le nombre total de clics sur le site.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Au-delà de la p-value :</strong> Une différence "statistiquement significative" n'est pas toujours une différence "pratiquement importante". Si la version B augmente les clics de 0.01% avec une p-value de 0.04, est-ce que cela vaut le coup de changer le site ? Quelle autre information serait utile ?</p>
+                    <p><strong>2. Le danger de l'espionnage :</strong> Pourquoi est-il considéré comme une mauvaise pratique de regarder les résultats d'un test A/B en continu et de l'arrêter dès que la p-value passe sous 0.05 ?</p>
+                    <p><strong>3. Pas seulement des clics :</strong> Pouvez-vous imaginer d'autres métriques que le taux de clics que l'on pourrait vouloir tester avec un test A/B sur un site e-commerce ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let answered = false;
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (answered) return;
+                        answered = true;
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                            opt.classList.add('cursor-not-allowed');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 5: Algèbre Linéaire pour le Machine Learning</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour le rendu des formules LaTeX -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 5. L'Algèbre Linéaire sans aspirine : Vecteurs et Matrices pour le Machine Learning
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    N'ayez pas peur du nom ! L'algèbre linéaire est simplement la grammaire qui nous permet de "parler" aux données de manière structurée et efficace. Si les données étaient des phrases, les vecteurs et les matrices en seraient les noms et les verbes. C'est le langage qu'utilisent les algorithmes de machine learning pour "penser", car il leur permet de manipuler d'immenses ensembles de données en une seule opération. Aujourd'hui, nous allons apprendre ce vocabulaire essentiel avec des concepts visuels et des exemples pratiques.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le sens caché des nombres : Vecteurs et Matrices</h2>
+                <div class="space-y-8">
+                    <!-- Section Vecteur détaillée -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le Vecteur : Un point, une flèche, une donnée</h3>
+                        <p class="mb-4 text-justify">
+                            Un vecteur est une liste ordonnée de nombres. On peut le visualiser comme un point dans un espace, ou comme une flèche partant de l'origine vers ce point. En Data Science, il représente une seule observation, où chaque nombre est une caractéristique ("feature").
+                        </p>
+                        <div class="text-center my-4">
+                            $$\vec{maison} = \begin{bmatrix} \text{surface} \\ \text{chambres} \\ \text{prix} \end{bmatrix} = \begin{bmatrix} 120 \\ 3 \\ 250000 \end{bmatrix}$$
+                        </div>
+                        <p class="mb-4 text-justify">[Image d'un vecteur comme une flèche dans un espace 2D]</p>
+                        <p class="mb-4">Ce vecteur représente une maison de 120 m², avec 3 chambres, coûtant 250 000 €.</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-comment"># Créer le vecteur représentant notre maison avec NumPy</span>
+<span class="code-variable">vecteur_maison</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([<span class="code-number">120</span>, <span class="code-number">3</span>, <span class="code-number">250000</span>])
+<span class="code-builtin">print</span>(<span class="code-variable">vecteur_maison</span>)</code></pre>
+                    </div>
+
+                    <!-- Section Matrice détaillée -->
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La Matrice : Une grille, une transformation, un jeu de données</h3>
+                        <p class="mb-4 text-justify">Une matrice est une grille de nombres. On peut la voir comme une collection de vecteurs (chaque ligne ou colonne est un vecteur). En Data Science, elle représente un jeu de données entier : chaque ligne est une observation (un vecteur) et chaque colonne une caractéristique. Géométriquement, une matrice est une opération qui peut transformer l'espace (rotation, étirement...).</p>
+                        <div class="text-center my-4">
+                             $$\text{Dataset} = \begin{bmatrix} 120 & 3 & 250000 \\ 80 & 2 & 180000 \\ 200 & 5 & 450000 \end{bmatrix}$$
+                        </div>
+                         <p class="mb-4">Cette matrice représente 3 maisons, chacune avec ses 3 caractéristiques.</p>
+                        <pre><code><span class="code-comment"># Créer une matrice représentant plusieurs maisons</span>
+<span class="code-variable">matrice_maisons</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([
+    [<span class="code-number">120</span>, <span class="code-number">3</span>, <span class="code-number">250000</span>],  <span class="code-comment"># Maison 1 (vecteur-ligne)</span>
+    [<span class="code-number">80</span>, <span class="code-number">2</span>, <span class="code-number">180000</span>],   <span class="code-comment"># Maison 2 (vecteur-ligne)</span>
+    [<span class="code-number">200</span>, <span class="code-number">5</span>, <span class="code-number">450000</span>]   <span class="code-comment"># Maison 3 (vecteur-ligne)</span>
+])
+<span class="code-builtin">print</span>(<span class="code-variable">matrice_maisons</span>)</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Opérations fondamentales et leur signification</h2>
+                <div class="space-y-8">
+
+                    <!-- Opération 1: Addition et Multiplication Scalaire -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Addition de Vecteurs et Multiplication par un Scalaire</h3>
+                        <p class="mb-4">Ces opérations fonctionnent "élément par élément". L'addition de deux vecteurs combine leurs effets (pensez à deux forces s'appliquant sur un objet). La multiplication par un scalaire (un simple nombre) change la longueur (magnitude) du vecteur sans changer sa direction.</p>
+                        <p class="text-center my-4">Addition: $$\vec{v} + \vec{w} = \begin{bmatrix} v_1 \\ v_2 \end{bmatrix} + \begin{bmatrix} w_1 \\ w_2 \end{bmatrix} = \begin{bmatrix} v_1 + w_1 \\ v_2 + w_2 \end{bmatrix}$$</p>
+                        <p class="text-center my-4">Mult. Scalaire: $$c \cdot \vec{v} = c \begin{bmatrix} v_1 \\ v_2 \end{bmatrix} = \begin{bmatrix} c \cdot v_1 \\ c \cdot v_2 \end{bmatrix}$$</p>
+                        <pre><code><span class="code-variable">vecteur_v</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([<span class="code-number">2</span>, <span class="code-number">3</span>])
+<span class="code-variable">vecteur_w</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([<span class="code-number">5</span>, <span class="code-operator">-</span><span class="code-number">1</span>])
+<span class="code-builtin">print</span>(<span class="code-string">f"Addition: {</span><span class="code-variable">vecteur_v</span> <span class="code-operator">+</span> <span class="code-variable">vecteur_w</span><span class="code-string">}"</span>)  <span class="code-comment"># Affiche [7 2]</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"Mult. Scalaire: {</span><span class="code-number">2</span> <span class="code-operator">*</span> <span class="code-variable">vecteur_v</span><span class="code-string">}"</span>) <span class="code-comment"># Affiche [4 6]</span></code></pre>
+                    </div>
+
+                    <!-- Opération 2: Produit Scalaire -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. Le Produit Scalaire (Dot Product)</h3>
+                        <p class="mb-4">Le produit scalaire de deux vecteurs donne un seul nombre (un scalaire) qui mesure leur "similarité d'orientation". C'est une opération cruciale en machine learning.</p>
+                        <ul class="list-disc list-inside mb-4 pl-4">
+                            <li>Résultat <strong>positif</strong> : les vecteurs pointent globalement dans la même direction.</li>
+                            <li>Résultat proche de <strong>zéro</strong> : ils sont perpendiculaires (orthogonaux).</li>
+                            <li>Résultat <strong>négatif</strong> : ils pointent dans des directions opposées.</li>
+                        </ul>
+                        <p class="text-center my-4">Formule: $$\vec{v} \cdot \vec{w} = \sum v_i w_i = v_1 w_1 + v_2 w_2$$</p>
+                        <p class="text-center my-4">Calcul: $$\begin{bmatrix} 2 \\ 3 \end{bmatrix} \cdot \begin{bmatrix} 5 \\ -1 \end{bmatrix} = (2 \times 5) + (3 \times -1) = 10 - 3 = 7$$</p>
+                        <pre><code><span class="code-comment"># On utilise l'opérateur @ pour le produit scalaire</span>
+<span class="code-variable">produit_scalaire</span> <span class="code-operator">=</span> <span class="code-variable">vecteur_v</span> <span class="code-operator">@</span> <span class="code-variable">vecteur_w</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"Produit Scalaire: {</span><span class="code-variable">produit_scalaire</span><span class="code-string">}"</span>) <span class="code-comment"># Affiche 7</span></code></pre>
+                    </div>
+
+                    <!-- Opération 3: Multiplication Matrice-Vecteur -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">3. La Multiplication Matrice-Vecteur</h3>
+                        <p class="mb-4">C'est l'opération qui applique une transformation (la matrice) à un point (le vecteur). Le résultat est un nouveau vecteur, qui est le point déplacé dans l'espace. Chaque ligne de la matrice est "produit-scalaire" avec le vecteur.</p>
+                        <p class="text-center my-4">$$A\vec{v} = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} ax + by \\ cx + dy \end{bmatrix}$$</p>
+                        <p class="text-center my-4">Calcul: $$\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix} \begin{bmatrix} 2 \\ 3 \end{bmatrix} = \begin{bmatrix} (1 \cdot 2) + (2 \cdot 3) \\ (3 \cdot 2) + (4 \cdot 3) \end{bmatrix} = \begin{bmatrix} 8 \\ 18 \end{bmatrix}$$</p>
+                        <pre><code><span class="code-variable">matrice_A</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([[<span class="code-number">1</span>, <span class="code-number">2</span>], [<span class="code-number">3</span>, <span class="code-number">4</span>]])
+<span class="code-variable">v_transforme</span> <span class="code-operator">=</span> <span class="code-variable">matrice_A</span> <span class="code-operator">@</span> <span class="code-variable">vecteur_v</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"Vecteur transformé: {</span><span class="code-variable">v_transforme</span><span class="code-string">}"</span>) <span class="code-comment"># Affiche [ 8 18]</span></code></pre>
+                    </div>
+
+                     <!-- Opération 4: Multiplication de Matrices -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">4. La Multiplication de Matrices</h3>
+                        <p class="mb-4">Multiplier deux matrices (A @ B) revient à enchaîner leurs transformations. Le résultat est une nouvelle matrice qui applique d'abord la transformation B, puis la transformation A. L'ordre est crucial : <strong>A @ B n'est presque jamais égal à B @ A</strong>.</p>
+                        <p class="text-center my-4">$$AB = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} e & f \\ g & h \end{bmatrix} = \begin{bmatrix} ae+bg & af+bh \\ ce+dg & cf+dh \end{bmatrix}$$</p>
+                        <pre><code><span class="code-variable">matrice_B</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([[<span class="code-number">0</span>, <span class="code-operator">-</span><span class="code-number">1</span>], [<span class="code-number">1</span>, <span class="code-number">0</span>]]) <span class="code-comment"># Matrice de rotation 90°</span>
+<span class="code-variable">transformation_composee</span> <span class="code-operator">=</span> <span class="code-variable">matrice_A</span> <span class="code-operator">@</span> <span class="code-variable">matrice_B</span>
+<span class="code-builtin">print</span>(<span class="code-string">"Transformation composée A @ B:\\n"</span>, <span class="code-variable">transformation_composee</span>)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : L'ordre des transformations compte !</h2>
+                <p class="text-lg text-justify mb-4">
+                    Vérifiez par vous-même que la multiplication de matrices n'est pas commutative. Créez deux matrices `A` (étirement) et `B` (rotation), calculez `C = A @ B` et `D = B @ A`. Sont-elles égales ?
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution</summary>
+                    <pre class="mt-4"><code><span class="code-comment"># 1. Création des matrices</span>
+<span class="code-variable">A</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([[<span class="code-number">2</span>, <span class="code-number">0</span>], [<span class="code-number">0</span>, <span class="code-number">1</span>]])  <span class="code-comment"># Étire l'axe X</span>
+<span class="code-variable">B</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>([[<span class="code-number">0</span>, <span class="code-operator">-</span><span class="code-number">1</span>], [<span class="code-number">1</span>, <span class="code-number">0</span>]])  <span class="code-comment"># Rotation de 90°</span>
+
+<span class="code-comment"># 2. Calculer C = A @ B et D = B @ A</span>
+<span class="code-variable">C</span> <span class="code-operator">=</span> <span class="code-variable">A</span> <span class="code-operator">@</span> <span class="code-variable">B</span>
+<span class="code-variable">D</span> <span class="code-operator">=</span> <span class="code-variable">B</span> <span class="code-operator">@</span> <span class="code-variable">A</span>
+
+<span class="code-builtin">print</span>(<span class="code-string">"C (Rotation puis Étirement):\\n"</span>, <span class="code-variable">C</span>)
+<span class="code-builtin">print</span>(<span class="code-string">"D (Étirement puis Rotation):\\n"</span>, <span class="code-variable">D</span>)
+
+<span class="code-comment"># 3. Comparaison</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"\\nLes matrices sont-elles égales ? {</span><span class="code-variable">np</span>.<span class="code-function">array_equal</span>(<span class="code-variable">C</span>, <span class="code-variable">D</span>)<span class="code-string">}"</span>)
+<span class="code-comment"># Conclusion : Non, l'ordre des transformations est crucial !</span></code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. En data science, comment représente-t-on le plus souvent une seule observation (par exemple, une maison avec sa surface, son nombre de chambres et son prix) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Comme une matrice</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Comme un vecteur</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Comme un scalaire (un seul nombre)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Comme un DataFrame</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Un produit scalaire (dot product) entre deux vecteurs qui est proche de zéro signifie que :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Les vecteurs pointent dans la même direction.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les vecteurs pointent dans des directions opposées.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Les vecteurs sont perpendiculaires (orthogonaux).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Les deux vecteurs sont identiques.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Que représente géométriquement la multiplication d'une matrice par un vecteur ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) L'application d'une transformation (rotation, étirement...) au point représenté par le vecteur.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le calcul de la similarité entre la matrice et le vecteur.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La création d'un jeu de données plus grand.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La sélection d'une colonne de la matrice.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Si A et B sont deux matrices, A @ B est-il généralement égal à B @ A ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Oui, toujours.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Non, la multiplication de matrices n'est pas commutative.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Seulement si les matrices sont de même taille.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Seulement si les matrices ne contiennent que des zéros.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Quel opérateur est utilisé en NumPy pour le produit scalaire et la multiplication de matrices ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) <code>*</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) <code>&</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) <code>.dot()</code></button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) <code>@</code></button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Vecteur de goûts :</strong> Comment pourriez-vous représenter vos préférences musicales (par exemple, vos notes de 0 à 5 pour le rock, le jazz, l'électro et le classique) sous forme de vecteur ? Si un ami fait de même, que signifierait un produit scalaire élevé entre vos deux vecteurs ?</p>
+                    <p><strong>2. Transformations d'images :</strong> Une image peut être vue comme une collection de points (vecteurs). Si vous avez une matrice qui fait tourner une image de 45° et une autre qui l'agrandit, pourquoi l'ordre dans lequel vous les appliquez changerait-il le résultat final ?</p>
+                    <p><strong>3. Le sens des mots :</strong> Le "word embedding" représente les mots comme des vecteurs dans un espace à plusieurs centaines de dimensions. Que pourrait signifier, dans cet espace, le fait que les vecteurs des mots "Roi", "Reine", "Homme" et "Femme" respectent l'équation : Vecteur("Roi") - Vecteur("Homme") + Vecteur("Femme") ≈ Vecteur("Reine") ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

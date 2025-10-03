@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 8: Les Statistiques Descriptives</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour le rendu des formules LaTeX -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 8. Les Statistiques Descriptives - L'art de faire parler vos données
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Avant de construire le moindre modèle d'intelligence artificielle ou la plus sophistiquée des visualisations, un bon data scientist fait une chose simple mais essentielle : il écoute ses données. Les statistiques descriptives sont les outils de cette première conversation. Elles nous permettent de résumer, de caractériser et de comprendre la structure d'un jeu de données sans chercher à en tirer des conclusions sur une population plus large. C'est l'art du premier contact, l'équivalent de la poignée de main avant une discussion approfondie. C'est ici que nous allons transformer une masse de chiffres intimidante en un résumé clair et concis.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Les outils de l'écoute</h2>
+                <div class="space-y-8">
+                    <!-- Section 1 : Tendance Centrale -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Mesures de tendance centrale : Où se situe le "centre" ?</h3>
+                        <p class="mb-6 text-justify">Ces mesures nous donnent une idée de la valeur "typique" ou "centrale" de nos données.</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xl font-semibold text-white">La Moyenne (mean)</h4>
+                                <p class="mb-2">La somme de toutes les valeurs divisée par leur nombre. Très sensible aux valeurs extrêmes (aberrantes).</p>
+                                <p class="text-center my-3">\[ \mu = \frac{1}{N} \sum_{i=1}^{N} x_i \] </p>
+                                <pre><code><span class="code-variable">salaires</span> <span class="code-operator">=</span> [<span class="code-number">30000</span>, <span class="code-number">32000</span>, <span class="code-number">35000</span>, <span class="code-number">40000</span>, <span class="code-number">250000</span>]
+<span class="code-variable">df_salaires</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">Series</span>(<span class="code-variable">salaires</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Moyenne : {</span><span class="code-variable">df_salaires</span>.<span class="code-function">mean</span>()<span class="code-string">}"</span>) <span class="code-comment"># Affiche 77400.0</span></code></pre>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-white">La Médiane (median)</h4>
+                                <p class="mb-2">La valeur du milieu d'un ensemble de données triées. 50% des données sont en dessous, 50% sont au-dessus. Robuste aux valeurs extrêmes, elle est souvent plus représentative.</p>
+                                <pre><code><span class="code-builtin">print</span>(<span class="code-string">f"Médiane : {</span><span class="code-variable">df_salaires</span>.<span class="code-function">median</span>()<span class="code-string">}"</span>) <span class="code-comment"># Affiche 35000.0</span></code></pre>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold text-white">Le Mode (mode)</h4>
+                                <p class="mb-2">La valeur qui apparaît le plus fréquemment. Particulièrement utile pour les données non numériques (catégorielles).</p>
+                                <pre><code><span class="code-variable">couleurs</span> <span class="code-operator">=</span> [<span class="code-string">'bleu'</span>, <span class="code-string">'noir'</span>, <span class="code-string">'bleu'</span>, <span class="code-string">'rouge'</span>, <span class="code-string">'noir'</span>, <span class="code-string">'bleu'</span>]
+<span class="code-variable">s_couleurs</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">Series</span>(<span class="code-variable">couleurs</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Mode : {</span><span class="code-variable">s_couleurs</span>.<span class="code-function">mode</span>()[<span class="code-number">0</span>]<span class="code-string">}"</span>) <span class="code-comment"># Affiche 'bleu'</span></code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2 : Dispersion -->
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. Mesures de dispersion : À quel point les données sont-elles étalées ?</h3>
+                        <p class="mb-6 text-justify">Il ne suffit pas de connaître le centre, il faut aussi savoir si les données sont regroupées ou très dispersées.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xl font-semibold text-white">L'Écart-type (standard deviation)</h4>
+                                <p class="mb-2">Il représente la distance "moyenne" de chaque point par rapport à la moyenne. Un petit écart-type signifie que les données sont regroupées ; un grand écart-type signifie qu'elles sont étalées.</p>
+                                <p class="text-center my-3">\[ \sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^2} \] </p>
+                                <pre><code><span class="code-builtin">print</span>(<span class="code-string">f"Écart-type des salaires : {</span><span class="code-variable">df_salaires</span>.<span class="code-function">std</span>()<span class="code-string">:.2f}"</span>) <span class="code-comment"># Affiche 95238.65</span></code></pre>
+                            </div>
+                             <div>
+                                <h4 class="text-xl font-semibold text-white">L'Écart Interquartile (IQR)</h4>
+                                <p class="mb-2">C'est l'étendue des 50% de données centrales, calculée comme la différence entre le 3ème quartile (Q3, 75ème percentile) et le 1er quartile (Q1, 25ème percentile). C'est une mesure de dispersion robuste.</p>
+                                <p class="text-center my-3">\[ \text{IQR} = Q3 - Q1 \] </p>
+                                 <pre><code><span class="code-variable">Q1</span> <span class="code-operator">=</span> <span class="code-variable">df_salaires</span>.<span class="code-function">quantile</span>(<span class="code-number">0.25</span>)
+<span class="code-variable">Q3</span> <span class="code-operator">=</span> <span class="code-variable">df_salaires</span>.<span class="code-function">quantile</span>(<span class="code-number">0.75</span>)
+<span class="code-variable">IQR</span> <span class="code-operator">=</span> <span class="code-variable">Q3</span> <span class="code-operator">-</span> <span class="code-variable">Q1</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"Écart Interquartile : {</span><span class="code-variable">IQR</span><span class="code-string">}"</span>) <span class="code-comment"># Affiche 8000.0</span></code></pre>
+                            </div>
+                        </div>
+                         <p class="text-center my-4">[Image d'un diagramme en boîte (box plot)]</p>
+                    </div>
+
+                    <!-- Section 3 : Forme -->
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">3. La Forme de la distribution</h3>
+                        <p class="mb-4 text-justify">Une distribution nous montre la fréquence d'apparition de chaque valeur. On la visualise avec un <strong>histogramme</strong> pour voir si elle est <strong>symétrique</strong> (comme une courbe en cloche) ou <strong>asymétrique</strong> (avec une "queue" qui s'étend vers la droite ou la gauche).</p>
+                         <pre><code><span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+
+<span class="code-comment"># Données symétriques (loi normale)</span>
+<span class="code-variable">data_sym</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">random</span>.<span class="code-function">randn</span>(<span class="code-number">1000</span>)
+<span class="code-variable">pd</span>.<span class="code-function">Series</span>(<span class="code-variable">data_sym</span>).<span class="code-function">hist</span>(<span class="code-variable">bins</span><span class="code-operator">=</span><span class="code-number">30</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Distribution Symétrique'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+
+<span class="code-comment"># Données asymétriques à droite</span>
+<span class="code-variable">data_asym</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">random</span>.<span class="code-function">exponential</span>(<span class="code-variable">size</span><span class="code-operator">=</span><span class="code-number">1000</span>)
+<span class="code-variable">pd</span>.<span class="code-function">Series</span>(<span class="code-variable">data_asym</span>).<span class="code-function">hist</span>(<span class="code-variable">bins</span><span class="code-operator">=</span><span class="code-number">30</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Distribution Asymétrique à Droite'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                        <p class="text-center my-4">[Image de distributions symétrique et asymétriques]</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">La conversation avec Pandas</h2>
+                <p class="text-lg text-justify mb-6">
+                    Pandas rend cette première conversation incroyablement simple et efficace. Utilisons le jeu de données du Titanic pour illustrer.
+                </p>
+                 <div class="space-y-8">
+                    <!-- .describe() -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">1. <code>.describe()</code> : Le résumé express</h3>
+                        <p class="mb-4">C'est la commande la plus utile pour commencer. En une seule ligne, elle calcule les statistiques clés pour toutes les colonnes numériques : nombre de valeurs non nulles (count), moyenne (mean), écart-type (std), minimum (min), quartiles (25%, 50%, 75%) et maximum (max).</p>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>) <span class="code-comment"># Assurez-vous d'avoir ce fichier</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">describe</span>())</code></pre>
+                    </div>
+                    <!-- Calculs individuels -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">2. Calculer des statistiques individuelles</h3>
+                        <p class="mb-4">Vous pouvez aussi calculer chaque mesure séparément. C'est utile pour comparer des valeurs spécifiques, comme la moyenne et la médiane, pour évaluer l'asymétrie.</p>
+                        <pre><code><span class="code-variable">age_moyen</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">mean</span>()
+<span class="code-variable">age_median</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>()
+<span class="code-builtin">print</span>(<span class="code-string">f"Âge moyen : {</span><span class="code-variable">age_moyen</span><span class="code-string">:.2f}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Âge médian : {</span><span class="code-variable">age_median</span><span class="code-string">:.2f}"</span>) <span class="code-comment"># Note: la moyenne est légèrement > à la médiane, suggérant une légère asymétrie à droite.</span></code></pre>
+                    </div>
+                    <!-- value_counts() -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">3. <code>.value_counts()</code> : Le roi des catégories</h3>
+                        <p class="mb-4">Pour les données non numériques (catégorielles), <code>.value_counts()</code> est parfait pour compter les occurrences de chaque catégorie. En ajoutant <code>normalize=True</code>, on obtient les pourcentages.</p>
+                        <pre><code><span class="code-builtin">print</span>(<span class="code-string">"Nombre de passagers par classe :"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>[<span class="code-string">'Pclass'</span>].<span class="code-function">value_counts</span>())
+
+<span class="code-builtin">print</span>(<span class="code-string">"\\nPourcentage de passagers par classe :"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>[<span class="code-string">'Pclass'</span>].<span class="code-function">value_counts</span>(<span class="code-variable">normalize</span><span class="code-operator">=</span><span class="code-keyword">True</span>))</code></pre>
+                    </div>
+                     <!-- Visualisation -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-xl font-bold text-white mb-2">4. Visualiser les distributions</h3>
+                        <p class="mb-4">Un histogramme permet de voir la forme de la distribution d'une variable. Un box plot est excellent pour visualiser la médiane, les quartiles et détecter les valeurs aberrantes (outliers).</p>
+                        <pre><code><span class="code-comment"># Histogramme de la distribution de l'âge</span>
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">hist</span>(<span class="code-variable">bins</span><span class="code-operator">=</span><span class="code-number">20</span>, <span class="code-variable">grid</span><span class="code-operator">=</span><span class="code-keyword">False</span>, <span class="code-variable">color</span><span class="code-operator">=</span><span class="code-string">'cyan'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+
+<span class="code-comment"># Box plot pour voir la dispersion du tarif ('Fare')</span>
+<span class="code-variable">df</span>.<span class="code-function">boxplot</span>(<span class="code-variable">column</span><span class="code-operator">=</span><span class="code-string">'Fare'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>() <span class="code-comment"># On voit beaucoup d'outliers (les points), des tarifs très élevés.</span></code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Analyse comparative des survivants du Titanic</h2>
+                <p class="text-lg text-justify mb-4">
+                    Les statistiques descriptives sont encore plus puissantes pour comparer des groupes. Votre mission : en utilisant le dataset du Titanic, séparez le DataFrame en deux (survivants et non-survivants) et comparez les statistiques de l'âge ('Age') et du tarif ('Fare') pour chaque groupe. Quelles premières hypothèses pouvez-vous formuler ?
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                    <pre class="mt-4"><code><span class="code-comment"># La méthode la plus élégante est d'utiliser groupby()</span>
+<span class="code-variable">description_par_groupe</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">groupby</span>(<span class="code-string">'Survived'</span>)[[<span class="code-string">'Age'</span>, <span class="code-string">'Fare'</span>]].<span class="code-function">describe</span>()
+<span class="code-builtin">print</span>(<span class="code-variable">description_par_groupe</span>)</code></pre>
+                    <p class="mt-4"><strong>Analyse :</strong> La moyenne du tarif payé par les survivants est bien plus élevée. De plus, la moyenne d'âge des survivants est légèrement inférieure. Cela suggère que les passagers plus riches et plus jeunes avaient de meilleures chances de survie.</p>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quelle mesure de tendance centrale est la plus sensible aux valeurs extrêmes ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La moyenne</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La médiane</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le mode</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) L'écart-type</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Si les données sont très étalées, que pouvez-vous dire de leur écart-type ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Il sera petit.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Il sera grand.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Il sera égal à la moyenne.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Il sera négatif.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. La commande Pandas <code>.describe()</code> fonctionne mieux sur quel type de données ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Les données textuelles</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les données catégorielles</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Les données numériques</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Les dates</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans une distribution avec une asymétrie à droite (queue vers la droite), comment se positionne généralement la moyenne par rapport à la médiane ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La moyenne est supérieure à la médiane.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La moyenne est inférieure à la médiane.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La moyenne est égale à la médiane.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) C'est impossible à dire.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Que représente l'Écart Interquartile (IQR) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) L'étendue totale des données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La valeur la plus fréquente.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) L'étendue des 50% de données centrales.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La différence entre la moyenne et la médiane.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Moyenne vs. Médiane :</strong> Dans quel scénario préféreriez-vous utiliser la médiane plutôt que la moyenne pour décrire le "centre" d'un jeu de données, et pourquoi ?</p>
+                    <p><strong>2. Détection d'anomalies :</strong> Le box plot est un excellent outil pour visualiser l'IQR. Les points qui apparaissent en dehors des "moustaches" du box plot sont souvent considérés comme des valeurs aberrantes (outliers). Pourquoi est-il important d'identifier ces points avant de construire un modèle de machine learning ?</p>
+                    <p><strong>3. Au-delà des nombres :</strong> Les statistiques descriptives s'appliquent aussi au texte. Si vous aviez une colonne contenant des critiques de films, quelles statistiques (non numériques) pourriez-vous calculer pour commencer à comprendre ces données ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

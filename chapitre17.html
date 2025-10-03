@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 17: Le Surapprentissage (Overfitting)</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour les formules mathématiques -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E2D3B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 17. Overfitting - Le piège mortel du Machine Learning
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Imaginez que vous apprenez pour un examen. Vous avez trois approches : le <strong>sous-apprentissage</strong> (vous survolez à peine le cours), le <strong>bon ajustement</strong> (vous comprenez les concepts clés et pouvez répondre à de nouvelles questions) et le <strong>surapprentissage</strong> (vous apprenez par cœur chaque question et réponse sans comprendre la logique). En machine learning, le surapprentissage (overfitting) est le piège mortel qui attend tout data scientist. Le modèle devient un expert des données qu'il a vues, mais un novice face à l'inconnu.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Apprendre par cœur n'est pas apprendre</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Qu'est-ce que l'overfitting ?</h3>
+                        <p class="mb-4 text-justify">
+                            L'overfitting (ou surajustement) se produit quand un modèle est trop complexe et qu'il "apprend par cœur" les données d'entraînement, y compris leur bruit et leurs particularités aléatoires. Au lieu d'apprendre la tendance générale (le "signal"), il mémorise les exemples. Par conséquent, le modèle obtient des scores spectaculaires sur les données qu'il a déjà vues, mais il est incapable de généraliser à de nouvelles données.
+                        </p>
+                        <div class="bg-gray-900/50 p-4 rounded-lg">
+                            [Image de graphiques comparant underfitting, good fit et overfitting]
+                            <p class="text-center text-sm text-gray-400 italic mt-2">De gauche à droite : un modèle trop simple (underfitting), un modèle bien ajusté qui capture la tendance, et un modèle trop complexe qui mémorise le bruit (overfitting).</p>
+                        </div>
+                    </div>
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Le compromis Biais-Variance</h3>
+                        <p class="mb-4 text-justify">Ce problème est au cœur d'un concept fondamental. Imaginez que vous jouez aux fléchettes. L'erreur de votre modèle peut être décomposée en trois parties :</p>
+                        
+                        <div class="bg-gray-900/50 p-4 rounded-md text-center my-4">
+                            <p class="text-xl font-bold text-gray-200">$$ Erreur = Biais^2 + Variance + Erreur\;irréductible $$</p>
+                        </div>
+
+                        <ul class="list-none space-y-4">
+                            <li class="p-4 bg-blue-500/10 border-l-4 border-blue-400 rounded-r-md">
+                                <strong class="text-blue-300">Le Biais (Underfitting) :</strong> C'est une erreur systématique. Votre modèle est trop simple et fait des hypothèses erronées.
+                                <br><em>Analogie :</em> Vos fléchettes sont toutes groupées, mais loin du centre de la cible. Vous visez systématiquement au mauvais endroit.
+                            </li>
+                            <li class="p-4 bg-purple-500/10 border-l-4 border-purple-400 rounded-r-md">
+                                <strong class="text-purple-300">La Variance (Overfitting) :</strong> C'est la sensibilité du modèle aux petites fluctuations des données d'entraînement. Votre modèle est trop complexe et instable.
+                                <br><em>Analogie :</em> Vos fléchettes sont dispersées partout sur la cible. En moyenne, vous visez le centre, mais chaque lancer est imprévisible.
+                            </li>
+                        </ul>
+                         <div class="my-6">
+                            [Image de cibles de fléchettes illustrant le biais et la variance]
+                        </div>
+                        <p class="mt-4 text-justify">Le but du jeu est de trouver le "juste milieu" : un modèle assez complexe pour avoir un faible biais, mais pas au point d'avoir une variance explosive. C'est le compromis Biais-Variance.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'overfitting en action : L'Arbre de Décision trop zélé</h2>
+                 <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <p class="mb-4 text-justify">
+                        Voyons un exemple flagrant de surapprentissage avec l'un des modèles les plus intuitifs : l'Arbre de Décision. Imaginez un arbre qui peut poser autant de questions qu'il le souhaite ("Le passager est-il un homme ?", "Son âge est-il inférieur à 10 ans ?", "A-t-il payé plus de 50£ ?"). S'il n'a aucune limite, il continuera à créer des branches et des sous-branches jusqu'à ce qu'il ait une règle unique pour chaque passager des données d'entraînement. Il apprendra ainsi le jeu de données par cœur, mais ces règles ultra-spécifiques seront inutiles pour de nouveaux passagers.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-900/50 rounded-lg">
+                            <h4 class="font-bold text-lg text-cyan-300 mb-2">Le Code de l'Expérience</h4>
+                            <p class="mb-3 text-sm">Nous allons entraîner deux arbres : le premier sans aucune limite de complexité, et le second en lui interdisant de dépasser une "profondeur" de 4 niveaux de questions.</p>
+                            <pre><code><span class="code-comment"># Préparation des données et division en train/test</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">train_test_split</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.tree</span> <span class="code-keyword">import</span> <span class="code-variable">DecisionTreeClassifier</span>
+
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>(), <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Sex'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Sex'</span>].<span class="code-function">map</span>({<span class="code-string">'male'</span>: <span class="code-number">0</span>, <span class="code-string">'female'</span>: <span class="code-number">1</span>})
+<span class="code-variable">df</span>.<span class="code-function">drop</span>([<span class="code-string">'Cabin'</span>, <span class="code-string">'Name'</span>, <span class="code-string">'Ticket'</span>, <span class="code-string">'Embarked'</span>], <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">drop</span>(<span class="code-string">'Survived'</span>, <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>)
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Survived'</span>]
+<span class="code-variable">X_train</span>, <span class="code-variable">X_test</span>, <span class="code-variable">y_train</span>, <span class="code-variable">y_test</span> <span class="code-operator">=</span> <span class="code-function">train_test_split</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>, <span class="code-variable">test_size</span><span class="code-operator">=</span><span class="code-number">0.3</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+
+<span class="code-comment"># Modèle 1 : L'élève qui apprend par cœur (aucune limite)</span>
+<span class="code-variable">overfit_tree</span> <span class="code-operator">=</span> <span class="code-function">DecisionTreeClassifier</span>(<span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+<span class="code-variable">overfit_tree</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+
+<span class="code-comment"># Modèle 2 : L'élève qui généralise (profondeur limitée à 4)</span>
+<span class="code-variable">good_tree</span> <span class="code-operator">=</span> <span class="code-function">DecisionTreeClassifier</span>(<span class="code-variable">max_depth</span><span class="code-operator">=</span><span class="code-number">4</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+<span class="code-variable">good_tree</span>.<span class="code-function">fit</span>(<span class="code-variable">X_train</span>, <span class="code-variable">y_train</span>)
+
+<span class="code-comment"># Comparaison des scores</span>
+<span class="code-builtin">print</span>(<span class="code-string">"--- Modèle en surapprentissage (profondeur infinie) ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score sur les données d'entraînement (le 'par cœur') : {overfit_tree.score(X_train, y_train):.2%}"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score sur les données de test (l''examen') : {overfit_tree.score(X_test, y_test):.2%}"</span>)
+
+<span class="code-builtin">print</span>(<span class="code-string">"\\n--- Modèle régularisé (profondeur max = 4) ---"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score d'entraînement : {good_tree.score(X_train, y_train):.2%}"</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Score de test : {good_tree.score(X_test, y_test):.2%}"</span>)</code></pre>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-gray-900/50 p-4 rounded-lg border border-red-500/50">
+                        <h4 class="font-bold text-lg mb-2 text-red-400">Analyse : Le drapeau rouge de l'overfitting</h4>
+                        <p class="text-justify">
+                            Le premier modèle est un exemple parfait de surapprentissage. Il obtient un score quasi parfait de <strong>98,23%</strong> sur les données qu'il a déjà vues, mais sa performance chute drastiquement à <strong>74,25%</strong> sur de nouvelles données. Cet écart énorme est LE signe qui doit vous alerter.
+                        </p>
+                        <p class="text-justify mt-2 text-green-300">
+                            Le second modèle, en limitant sa complexité (`max_depth=4`), obtient un score d'entraînement plus modeste de <strong>82,82%</strong>, mais son score de test est bien meilleur et plus proche : <strong>79,10%</strong>. Il n'est pas parfait, mais il a appris des règles plus générales et robustes. Il a sacrifié la perfection sur le "par cœur" pour une meilleure performance dans le monde réel.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'arsenal anti-overfitting</h2>
+                <p class="mb-6 text-lg text-justify">Heureusement, nous avons plusieurs armes à notre disposition pour dompter nos modèles trop zélés. Un bon data scientist ne se contente pas de construire un modèle, il le sculpte et le contraint pour qu'il généralise bien.</p>
+                <div class="space-y-6">
+                    <!-- Stratégie 1 -->
+                    <div class="p-6 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-xl text-cyan-300 mb-2">1. Simplifier le modèle (Le minimalisme)</h3>
+                        <p class="text-justify">C'est la première ligne de défense. Au lieu de laisser le modèle devenir infiniment complexe, on lui impose des limites. Ces limites sont des "hyperparamètres" que nous choisissons avant l'entraînement.
+                        <br><strong>Exemples :</strong> Pour un Arbre de Décision, on peut limiter sa `max_depth` (profondeur maximale) ou augmenter `min_samples_leaf` (le nombre minimum d'exemples dans une feuille).</p>
+                    </div>
+                    <!-- Stratégie 2 -->
+                    <div class="p-6 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-xl text-cyan-300 mb-2">2. La Régularisation (La taxe sur la complexité)</h3>
+                        <p class="text-justify mb-4">Cette technique ajoute une "pénalité" à la fonction de coût du modèle. Le modèle est alors incité non seulement à bien prédire, mais aussi à garder ses paramètres internes (ses coefficients) petits. Des coefficients élevés sont souvent un signe de surapprentissage.
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Régularisation L2 (Ridge) :</strong> Pénalise la somme des carrés des coefficients. Elle pousse tous les coefficients à diminuer de concert, sans jamais les annuler complètement. C'est la plus courante.</li>
+                             <li><strong>Régularisation L1 (Lasso) :</strong> Pénalise la somme des valeurs absolues des coefficients. Elle a la particularité de pouvoir réduire certains coefficients à exactement zéro, effectuant ainsi une sélection automatique des features les plus importantes.</li>
+                        </ul>
+                        </p>
+                    </div>
+                    <!-- Stratégie 3 -->
+                    <div class="p-6 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-xl text-cyan-300 mb-2">3. La Validation Croisée (L'examen blanc multiple)</h3>
+                        <p class="text-justify">Une simple division train/test peut être trompeuse si, par malchance, le test est particulièrement "facile". La validation croisée (Cross-Validation) est une méthode beaucoup plus robuste. On divise les données d'entraînement en plusieurs "plis" (par exemple, 5). On entraîne le modèle 5 fois, en utilisant à chaque fois un pli différent comme ensemble de validation. Le score final est la moyenne des 5 scores. Cela donne une bien meilleure estimation de la performance du modèle sur des données qu'il n'a jamais vues.</p>
+                        [Image d'un diagramme de validation croisée à 5 plis]
+                    </div>
+                    <!-- Stratégie 4 -->
+                    <div class="p-6 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-xl text-cyan-300 mb-2">4. Obtenir plus de données (Le remède miracle)</h3>
+                        <p class="text-justify">C'est souvent la solution la plus efficace, mais aussi la plus coûteuse. Avec plus d'exemples, le modèle est forcé de trouver des tendances plus générales pour expliquer les données et ne peut plus se permettre de mémoriser les exceptions. Quand il n'est pas possible d'obtenir de nouvelles données, on peut parfois utiliser des techniques d'<strong>augmentation de données</strong> (par exemple, en créant de nouvelles images en pivotant ou en zoomant sur des images existantes).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Challenge : L'effet de la Régularisation</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-4">
+                    <p class="text-lg text-justify">Explorons l'effet de la régularisation L2 (Ridge) sur une régression linéaire. Lorsque l'on augmente la force de la régularisation, on s'attend à ce que le modèle soit plus contraint et que ses coefficients diminuent.</p>
+                    <div>
+                        <h3 class="font-bold text-cyan-300">Votre mission :</h3>
+                        <ul class="list-decimal list-inside pl-4 mt-2 space-y-1">
+                            <li>Utilisez le modèle <code>Ridge</code> de Scikit-Learn sur le jeu de données de régression simple du chapitre 14.</li>
+                            <li>Entraînez plusieurs modèles en faisant varier l'hyperparamètre <code>alpha</code> (la force de la pénalité) sur une large échelle (ex: 0.01, 0.1, 1, 10, 100).</li>
+                            <li>Pour chaque <code>alpha</code>, affichez les coefficients appris par le modèle.</li>
+                            <li>Analysez comment les coefficients évoluent lorsque <code>alpha</code> augmente.</li>
+                        </ul>
+                    </div>
+                    <details class="bg-gray-900/50 p-4 rounded-md cursor-pointer">
+                        <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                        <div class="mt-4">
+                            <pre><code><span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.linear_model</span> <span class="code-keyword">import</span> <span class="code-variable">Ridge</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.linear_model</span> <span class="code-keyword">import</span> <span class="code-variable">LinearRegression</span>
+
+<span class="code-comment"># 1. On recrée les données du chapitre 14</span>
+<span class="code-variable">np</span>.<span class="code-variable">random</span>.<span class="code-function">seed</span>(<span class="code-number">0</span>)
+<span class="code-variable">X</span> <span class="code-operator">=</span> <span class="code-number">2</span> <span class="code-operator">*</span> <span class="code-variable">np</span>.<span class="code-variable">random</span>.<span class="code-function">rand</span>(<span class="code-number">100</span>, <span class="code-number">1</span>)
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-number">4</span> <span class="code-operator">+</span> <span class="code-number">3</span> <span class="code-operator">*</span> <span class="code-variable">X</span> <span class="code-operator">+</span> <span class="code-variable">np</span>.<span class="code-variable">random</span>.<span class="code-function">randn</span>(<span class="code-number">100</span>, <span class="code-number">1</span>)
+
+<span class="code-comment"># Entraînement d'un modèle simple pour référence</span>
+<span class="code-variable">lr</span> <span class="code-operator">=</span> <span class="code-function">LinearRegression</span>()
+<span class="code-variable">lr</span>.<span class="code-function">fit</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>)
+<span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Coefficient sans régularisation : {lr.coef_[0][0]:.4f}"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">"-"</span><span class="code-operator">*</span><span class="code-number">40</span>)
+
+<span class="code-comment"># 2. On teste différentes forces de régularisation</span>
+<span class="code-variable">alphas</span> <span class="code-operator">=</span> [<span class="code-number">0.01</span>, <span class="code-number">0.1</span>, <span class="code-number">1</span>, <span class="code-number">10</span>, <span class="code-number">100</span>]
+
+<span class="code-keyword">for</span> <span class="code-variable">alpha</span> <span class="code-keyword">in</span> <span class="code-variable">alphas</span>:
+    <span class="code-comment"># 3. Créer et entraîner le modèle Ridge</span>
+    <span class="code-variable">model</span> <span class="code-operator">=</span> <span class="code-function">Ridge</span>(<span class="code-variable">alpha</span><span class="code-operator">=</span><span class="code-variable">alpha</span>)
+    <span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>)
+    
+    <span class="code-comment"># 4. Afficher les coefficients</span>
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Alpha = {alpha:&lt;5} | Coefficient appris (pente m) : {model.coef_[0][0]:.4f}"</span>)</code></pre>
+                            <div class="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-600">
+                                <h4 class="font-bold text-lg text-green-300">Interprétation :</h4>
+                                <p class="mt-2 text-justify">On observe clairement que plus la valeur d'<code>alpha</code> augmente, plus le coefficient du modèle se rapproche de zéro. Une valeur d'<code>alpha</code> élevée correspond à une forte pénalité sur la complexité. Le modèle est donc "forcé" de réduire la magnitude de ses coefficients pour minimiser la fonction de coût, ce qui le rend moins sensible aux variations des données d'entraînement. C'est l'essence même de la régularisation : on sacrifie un peu de performance sur les données d'entraînement pour obtenir un modèle plus simple et plus robuste.
+                                </p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Qu'est-ce que le surapprentissage (overfitting) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Un modèle trop simple qui ne parvient pas à capter la tendance des données.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Un modèle qui mémorise les données d'entraînement, y compris le bruit.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Un modèle qui a des performances égales sur les données d'entraînement et de test.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le processus de division des données en ensembles d'entraînement et de test.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Une "variance élevée" dans un modèle est un symptôme de :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Sous-apprentissage (Underfitting)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Biais élevé</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Surapprentissage (Overfitting)</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Un bon ajustement</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Laquelle de ces stratégies est une méthode efficace pour combattre l'overfitting ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Utiliser un modèle plus complexe.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Entraîner le modèle plus longtemps.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Utiliser moins de données d'entraînement.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Utiliser la régularisation pour pénaliser la complexité.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans un Arbre de Décision, que contrôle principalement l'hyperparamètre `max_depth` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La complexité de l'arbre.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le nombre de données utilisées pour l'entraînement.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La vitesse d'entraînement du modèle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le type de données que l'arbre peut utiliser.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Un score d'entraînement de 99% et un score de test de 70% est un signe clair de :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Sous-apprentissage</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Surapprentissage</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Un modèle bien généralisé</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Données de test trop faciles</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le Biais contre la Variance :</strong> En pratique, comment décideriez-vous s'il vaut mieux avoir un modèle avec un peu plus de biais ou un peu plus de variance ? De quels facteurs votre décision dépendrait-elle ?</p>
+                    <p><strong>2. La Validation Croisée :</strong> Pourquoi la validation croisée est-elle une méthode d'évaluation plus fiable qu'une simple division en ensembles d'entraînement et de test ? Quel est son principal inconvénient ?</p>
+                    <p><strong>3. L'overfitting silencieux :</strong> Peut-on être en situation de surapprentissage même si les scores d'entraînement et de test sont très proches ? (Indice : que se passe-t-il si notre ensemble de test ressemble par hasard beaucoup à notre ensemble d'entraînement ?)</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = "Bravo, c'est la bonne réponse !";
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

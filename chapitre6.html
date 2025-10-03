@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 6: Calcul Différentiel et Descente de Gradient</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax pour le rendu des formules LaTeX -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 6. Le Calcul Différentiel pour les nuls - Comprendre la "descente de gradient"
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Comment une machine "apprend"-elle réellement ? Au cœur de presque tous les algorithmes de machine learning modernes se trouve un processus d'optimisation élégant appelé la descente de gradient. Pour le comprendre, imaginez un randonneur aveugle, perdu dans une vallée brumeuse, qui cherche le point le plus bas. Il ne voit rien, mais en posant son bâton à côté de son pied, il peut sentir la pente du terrain. Pour descendre, il lui suffit de faire un petit pas dans la direction où la pente est la plus forte vers le bas. Il répète ce processus encore et encore, et finit par atteindre le fond de la vallée.
+                </p>
+                 <div class="mt-6 border-l-4 border-cyan-400 pl-4 italic text-gray-400">
+                    <p>Dans cette analogie :</p>
+                    <ul class="list-disc list-inside mt-2">
+                        <li>La <strong>vallée</strong> est notre <strong>fonction de coût</strong>, une mesure de l'erreur du modèle.</li>
+                        <li>Le <strong>bâton</strong> est la <strong>dérivée</strong> (ou le gradient), qui mesure la pente.</li>
+                        <li>La <strong>stratégie de déplacement</strong> est l'algorithme de <strong>descente de gradient</strong>.</li>
+                        <li>Le <strong>but</strong> est de trouver le point le plus bas, c'est-à-dire les paramètres du modèle qui <strong>minimisent l'erreur</strong>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Le vocabulaire de l'optimisation</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Qu'est-ce qu'une fonction de coût ?</h3>
+                        <p class="mb-4 text-justify">Une fonction de coût (ou fonction de perte, \(J(\theta)\)) est une mesure de l'erreur d'un modèle. Elle compare les prédictions du modèle aux vraies valeurs et renvoie un seul nombre qui quantifie à quel point le modèle est "mauvais". Un score élevé signifie de grosses erreurs, un score proche de zéro signifie que le modèle est performant. Le but de l'entraînement est de trouver les paramètres \(\theta\) qui rendent ce score le plus bas possible.</p>
+                    </div>
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Qu'est-ce qu'une dérivée et un gradient ?</h3>
+                        <p class="mb-4 text-justify">La <strong>dérivée</strong> d'une fonction en un point est la pente de la ligne tangente à ce point. C'est le "bâton" de notre randonneur. Elle indique la direction (montée/descente) et l'intensité du changement. Le <strong>gradient</strong>, noté \(\nabla J(\theta)\), est simplement la généralisation de la dérivée pour des fonctions avec plusieurs variables (les paramètres \(\theta\)). C'est un vecteur qui pointe toujours dans la direction de la plus forte pente ascendante. Pour descendre, il suffit donc d'aller dans la direction opposée au gradient.</p>
+                         <p class="text-center my-4">[Image de la pente d'une courbe en un point]</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'Algorithme de la Descente de Gradient</h2>
+                <p class="text-lg text-justify mb-6">
+                    La recette est une boucle simple qui met à jour les paramètres du modèle pour minimiser la fonction de coût. Voici les étapes en détail :
+                </p>
+
+                <div class="space-y-6">
+                    <div class="bg-gray-800/50 p-4 rounded-lg">
+                        <p><strong>Étape 1 : Initialisation</strong><br> On commence par choisir un point de départ aléatoire. En machine learning, cela signifie initialiser les paramètres du modèle (appelés poids et biais, notés \(\theta\)) avec de petites valeurs aléatoires.</p>
+                    </div>
+                    <div class="bg-gray-800/50 p-4 rounded-lg">
+                        <p><strong>Étape 2 : Calcul du Gradient</strong><br> À la position actuelle, on calcule le gradient de la fonction de coût, \(\nabla J(\theta)\). Ce vecteur nous indique la direction de la "montée" la plus raide. Chaque composant du gradient est une dérivée partielle, qui nous dit comment l'erreur change si on modifie un seul paramètre.</p>
+                    </div>
+                    <div class="bg-gray-800/50 p-4 rounded-lg">
+                        <p><strong>Étape 3 : Mise à jour des paramètres</strong><br> On fait un petit pas dans la direction opposée au gradient pour descendre la pente. La taille de ce pas est contrôlée par le <strong>taux d'apprentissage</strong> (<em>learning rate</em>), noté \(\alpha\). La formule de mise à jour pour tous les paramètres \(\theta\) est :</p>
+                        <p class="text-center my-4 text-xl">
+                            \[ \theta_{\text{nouveau}} := \theta_{\text{actuel}} - \alpha \nabla J(\theta_{\text{actuel}}) \]
+                        </p>
+                    </div>
+                     <div class="bg-gray-800/50 p-4 rounded-lg">
+                        <p><strong>Étape 4 : Répétition</strong><br> On répète les étapes 2 et 3 un grand nombre de fois (pendant plusieurs "époques"). À chaque pas, on s'approche un peu plus du fond de la vallée. On arrête lorsque les paramètres ne changent presque plus, ce qui signifie qu'on a "convergé" vers un minimum.</p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-blue-400 mt-8 mb-4">Le Taux d'Apprentissage (\(\alpha\)) : L'art de bien choisir la taille du pas</h3>
+                 <p class="text-lg text-justify mb-6">
+                    Le choix du taux d'apprentissage est crucial :
+                </p>
+                <ul class="list-disc list-inside space-y-2 mb-4">
+                    <li><strong>Trop petit :</strong> L'apprentissage est très lent, comme un randonneur faisant des pas de fourmi. Il mettra une éternité à atteindre le fond.</li>
+                    <li><strong>Trop grand :</strong> L'algorithme risque de faire des pas de géant et de "sauter" par-dessus le minimum, sans jamais y arriver, voire en s'éloignant de plus en plus (divergence).</li>
+                </ul>
+                <p class="text-center my-4">[Image de l'effet du taux d'apprentissage sur la convergence]</p>
+                 <p class="text-lg text-justify">Trouver un bon taux d'apprentissage (souvent des valeurs comme 0.1, 0.01, ou 0.001) est un art qui relève de l'expérimentation.</p>
+            </section>
+
+             <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Implémenter la descente de gradient</h2>
+                <p class="text-lg text-justify mb-6">
+                    Mettons cela en pratique. Notre but est de trouver le point le plus bas (le minimum) de la fonction \(f(x) = x^2\). Nous savons que la réponse est \(x=0\), mais nous allons laisser l'algorithme le découvrir par lui-même.
+                </p>
+
+                <div class="space-y-6">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">1. Définir la fonction et sa dérivée</h3>
+                        <p class="mb-4">Nous avons besoin de deux choses : la fonction de coût elle-même (notre "vallée") et sa dérivée (qui nous donne la pente en tout point).</p>
+                        <ul class="list-disc list-inside mb-4 pl-4">
+                            <li>Fonction de coût : \(f(x) = x^2\)</li>
+                            <li>Dérivée (gradient) : \(f'(x) = 2x\)</li>
+                        </ul>
+                        <pre><code><span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+<span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+
+<span class="code-keyword">def</span> <span class="code-function">f</span>(<span class="code-variable">x</span>): <span class="code-keyword">return</span> <span class="code-variable">x</span><span class="code-operator">**</span><span class="code-number">2</span>
+<span class="code-keyword">def</span> <span class="code-function">derivative_f</span>(<span class="code-variable">x</span>): <span class="code-keyword">return</span> <span class="code-number">2</span><span class="code-operator">*</span><span class="code-variable">x</span></code></pre>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">2. L'algorithme pas à pas</h3>
+                        <p class="mb-4">Initialisons nos paramètres :</p>
+                        <pre><code><span class="code-variable">x_current</span> <span class="code-operator">=</span> <span class="code-operator">-</span><span class="code-number">8.0</span>      <span class="code-comment"># Point de départ du randonneur</span>
+<span class="code-variable">learning_rate</span> <span class="code-operator">=</span> <span class="code-number">0.1</span>   <span class="code-comment"># Taux d'apprentissage (la taille du pas)</span>
+<span class="code-variable">iterations</span> <span class="code-operator">=</span> <span class="code-number">25</span>       <span class="code-comment"># Le nombre de pas à effectuer</span></code></pre>
+                        
+                        <p class="mt-4"><strong>Première itération (pas 1) :</strong></p>
+                        <ul class="list-decimal list-inside space-y-2 pl-4">
+                            <li><strong>Position actuelle :</strong> \(x_0 = -8.0\)</li>
+                            <li><strong>Calcul du gradient :</strong> \(f'(-8.0) = 2 \times (-8.0) = -16.0\) (La pente est très forte et descendante)</li>
+                            <li><strong>Mise à jour :</strong> \(x_1 = x_0 - \alpha \times \text{gradient} = -8.0 - 0.1 \times (-16.0) = -8.0 + 1.6 = -6.4\)</li>
+                        </ul>
+                         <p class="mt-4"><strong>Seconde itération (pas 2) :</strong></p>
+                        <ul class="list-decimal list-inside space-y-2 pl-4">
+                            <li><strong>Position actuelle :</strong> \(x_1 = -6.4\)</li>
+                            <li><strong>Calcul du gradient :</strong> \(f'(-6.4) = 2 \times (-6.4) = -12.8\)</li>
+                            <li><strong>Mise à jour :</strong> \(x_2 = -6.4 - 0.1 \times (-12.8) = -6.4 + 1.28 = -5.12\)</li>
+                        </ul>
+                        <p class="mt-4">... et ainsi de suite. On voit que l'on se rapproche progressivement de 0.</p>
+                    </div>
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">3. Code complet et visualisation</h3>
+                        <pre><code><span class="code-comment"># On stocke l'historique des positions pour la visualisation</span>
+<span class="code-variable">history</span> <span class="code-operator">=</span> [<span class="code-variable">x_current</span>]
+
+<span class="code-keyword">for</span> <span class="code-variable">i</span> <span class="code-keyword">in</span> <span class="code-function">range</span>(<span class="code-variable">iterations</span>):
+    <span class="code-comment"># On calcule la pente (le gradient) à notre position actuelle</span>
+    <span class="code-variable">gradient</span> <span class="code-operator">=</span> <span class="code-function">derivative_f</span>(<span class="code-variable">x_current</span>)
+    
+    <span class="code-comment"># On fait un pas dans la direction opposée au gradient</span>
+    <span class="code-variable">x_current</span> <span class="code-operator">=</span> <span class="code-variable">x_current</span> <span class="code-operator">-</span> <span class="code-variable">learning_rate</span> <span class="code-operator">*</span> <span class="code-variable">gradient</span>
+    
+    <span class="code-comment"># On enregistre notre nouvelle position</span>
+    <span class="code-variable">history</span>.<span class="code-function">append</span>(<span class="code-variable">x_current</span>)
+
+<span class="code-builtin">print</span>(<span class="code-string">f"Minimum trouvé après {</span><span class="code-variable">iterations</span><span class="code-string">} itérations : x = {</span><span class="code-variable">x_current</span><span class="code-string">:.4f}"</span>)
+
+<span class="code-comment"># ... (code de visualisation avec matplotlib) ...</span></code></pre>
+                        <p class="mt-4">Le graphique généré montrera les points rouges (nos étapes) dévalant la courbe bleue pour s'approcher du minimum à \(x=0\).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : La malédiction des minimums locaux</h2>
+                <p class="text-lg text-justify mb-4">
+                    Le monde réel est rarement une seule vallée. Parfois, il y a des "minimums locaux". Votre mission : adaptez le code pour la fonction \(f(x) = x^4 - 4x^2 + 2\) (dérivée \(f'(x) = 4x^3 - 8x\)). Lancez l'algorithme depuis \(x=3\) puis depuis \(x=-3\). Observez-vous le même résultat ?
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la conclusion</summary>
+                    <p class="mt-4">
+                        Non, le résultat n'est pas le même ! L'algorithme se coince dans le "creux" le plus proche de son point de départ. Cela montre que l'initialisation des paramètres est cruciale en machine learning pour éviter de se retrouver dans une solution sous-optimale.
+                    </p>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Dans l'analogie du "randonneur aveugle", que représente la vallée brumeuse ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Les paramètres du modèle</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Le taux d'apprentissage</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La fonction de coût</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le gradient</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Quel est le rôle principal de la dérivée (ou du gradient) dans l'algorithme de descente de gradient ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Calculer l'erreur du modèle</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Indiquer la direction de la pente la plus raide</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Choisir le point de départ</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Stocker les données</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Que se passe-t-il si le taux d'apprentissage (learning rate) est trop grand ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) L'algorithme convergera plus vite vers le minimum.</button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) L'apprentissage sera très lent.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) L'algorithme risque de "sauter" par-dessus le minimum et de ne jamais converger.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le gradient deviendra nul.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Le gradient d'une fonction à plusieurs variables est un...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Nombre unique (scalaire)</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Vecteur</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Matrice</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Tenseur</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Le problème des "minimums locaux" illustre que la descente de gradient...</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) est une méthode toujours parfaite.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) ne fonctionne que pour des fonctions simples comme \(x^2\).</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) trouve toujours le point le plus bas possible (minimum global).</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) peut se coincer dans une solution sous-optimale selon son point de départ.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le taux d'apprentissage adaptatif :</strong> Pourquoi pourrait-il être intelligent de diminuer la taille du "pas" (le taux d'apprentissage) à mesure que le randonneur s'approche du fond de la vallée ?</p>
+                    <p><strong>2. Descente de gradient stochastique :</strong> Pour un très grand jeu de données, calculer le gradient exact à chaque étape peut être très long. Pouvez-vous imaginer une manière plus rapide (même si moins précise) d'estimer la pente à chaque pas ?</p>
+                    <p><strong>3. Les limites de la méthode :</strong> Imaginez que notre randonneur se trouve sur un immense plateau parfaitement plat. Que ferait l'algorithme de descente de gradient dans cette situation ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

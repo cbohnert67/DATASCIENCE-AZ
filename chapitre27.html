@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 27: Le Data Storytelling</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 27 : Le Data Storytelling - Comment transformer vos analyses en histoires captivantes
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Une analyse brillante, un modèle prédictif incroyable... tout cela ne sert à rien si personne ne vous comprend, ou pire, si personne ne vous écoute. Le "data storytelling" est la compétence finale et cruciale du data scientist : c'est l'art de transformer vos chiffres, vos graphiques et vos résultats en une histoire claire, mémorable et convaincante qui pousse votre audience à l'action. Ce n'est pas juste "faire de jolis graphiques". C'est construire un pont entre les données et la décision.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Avant de commencer : Connaissez votre public</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                    <p class="mb-6 text-justify text-lg">Une histoire n'existe pas sans audience. C'est la règle d'or. Avant même d'ouvrir un notebook ou de penser à un type de graphique, vous devez devenir un détective et profiler votre public. Votre succès en dépend.</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-xl text-blue-400">1. À qui est-ce que je parle ?</h4>
+                            <p class="pl-4 text-justify">Identifiez les rôles et les responsabilités. Un PDG, un chef de produit, un ingénieur logiciel n'ont pas les mêmes préoccupations ni le même jargon.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xl text-blue-400">2. Quel est leur niveau de connaissance technique ?</h4>
+                            <p class="pl-4 text-justify">C'est le piège le plus courant. Ne supposez jamais que votre public comprend des termes comme "RMSE", "p-value" ou "noyau RBF". Si vous parlez à des non-techniciens, vous devez traduire ces concepts en langage courant et vous concentrer sur les implications, pas sur la méthode.</p>
+                        </div>
+                         <div>
+                            <h4 class="font-bold text-xl text-blue-400">3. Qu'est-ce qui est important pour eux ? (Le WIIFM : "What's In It For Me?")</h4>
+                            <p class="pl-4 text-justify">Votre audience écoute avec un filtre : "En quoi cela me concerne ?". Vous devez répondre à cette question. Un directeur financier se soucie des coûts et du ROI. Une équipe marketing se soucie de l'acquisition et de l'engagement client. Une équipe d'ingénieurs se soucie de la faisabilité et de la performance technique. Connectez toujours vos résultats à leurs objectifs.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xl text-blue-400">4. Quelle est LA chose qu'ils doivent retenir ?</h4>
+                            <p class="pl-4 text-justify">Imaginez que votre audience oublie 99% de ce que vous avez dit. Quelle est la seule phrase, le seul chiffre, la seule idée que vous voulez absolument qu'ils retiennent ? C'est le cœur de votre message. Toute votre histoire doit être construite pour amener à cette conclusion et la renforcer.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 bg-gray-900/50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-lg text-cyan-300 text-center mb-4">Exemple Concret : Adapter son message sur le Titanic</h4>
+                        <div class="grid md:grid-cols-2 gap-6 text-sm">
+                            <div class="bg-gray-800 p-3 rounded">
+                                <p class="font-bold">Pour un comité de direction (PDG, directeurs) :</p>
+                                <p class="mt-2"><strong>Ce qui compte pour eux :</strong> L'impact sur l'image de marque, la responsabilité, les leçons pour l'avenir.</p>
+                                <p class="mt-2"><strong>Le message principal :</strong> "La tragédie a été aggravée par une division sociale claire. Pour nos futures traversées, nous devons garantir des procédures d'évacuation équitables pour tous les passagers, indépendamment de leur classe, pour restaurer la confiance du public."</p>
+                            </div>
+                             <div class="bg-gray-800 p-3 rounded">
+                                <p class="font-bold">Pour les ingénieurs navals :</p>
+                                <p class="mt-2"><strong>Ce qui compte pour eux :</strong> Les défaillances techniques, les données précises, la conception des navires.</p>
+                                <p class="mt-2"><strong>Le message principal :</strong> "L'analyse des survivants par emplacement de cabine suggère une corrélation entre la proximité des canots de sauvetage et le taux de survie. Les plans de nos futurs navires doivent optimiser l'accès aux ponts d'évacuation depuis toutes les sections."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Les règles d'une bonne histoire</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">La structure en 3 actes</h3>
+                        <p class="mb-4 text-justify">Les humains sont programmés pour comprendre et retenir les histoires. En structurant votre analyse comme un récit, vous la rendez plus engageante et mémorable. Toute bonne histoire, d'un conte de fées à un blockbuster hollywoodien, suit cette structure simple :</p>
+                        <ol class="list-decimal list-inside space-y-6 text-lg">
+                            <li>
+                                <strong class="text-cyan-300">Acte 1 : Le Contexte (L'exposition)</strong>
+                                <p class="text-base text-justify pl-4 mt-1">C'est la mise en place. Vous devez présenter la situation de départ, la norme, le statu quo. L'objectif est de créer un terrain d'entente avec votre audience en parlant d'un sujet qu'elle connaît et qui lui importe. C'est ici que vous répondez à la question "Pourquoi devrais-je écouter ?".</p>
+                                <p class="italic text-gray-400 pl-4 mt-1 text-base"><strong>Exemple (Titanic) :</strong> "Le RMS Titanic était le plus grand paquebot du monde, réputé insubmersible, transportant plus de 2200 âmes. La norme de l'époque était que voyager en première classe offrait un confort et une sécurité inégalés."</p>
+                            </li>
+                            <li>
+                                <strong class="text-cyan-300">Acte 2 : La Complication (Le conflit)</strong>
+                                <p class="text-base text-justify pl-4 mt-1">C'est le cœur de votre histoire. Vous introduisez une tension, un problème, ou une découverte surprenante qui vient perturber le statu quo. C'est votre "Aha! moment", la raison d'être de votre analyse. L'audience doit se dire "Intéressant, je ne savais pas ça. Et alors ?".</p>
+                                <p class="italic text-gray-400 pl-4 mt-1 text-base"><strong>Exemple (Titanic) :</strong> "Pourtant, malgré la catastrophe, les chances de survie n'ont pas été les mêmes pour tous. Notre analyse révèle que certains groupes avaient systématiquement plus de chances de s'en sortir. Par exemple, être une femme multipliait par près de 4 les chances de survie."</p>
+                            </li>
+                            <li>
+                                <strong class="text-cyan-300">Acte 3 : La Résolution (Le dénouement)</strong>
+                                <p class="text-base text-justify pl-4 mt-1">C'est la conclusion de votre histoire. Vous apportez une réponse à la tension que vous avez créée. C'est votre recommandation, la solution au problème, la leçon à retenir. Elle doit être claire, concise et directement liée à la complication que vous avez exposée. C'est l'appel à l'action.</p>
+                                <p class="italic text-gray-400 pl-4 mt-1 text-base"><strong>Exemple (Titanic) :</strong> "Mais le facteur le plus déterminant était la classe sociale. Un passager de 1ère classe avait 62% de chances de survivre, contre seulement 25% pour un passager de 3ème. Cette inégalité flagrante face à l'urgence nous force à revoir nos protocoles d'évacuation pour garantir l'équité à l'avenir."</p>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">L'art de la simplicité : Maximiser le rapport signal/bruit</h3>
+                        <p class="mb-4 text-justify">C'est le concept le plus important en visualisation de données, popularisé par le statisticien Edward Tufte. Votre objectif est de communiquer avec un maximum de clarté et un minimum de distraction.</p>
+                        <div class="grid md:grid-cols-2 gap-6 my-4">
+                           <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-green-400">Le Signal</h4>
+                                <p>C'est l'information essentielle, le message que vous voulez transmettre. Ce sont les barres du graphique, les points sur la courbe, les annotations qui clarifient un point précis.</p>
+                            </div>
+                            <div class="bg-gray-900/50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-lg text-red-400">Le Bruit</h4>
+                                <p>C'est tout ce qui est visuellement présent mais n'ajoute pas de valeur informative. Le bruit distrait votre audience et dilue votre message.</p>
+                            </div>
+                        </div>
+                        <p class="mb-2"><strong>Votre mission :</strong> Pour chaque élément de votre graphique, posez-vous la question : "Si je supprime cet élément, la compréhension du message en sera-t-elle affectée ?".</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>Le Bruit à éliminer :</strong> Grilles de fond épaisses, bordures inutiles, ombres portées, effets 3D, couleurs criardes sans signification, étiquettes redondantes.</li>
+                            <li><strong>Le Signal à amplifier :</strong> Utiliser des titres percutants, des couleurs stratégiques pour attirer l'œil, et des annotations directes pour guider l'interprétation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                 <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Cas Pratique : D'un graphique d'exploration à une histoire</h2>
+                 <p class="mb-6 text-lg text-justify">Un graphique brut, tel qu'il sort d'une bibliothèque comme Matplotlib ou Seaborn, est un excellent outil de travail pour le data scientist. C'est un point de départ. Mais pour la communication, c'est un brouillon. Le présenter tel quel, c'est comme demander à votre public de lire vos notes de recherche au lieu de leur lire le rapport final. Voyons comment transformer ce brouillon en un message clair et percutant.</p>
+                
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                        <h4 class="font-semibold text-xl text-red-400 mb-2 text-center">Avant : Le graphique d'exploration</h4>
+                        [Image d'un graphique à barres par défaut de Matplotlib]
+                        <p class="mt-2 text-sm text-justify">Ce graphique est techniquement correct mais visuellement inefficace. Il est chargé de "bruit" : un titre générique, des couleurs sans signification, une grille et des bordures distrayantes. Il force le spectateur à faire tout le travail d'interprétation.</p>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                        <h4 class="font-semibold text-xl text-green-400 mb-2 text-center">Après : Le graphique explicatif</h4>
+                        [Image d'un graphique à barres storytelling épuré]
+                        <p class="mt-2 text-sm text-justify">Ce deuxième graphique est une histoire. Il utilise un titre fort, des couleurs intentionnelles pour guider l'œil, et a supprimé tout le désordre visuel. Le message est instantanément clair : la survie en 1ère classe était bien plus élevée.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 mt-8">
+                    <h3 class="text-2xl font-bold text-blue-400 mb-4">Le Code de la Transformation</h3>
+                    <p class="mb-4">Voici comment, en pratique, on peut passer du premier graphique au second en utilisant Matplotlib. La clé n'est pas la complexité du code, mais l'intention derrière chaque ligne.</p>
+                    <pre><code><span class="code-comment"># ... (code pandas pour calculer survival_by_class) ...</span>
+<span class="code-variable">fig</span>, <span class="code-variable">ax</span> = <span class="code-variable">plt</span>.<span class="code-function">subplots</span>(<span class="code-variable">figsize</span>=(<span class="code-number">8</span>, <span class="code-number">5</span>))
+
+<span class="code-comment"># 1. Utiliser des couleurs stratégiques</span>
+<span class="code-variable">colors</span> = [<span class="code-string">'#3B82F6'</span>, <span class="code-string">'#6B7280'</span>, <span class="code-string">'#6B7280'</span>] <span class="code-comment"># Bleu pour le signal, gris pour le bruit</span>
+<span class="code-variable">bars</span> = <span class="code-variable">ax</span>.<span class="code-function">bar</span>(<span class="code-variable">survival_by_class</span>.<span class="code-variable">index</span>, <span class="code-variable">survival_by_class</span>.<span class="code-variable">values</span>, <span class="code-variable">color</span>=<span class="code-variable">colors</span>)
+
+<span class="code-comment"># 2. Nettoyage : Supprimer le bruit visuel</span>
+<span class="code-variable">ax</span>.<span class="code-function">spines</span>[<span class="code-string">'top'</span>].<span class="code-function">set_visible</span>(<span class="code-literal">False</span>)
+<span class="code-variable">ax</span>.<span class="code-function">spines</span>[<span class="code-string">'right'</span>].<span class="code-function">set_visible</span>(<span class="code-literal">False</span>)
+<span class="code-variable">ax</span>.<span class="code-function">spines</span>[<span class="code-string">'left'</span>].<span class="code-function">set_visible</span>(<span class="code-literal">False</span>)
+<span class="code-variable">ax</span>.<span class="code-function">spines</span>[<span class="code-string">'bottom'</span>].<span class="code-function">set_color</span>(<span class="code-string">'#9CA3AF'</span>)
+<span class="code-variable">ax</span>.<span class="code-function">tick_params</span>(<span class="code-variable">bottom</span>=<span class="code-literal">False</span>, <span class="code-variable">left</span>=<span class="code-literal">False</span>)
+<span class="code-variable">ax</span>.<span class="code-function">set_yticks</span>([]) <span class="code-comment"># Cacher l'axe Y, on utilisera des annotations</span>
+<span class="code-variable">ax</span>.<span class="code-function">grid</span>(<span class="code-literal">False</span>)
+
+<span class="code-comment"># 3. Annotations : Ajouter les labels directement</span>
+<span class="code-keyword">for</span> <span class="code-variable">bar</span> <span class="code-keyword">in</span> <span class="code-variable">bars</span>:
+    <span class="code-variable">height</span> = <span class="code-variable">bar</span>.<span class="code-function">get_height</span>()
+    <span class="code-variable">ax</span>.<span class="code-function">text</span>(<span class="code-variable">bar</span>.<span class="code-function">get_x</span>() + <span class="code-variable">bar</span>.<span class="code-function">get_width</span>()/<span class="code-number">2</span>, <span class="code-variable">height</span> + <span class="code-number">0.02</span>,
+              <span class="code-function">f</span><span class="code-string">'{height:.0%}'</span>, <span class="code-variable">ha</span>=<span class="code-string">'center'</span>, <span class="code-variable">va</span>=<span class="code-string">'bottom'</span>, <span class="code-variable">fontsize</span>=<span class="code-number">12</span>, <span class="code-variable">fontweight</span>=<span class="code-string">'bold'</span>)
+
+<span class="code-comment"># 4. Titre clair et actionnable (le plus important !)</span>
+<span class="code-variable">ax</span>.<span class="code-function">set_title</span>(<span class="code-string">"Le statut social a été un facteur de vie ou de mort"</span>, <span class="code-variable">loc</span>=<span class="code-string">'left'</span>, <span class="code-variable">fontsize</span>=<span class="code-number">18</span>, <span class="code-variable">fontweight</span>=<span class="code-string">'bold'</span>)
+<span class="code-variable">ax</span>.<span class="code-function">text</span>(-<span class="code-number">0.5</span>, <span class="code-number">0.85</span>, <span class="code-string">"Les passagers de 1ère classe avaient plus de 2x plus de chances de survivre que ceux de 3ème classe"</span>,
+          <span class="code-variable">transform</span>=<span class="code-variable">ax</span>.<span class="code-variable">transAxes</span>, <span class="code-variable">ha</span>=<span class="code-string">"left"</span>, <span class="code-variable">fontsize</span>=<span class="code-number">12</span>, <span class="code-variable">color</span>=<span class="code-string">'#9CA3AF'</span>)
+
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+    </div>
+</section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous ! Racontez l'histoire du Titanic</h2>
+                <p class="text-lg text-justify mb-4">Vous êtes le data scientist en chef de la compagnie White Star Line et vous devez présenter les conclusions de votre analyse sur le naufrage à un comité de direction non technique. Le temps est limité.</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                    <p>Racontez l'histoire du Titanic en 3 graphiques clairs et simples. Votre but est d'expliquer quels facteurs ont le plus influencé la survie. Pensez à la structure en 3 actes et au principe du rapport signal/bruit.</p>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour une approche possible</summary>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <h4 class="font-semibold">Acte 1 : Le Contexte - L'ampleur de la tragédie</h4>
+                            <p class="text-sm"><strong>Graphique 1 :</strong> Un diagramme à barres simple. <strong>Titre :</strong> "Le Bilan Humain : Moins de 4 passagers sur 10 ont survécu". <strong>Visuel :</strong> Deux barres, une grande grise ("Non-survivants") et une petite bleue mise en évidence ("Survivants", avec "38%" annoté). <strong>Message :</strong> On pose le décor. La situation est grave.</p>
+                        </div>
+                         <div>
+                            <h4 class="font-semibold">Acte 2 : La Complication - Le premier facteur de division</h4>
+                            <p class="text-sm"><strong>Graphique 2 :</strong> Barres comparant le taux de survie hommes/femmes. <strong>Titre :</strong> "La règle 'les femmes et les enfants d'abord' a été drastiquement appliquée.". <strong>Visuel :</strong> Mettre la barre du taux de survie des femmes (~74%) en couleur vive et celle des hommes en gris. <strong>Message :</strong> Le genre a été un facteur de séparation incroyablement fort.</p>
+                        </div>
+                         <div>
+                            <h4 class="font-semibold">Acte 3 : La Résolution - Le facteur décisif</h4>
+                            <p class="text-sm"><strong>Graphique 3 :</strong> Barres comparant le taux de survie par classe. <strong>Titre :</strong> "Cependant, la classe sociale a créé une seconde division : les passagers de 1ère classe avaient 2.5x plus de chances de survivre.". <strong>Visuel :</strong> Mettre la barre de la 1ère classe en couleur vive. <strong>Message :</strong> C'est la conclusion percutante.</p>
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est l'objectif principal du data storytelling ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Créer les visualisations les plus complexes possibles.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Communiquer des résultats de manière claire pour inspirer une action.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Prouver que le modèle de machine learning est le plus performant.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Présenter toutes les données brutes disponibles.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Dans la structure narrative en 3 actes, que représente l'Acte 2 ("La Complication") ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La recommandation finale.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) La situation de départ que tout le monde connaît.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La description technique du modèle utilisé.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le problème ou la découverte principale de votre analyse.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Que signifie "maximiser le rapport signal/bruit" dans une visualisation de données ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Maximiser l'information essentielle et minimiser les éléments visuels superflus.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Utiliser le plus de couleurs et d'effets 3D possible pour attirer l'attention.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Rendre le graphique le plus grand possible.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Ajouter un maximum d'annotations et de légendes.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Lequel de ces titres est le meilleur pour un graphique de data storytelling ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) "Graphique à barres des ventes par trimestre"</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) "Les ventes du T3 ont dépassé les prévisions de 20%"</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) "Données de ventes"</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) "Figure 1"</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. La toute première étape avant de concevoir une présentation de données est de :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Choisir le type de graphique à utiliser.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Nettoyer les données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Choisir la palette de couleurs.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Définir l'audience et le message principal.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Le piège de la complexité :</strong> Pourquoi un data scientist pourrait-il être tenté de créer un graphique techniquement "parfait" mais visuellement trop complexe, et pourquoi est-ce souvent une mauvaise idée pour communiquer ?</p>
+                    <p><strong>2. Storytelling sans graphiques :</strong> Pouvez-vous imaginer une situation où la meilleure façon de raconter une histoire avec des données serait de n'utiliser qu'une seule phrase ou un seul chiffre, sans aucun graphique ?</p>
+                    <p><strong>3. L'éthique du storytelling :</strong> Comment le data storytelling peut-il être utilisé pour manipuler ou tromper une audience ? Quelle est la responsabilité d'un data scientist pour présenter une histoire "honnête" ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

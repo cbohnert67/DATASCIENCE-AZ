@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 32: Déployer son premier modèle avec Flask</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; }
+        .code-function { color: #DCDCAA; }
+        .code-string { color: #CE9178; }
+        .code-comment { color: #6A9955; font-style: italic; }
+        .code-number { color: #B5CEA8; }
+        .code-builtin { color: #569CD6; }
+        .code-variable { color: #9CDCFE; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 32 : Déployer son premier modèle avec Flask - De votre ordinateur au monde entier
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Un modèle de Machine Learning dans un notebook, c'est bien. Un modèle utilisable par n'importe qui via une simple URL, c'est beaucoup mieux. Le déploiement est l'étape qui transforme votre projet de recherche en un produit réel. C'est le "dernier kilomètre", souvent le plus critique, qui donne de la valeur à votre travail. Flask est un "micro-framework" Python parfait pour créer une API web simple et légère autour de votre modèle, le rendant accessible au monde entier.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">De l'ordinateur au web</h2>
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Qu'est-ce qu'une API pour un modèle ?</h3>
+                        <p class="mb-4 text-justify">
+                            L'analogie du restaurant est parfaite. Votre modèle de Machine Learning est un chef cuisinier de génie, mais il est enfermé dans sa cuisine (votre ordinateur ou un serveur). Il ne parle pas aux clients. L'API est le serveur qui prend la commande du client (la requête avec les données), la transmet au chef dans un format qu'il comprend, récupère le plat préparé (la prédiction) et le rapporte au client.
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 bg-gray-900/50 p-4 rounded-md">
+                            <li><strong>Le Client (une app mobile, un site web) :</strong> "Je voudrais une prédiction pour une maison avec 3 chambres, 120m², dans le 5ème arrondissement."</li>
+                            <li><strong>Le Serveur (l'API Flask) :</strong> Reçoit cette demande, la traduit en une liste de chiffres `[3, 120, 5]` et l'envoie au Chef.</li>
+                            <li><strong>Le Chef (le modèle ML) :</strong> Reçoit `[3, 120, 5]` et, grâce à son entraînement, calcule un prix : `450000`.</li>
+                            <li><strong>Le Serveur (l'API Flask) :</strong> Reprend le chiffre `450000`, le met dans un format standard (JSON) comme `{"prediction_prix": 450000}` et le renvoie au Client.</li>
+                        </ul>
+                         <p class="mt-4 text-justify">Cette séparation est cruciale : le client n'a pas besoin de savoir comment le chef cuisine (quel algorithme est utilisé), et le chef peut être mis à jour ou remplacé sans que le client ne s'en aperçoive.</p>
+                         [Image d'un schéma d'API détaillé : Client -> Requête JSON -> API Flask -> Données NumPy -> Modèle -> Prédiction -> Réponse JSON -> Client]
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Les outils du déploiement simple</h3>
+                        <div class="space-y-4">
+                           <div class="bg-gray-900/50 p-4 rounded-lg">
+                               <h4 class="font-semibold text-lg text-cyan-300">Flask : La boîte à outils minimaliste</h4>
+                               <p>Imaginez que vous voulez construire une cabane. Un "gros" framework comme Django vous donnerait une cabane préfabriquée avec des murs, des fenêtres et un toit déjà en place. C'est rapide si la cabane vous convient, mais difficile à personnaliser. Flask, lui, vous donne une caisse à outils avec un marteau, des clous et une scie. C'est à vous de construire la cabane, mais vous avez une liberté totale sur sa forme. Pour une simple API (une "cabane" avec une seule pièce), Flask est parfait car il est léger et rapide à mettre en place.</p>
+                           </div>
+                           <div class="bg-gray-900/50 p-4 rounded-lg">
+                               <h4 class="font-semibold text-lg text-cyan-300">Route : Le panneau indicateur</h4>
+                               <p>Une route est un "panneau" qui indique à Flask quelle fonction exécuter quand une requête arrive à une certaine URL. Le symbole `@` en Python s'appelle un "décorateur". `@app.route('/predict')` décore la fonction qui le suit, en disant à Flask : "Hé, quand quelqu'un visite l'URL `/predict` de mon site, exécute le code de la fonction `predict()` juste en dessous."</p>
+                           </div>
+                           <div class="bg-gray-900/50 p-4 rounded-lg">
+                               <h4 class="font-semibold text-lg text-cyan-300">Pickle : "Mettre sous vide" votre modèle</h4>
+                               <p>Un modèle entraîné dans Scikit-Learn est un objet Python complexe qui contient des millions de chiffres (les "poids") appris pendant l'entraînement. Cet objet n'existe que dans la mémoire vive (RAM) de votre ordinateur. Si vous éteignez votre programme, tout est perdu. `pickle` est un outil qui permet de "mettre sous vide" cet objet : il le transforme en une suite d'octets que vous pouvez sauvegarder dans un fichier (souvent avec l'extension `.pkl`). Plus tard, votre application Flask peut "ouvrir le sachet" et recréer l'objet modèle à l'identique, avec tout son savoir intact, sans avoir à le ré-entraîner. C'est la sérialisation.</p>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Créer une API avec Flask</h2>
+                 <p class="text-lg text-justify mb-6">Le processus se fait en deux temps. D'abord, on joue le rôle de "l'ingénieur" qui prépare le modèle. Ensuite, on joue le rôle du "développeur" qui construit l'API autour de ce modèle.</p>
+                 <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Étape 1 : Entraîner et sauvegarder le modèle (fichier `train.py`)</h3>
+                        <p class="mb-4 text-justify">Ce script est notre phase de préparation. On l'exécute <strong>une seule fois</strong> pour créer le fichier `model.pkl` qui contient le "cerveau" de notre application.</p>
+<pre><code><span class="code-comment"># Importer les bibliothèques nécessaires</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.datasets</span> <span class="code-keyword">import</span> <span class="code-variable">load_iris</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.linear_model</span> <span class="code-keyword">import</span> <span class="code-variable">LogisticRegression</span>
+<span class="code-keyword">import</span> <span class="code-variable">pickle</span> <span class="code-comment"># La bibliothèque pour sérialiser notre modèle</span>
+
+<span class="code-builtin">print</span>(<span class="code-string">"Entraînement du modèle..."</span>)
+<span class="code-comment"># 1. Charger les données et entraîner un modèle, comme d'habitude.</span>
+<span class="code-variable">X</span>, <span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-function">load_iris</span>(<span class="code-variable">return_X_y</span><span class="code-operator">=</span><span class="code-literal">True</span>)
+<span class="code-variable">model</span> <span class="code-operator">=</span> <span class="code-function">LogisticRegression</span>(<span class="code-variable">max_iter</span><span class="code-operator">=</span><span class="code-number">200</span>)
+<span class="code-variable">model</span>.<span class="code-function">fit</span>(<span class="code-variable">X</span>, <span class="code-variable">y</span>)
+
+<span class="code-comment"># 2. Sauvegarder le modèle entraîné dans un fichier.</span>
+<span class="code-comment"># 'wb' signifie "write binary" (écrire en mode binaire), car pickle sauvegarde l'objet sous forme d'octets.</span>
+<span class="code-keyword">with</span> <span class="code-function">open</span>(<span class="code-string">'model.pkl'</span>, <span class="code-string">'wb'</span>) <span class="code-keyword">as</span> <span class="code-variable">f</span>:
+    <span class="code-comment"># La fonction dump() "verse" l'objet 'model' dans le fichier 'f'.</span>
+    <span class="code-variable">pickle</span>.<span class="code-function">dump</span>(<span class="code-variable">model</span>, <span class="code-variable">f</span>)
+
+<span class="code-builtin">print</span>(<span class="code-string">"Modèle entraîné et sauvegardé dans 'model.pkl'"</span>)
+</code></pre>
+                    </div>
+                     <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Étape 2 : Créer l'application API (fichier `app.py`)</h3>
+                        <p class="mb-4 text-justify">Ce script est le cœur de notre service. C'est un serveur qui va tourner en continu pour attendre et répondre aux requêtes de prédiction.</p>
+<pre><code><span class="code-keyword">from</span> <span class="code-variable">flask</span> <span class="code-keyword">import</span> <span class="code-variable">Flask</span>, <span class="code-variable">request</span>, <span class="code-variable">jsonify</span>
+<span class="code-keyword">import</span> <span class="code-variable">pickle</span>
+<span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+
+<span class="code-comment"># 1. Initialiser une nouvelle application Flask</span>
+<span class="code-variable">app</span> <span class="code-operator">=</span> <span class="code-function">Flask</span>(__name__)
+
+<span class="code-comment"># 2. Charger le modèle une seule fois, au démarrage de l'application</span>
+<span class="code-keyword">with</span> <span class="code-function">open</span>(<span class="code-string">'model.pkl'</span>, <span class="code-string">'rb'</span>) <span class="code-keyword">as</span> <span class="code-variable">f</span>: <span class="code-comment"># 'rb' = read binary</span>
+    <span class="code-variable">model</span> <span class="code-operator">=</span> <span class="code-variable">pickle</span>.<span class="code-function">load</span>(<span class="code-variable">f</span>)
+
+<span class="code-comment"># 3. Définir la route de prédiction. Elle n'accepte que les requêtes POST.</span>
+@app.route(<span class="code-string">'/predict'</span>, <span class="code-variable">methods</span><span class="code-operator">=</span>[<span class="code-string">'POST'</span>])
+<span class="code-keyword">def</span> <span class="code-function">predict</span>():
+    <span class="code-keyword">try</span>:
+        <span class="code-comment"># 4. Extraire les données JSON de la requête entrante</span>
+        <span class="code-variable">data</span> <span class="code-operator">=</span> <span class="code-variable">request</span>.<span class="code-function">get_json</span>(<span class="code-variable">force</span><span class="code-operator">=</span><span class="code-literal">True</span>)
+        
+        <span class="code-comment"># 5. Préparer les données pour le modèle (doit être un array 2D)</span>
+        <span class="code-variable">features</span> <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">array</span>(<span class="code-variable">data</span>[<span class="code-string">'features'</span>]).<span class="code-function">reshape</span>(<span class="code-number">1</span>, -<span class="code-number">1</span>)
+        
+        <span class="code-comment"># 6. Faire la prédiction</span>
+        <span class="code-variable">prediction</span> <span class="code-operator">=</span> <span class="code-variable">model</span>.<span class="code-function">predict</span>(<span class="code-variable">features</span>)
+        
+        <span class="code-comment"># 7. Formater la réponse en JSON</span>
+        <span class="code-variable">response</span> <span class="code-operator">=</span> {<span class="code-string">'prediction'</span>: <span class="code-function">int</span>(<span class="code-variable">prediction</span>[<span class="code-number">0</span>])}
+        
+        <span class="code-comment"># 8. Renvoyer la réponse</span>
+        <span class="code-keyword">return</span> <span class="code-function">jsonify</span>(<span class="code-variable">response</span>)
+        
+    <span class="code-keyword">except</span> <span class="code-variable">Exception</span> <span class="code-keyword">as</span> <span class="code-variable">e</span>:
+        <span class="code-comment"># Si une erreur se produit, renvoyer un message d'erreur clair</span>
+        <span class="code-keyword">return</span> <span class="code-function">jsonify</span>({<span class="code-string">'error'</span>: <span class="code-function">str</span>(<span class="code-variable">e</span>)})
+
+<span class="code-comment"># Ce bloc permet de lancer le serveur en exécutant `python app.py`</span>
+<span class="code-keyword">if</span> __name__ <span class="code-operator">==</span> <span class="code-string">'__main__'</span>:
+    <span class="code-comment"># debug=True est utile pour le développement, il ne faut pas l'utiliser en production.</span>
+    <span class="code-variable">app</span>.<span class="code-function">run</span>(<span class="code-variable">port</span><span class="code-operator">=</span><span class="code-number">5000</span>, <span class="code-variable">debug</span><span class="code-operator">=</span><span class="code-literal">True</span>)
+</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge pour vous !</h2>
+                <p class="text-lg text-justify mb-4">Votre API est en cours d'exécution, mais comment l'interroger ?</p>
+                <div class="bg-gray-700/50 p-4 rounded-md">
+                    <h3 class="font-bold text-cyan-300 mb-2">Votre mission :</h3>
+                    <p>Créez un second script Python, `test_api.py`, qui utilise la bibliothèque `requests` pour envoyer une requête POST à votre API locale avec les données d'une fleur Iris, puis affiche la prédiction retournée.</p>
+                </div>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer mt-4">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour la solution</summary>
+<pre class="mt-2"><code><span class="code-comment"># Fichier test_api.py</span>
+<span class="code-keyword">import</span> <span class="code-variable">requests</span>
+<span class="code-keyword">import</span> <span class="code-variable">json</span>
+
+<span class="code-variable">url</span> <span class="code-operator">=</span> <span class="code-string">'http://127.0.0.1:5000/predict'</span>
+<span class="code-variable">data</span> <span class="code-operator">=</span> {<span class="code-string">'features'</span>: [<span class="code-number">5.1</span>, <span class="code-number">3.5</span>, <span class="code-number">1.4</span>, <span class="code-number">0.2</span>]} <span class="code-comment"># Un exemple de fleur Iris Setosa</span>
+<span class="code-variable">response</span> <span class="code-operator">=</span> <span class="code-variable">requests</span>.<span class="code-function">post</span>(<span class="code-variable">url</span>, <span class="code-variable">json</span><span class="code-operator">=</span><span class="code-variable">data</span>)
+
+<span class="code-keyword">if</span> <span class="code-variable">response</span>.<span class="code-variable">status_code</span> <span class="code-operator">==</span> <span class="code-number">200</span>:
+    <span class="code-variable">result</span> <span class="code-operator">=</span> <span class="code-variable">response</span>.<span class="code-function">json</span>()
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Prédiction de l'API : {result['prediction']}"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-builtin">print</span>(<span class="code-function">f</span><span class="code-string">"Erreur : {response.text}"</span>)
+</code></pre>
+                </details>
+            </section>
+
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Quel est le rôle principal de la bibliothèque `pickle` dans le déploiement d'un modèle ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Sauvegarder un modèle entraîné dans un fichier et le recharger plus tard.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Créer l'application web.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Gérer les requêtes HTTP.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Entraîner le modèle de machine learning.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Dans Flask, qu'est-ce qu'une "route" ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Le chemin d'accès au fichier du modèle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Une fonction Python qui entraîne le modèle.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le port sur lequel le serveur est lancé.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Un lien entre une URL et une fonction Python qui s'exécute quand l'URL est appelée.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Quelle méthode HTTP est généralement utilisée pour envoyer des données à une API de prédiction afin d'obtenir un résultat ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) GET</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) POST</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) DELETE</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) UPDATE</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Dans le script `app.py`, à quoi sert `jsonify` ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À charger le modèle depuis le fichier `.pkl`.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À recevoir les données de la requête.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À convertir un dictionnaire Python en une réponse au format JSON.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À lancer le serveur Flask.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Pourquoi sépare-t-on le code d'entraînement (`train.py`) du code de l'application (`app.py`) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) C'est une obligation de la bibliothèque Flask.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour ne pas ré-entraîner le modèle à chaque fois qu'un utilisateur fait une requête.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour des raisons de style de code uniquement.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Pour pouvoir utiliser la bibliothèque `pickle`.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Robustesse :</strong> Notre API est très simple. Que se passerait-il si un utilisateur envoyait des données incorrectes (ex: du texte au lieu de chiffres, ou seulement 3 features au lieu de 4) ? Comment pourriez-vous rendre la fonction `predict()` plus robuste pour gérer ces erreurs ?</p>
+                    <p><strong>2. Déploiement "réel" :</strong> Le serveur de développement de Flask (`app.run()`) n'est pas fait pour être utilisé en production. Pour un vrai déploiement, on utilise un serveur de production comme Gunicorn ou uWSGI. Pourquoi, à votre avis ? (Indice : pensez à la gestion de plusieurs requêtes en même temps, à la sécurité et à la performance).</p>
+                    <p><strong>3. Alternatives à pickle :</strong> `pickle` est très pratique mais peut avoir des problèmes de compatibilité entre différentes versions de Python ou de bibliothèques. Recherchez d'autres formats pour sauvegarder des modèles, comme `joblib` ou des formats standardisés comme ONNX. Quels sont leurs avantages ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

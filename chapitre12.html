@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 12: Exploration et Visualisation de Données</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles for Python Syntax Highlighting */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like def, if, for */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 12. Votre Premier Projet de A à Z (Partie 2) - Exploration et Visualisation
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Nos données sont propres. Le travail fastidieux est terminé, et maintenant, le plaisir commence ! Dans cette deuxième partie, nous allons enfiler notre casquette de détective. En utilisant la puissance de la visualisation de données, nous allons interroger notre dataset pour qu'il nous raconte les histoires cachées du Titanic. Qui a survécu ? Pourquoi ? Les graphiques seront nos témoins et nous aideront à trouver les premiers indices.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'art de l'exploration : Poser les bonnes questions</h2>
+                <p class="text-lg text-justify mb-6">
+                    L'Analyse Exploratoire des Données (EDA) est une approche d'investigation pour analyser et visualiser des jeux de données afin d'en résumer les principales caractéristiques, découvrir des tendances, repérer des anomalies et formuler des hypothèses. Le but n'est pas de prouver une hypothèse finale, mais d'en découvrir. C'est une phase de curiosité où l'on "discute" avec les données.
+                </p>
+                <div class="space-y-8">
+                    <!-- Analyse univariée -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Analyse univariée : Comprendre chaque indice séparément</h3>
+                        <p class="mb-4 text-justify">On examine les variables une par une pour comprendre leur propre structure et distribution. <strong>Question type :</strong> "Quel était le profil d'un passager ? (âge, classe, sexe...)"</p>
+                        <p class="mb-4"><strong>Outils :</strong></p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Statistiques descriptives :</strong> moyenne, médiane, écart-type, etc. \( \mu = \frac{1}{N} \sum x_i \)</li>
+                            <li><strong>Visualisations :</strong> Histogrammes (pour les variables numériques), diagrammes à barres (pour les catégories).</li>
+                        </ul>
+                        <pre class="mt-4"><code><span class="code-comment"># Exemple: Analyser la distribution de l'âge</span>
+<span class="code-builtin">print</span>(<span class="code-string">f"Âge moyen : {</span><span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">mean</span>()<span class="code-string">:.2f}"</span>)
+<span class="code-variable">sns</span>.<span class="code-function">histplot</span>(<span class="code-variable">df</span>[<span class="code-string">'Age'</span>], <span class="code-variable">kde</span><span class="code-operator">=</span><span class="code-keyword">True</span>, <span class="code-variable">bins</span><span class="code-operator">=</span><span class="code-number">30</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Distribution des âges sur le Titanic'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                    </div>
+                    <!-- Analyse bi/multivariée -->
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Analyse bi/multivariée : Croiser les indices</h3>
+                        <p class="mb-4 text-justify">C'est ici que les histoires émergent. On examine la relation entre deux ou plusieurs variables simultanément. <strong>Question type :</strong> "Le sexe d'une personne a-t-il eu un impact sur ses chances de survie ?"</p>
+                         <p class="mb-4"><strong>Outils :</strong></p>
+                        <ul class="list-disc list-inside space-y-2 pl-4">
+                            <li><strong>Statistiques groupées :</strong> <code>.groupby()</code> pour comparer des moyennes, des taux, etc.</li>
+                            <li><strong>Visualisations :</strong> Nuages de points, diagrammes à barres groupés, cartes de chaleur pour les corrélations.</li>
+                        </ul>
+                        <pre class="mt-4"><code><span class="code-comment"># Exemple: Relation entre le sexe et la survie</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">groupby</span>(<span class="code-string">'Sex'</span>)[<span class="code-string">'Survived'</span>].<span class="code-function">mean</span>())
+<span class="code-variable">sns</span>.<span class="code-function">countplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-string">'Sex'</span>, <span class="code-variable">hue</span><span class="code-operator">=</span><span class="code-string">'Survived'</span>, <span class="code-variable">data</span><span class="code-operator">=</span><span class="code-variable">df</span>)
+<span class="code-variable">plt</span>.<span class="code-function">title</span>(<span class="code-string">'Survie par Sexe'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                    </div>
+                </div>
+                 <p class="text-lg text-justify mt-6">
+                    Un graphique est une réponse visuelle à une question. Si un diagramme à barres montre que 74% des femmes ont survécu contre seulement 19% des hommes, nous tenons un indice majeur. L'EDA nous fournit ces indices, que la modélisation (la prochaine étape) cherchera ensuite à utiliser.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'interrogatoire du Titanic : Faire parler les données</h2>
+                <p class="text-lg text-justify mb-6">
+                    Nous utiliserons Seaborn pour sa simplicité et l'élégance de ses graphiques. Assurez-vous d'avoir votre DataFrame <code>df</code> nettoyé de la partie 1.
+                </p>
+                
+                <div class="space-y-8">
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Indice n°1 : La règle "les femmes et les enfants d'abord" a-t-elle été respectée ?</h3>
+                        <p class="mb-4">Le calcul du taux de survie par sexe révèle que 74% des femmes ont survécu, contre seulement 19% des hommes. La visualisation de la distribution des âges montre un pic de survie très net chez les jeunes enfants. L'indice est donc extrêmement fort : le sexe et l'âge sont des facteurs prédictifs majeurs.</p>
+                        <pre><code><span class="code-comment"># (Code de la partie 1 pour recréer le df nettoyé)</span>
+<span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>; <span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>; <span class="code-keyword">import</span> <span class="code-variable">seaborn</span> <span class="code-keyword">as</span> <span class="code-variable">sns</span>; <span class="code-keyword">import</span> <span class="code-variable">matplotlib.pyplot</span> <span class="code-keyword">as</span> <span class="code-variable">plt</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>(), <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-variable">df</span>.<span class="code-function">drop</span>(<span class="code-string">'Cabin'</span>, <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">fillna</span>(<span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">mode</span>()[<span class="code-number">0</span>], <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-keyword">True</span>)
+
+<span class="code-comment"># Taux de survie par sexe</span>
+<span class="code-variable">sns</span>.<span class="code-function">countplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-string">'Survived'</span>, <span class="code-variable">hue</span><span class="code-operator">=</span><span class="code-string">'Sex'</span>, <span class="code-variable">data</span><span class="code-operator">=</span><span class="code-variable">df</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+
+<span class="code-comment"># Distribution des âges par survie</span>
+<span class="code-variable">sns</span>.<span class="code-function">kdeplot</span>(<span class="code-variable">data</span><span class="code-operator">=</span><span class="code-variable">df</span>, <span class="code-variable">x</span><span class="code-operator">=</span><span class="code-string">'Age'</span>, <span class="code-variable">hue</span><span class="code-operator">=</span><span class="code-string">'Survived'</span>, <span class="code-variable">fill</span><span class="code-operator">=</span><span class="code-keyword">True</span>, <span class="code-variable">common_norm</span><span class="code-operator">=</span><span class="code-keyword">False</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <h3 class="text-2xl font-bold text-blue-400 mb-3">Indice n°2 : La classe sociale a-t-elle fait une différence ?</h3>
+                        <p class="mb-4">Un graphique à barres comparant le taux de survie par classe et par sexe est riche en révélations : dans chaque classe, les femmes ont un taux de survie bien supérieur. De plus, le taux de survie diminue drastiquement avec la classe. Une femme en 1ère classe avait près de 97% de chances de survie, contre moins de 50% en 3ème classe. La richesse a été un facteur décisif.</p>
+                        <pre><code><span class="code-variable">sns</span>.<span class="code-function">catplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-string">'Pclass'</span>, <span class="code-variable">y</span><span class="code-operator">=</span><span class="code-string">'Survived'</span>, <span class="code-variable">hue</span><span class="code-operator">=</span><span class="code-string">'Sex'</span>, <span class="code-variable">data</span><span class="code-operator">=</span><span class="code-variable">df</span>, <span class="code-variable">kind</span><span class="code-operator">=</span><span class="code-string">'bar'</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()</code></pre>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h2 class="text-2xl font-bold text-cyan-400 mb-4">Challenge : Le prix du billet</h2>
+                <p class="text-lg text-justify mb-4">
+                    Est-ce que, au sein d'une même classe, ceux qui ont payé plus cher ont eu plus de chances ? Créez une visualisation qui explore la relation entre le tarif payé ('Fare') et la survie. Attention, la colonne 'Fare' est très asymétrique ; utilisez une transformation logarithmique pour une meilleure visualisation.
+                </p>
+                <details class="bg-gray-700 p-4 rounded-md cursor-pointer">
+                    <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution</summary>
+                    <pre class="mt-4"><code><span class="code-comment"># Créer la colonne logarithmique</span>
+<span class="code-variable">df</span>[<span class="code-string">'LogFare'</span>] <span class="code-operator">=</span> <span class="code-variable">np</span>.<span class="code-function">log1p</span>(<span class="code-variable">df</span>[<span class="code-string">'Fare'</span>])
+
+<span class="code-comment"># Créer le boxplot</span>
+<span class="code-variable">sns</span>.<span class="code-function">boxplot</span>(<span class="code-variable">x</span><span class="code-operator">=</span><span class="code-string">'Survived'</span>, <span class="code-variable">y</span><span class="code-operator">=</span><span class="code-string">'LogFare'</span>, <span class="code-variable">data</span><span class="code-operator">=</span><span class="code-variable">df</span>)
+<span class="code-variable">plt</span>.<span class="code-function">show</span>()
+</code></pre>
+                </details>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <!-- Question 1 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Qu'est-ce que l'Analyse Exploratoire des Données (EDA) ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) La construction finale du modèle de machine learning.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Une approche d'investigation pour découvrir des tendances et des hypothèses dans les données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Le processus de nettoyage des données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) La présentation des résultats finaux.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 2 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Examiner la distribution de la variable 'Âge' seule est un exemple de :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Analyse multivariée</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Analyse bivariée</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Modélisation</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Analyse univariée</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 3 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. Quel graphique Seaborn est utilisé pour montrer le taux de survie par classe et par sexe dans l'exemple ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) <code>kdeplot</code></button>
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) <code>countplot</code></button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) <code>catplot</code> avec <code>kind='bar'</code></button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) <code>boxplot</code></button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                     <!-- Question 4 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. D'après l'analyse, quel groupe avait le plus haut taux de survie sur le Titanic ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Les femmes en première classe.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Les hommes en troisième classe.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Les hommes en première classe.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Les enfants en troisième classe.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <!-- Question 5 -->
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Pourquoi est-il utile d'appliquer une transformation logarithmique à la colonne 'Fare' avant de la visualiser ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Pour la convertir en texte.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Pour la rendre plus difficile à lire.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour réduire l'impact des valeurs extrêmes et mieux voir la distribution.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Pour supprimer les valeurs manquantes.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour aller plus loin</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. Un nouvel indice :</strong> Les colonnes 'SibSp' (frères/sœurs/époux) et 'Parch' (parents/enfants) indiquent la taille de la famille. Comment pourriez-vous combiner ces deux colonnes pour créer une nouvelle variable 'TailleFamille' ? Pensez-vous qu'être seul ou dans une grande famille a eu un impact sur la survie ?</p>
+                    <p><strong>2. Le port d'embarquement :</strong> Explorez la relation entre le port d'embarquement ('Embarked') et la survie. Y a-t-il une différence significative ? Pouvez-vous émettre une hypothèse pour expliquer cette différence si elle existe ? (Indice : le port d'embarquement est-il lié à la classe sociale ?)</p>
+                    <p><strong>3. Communiquer une découverte :</strong> Choisissez l'un des graphiques de ce chapitre. Si vous deviez le présenter à quelqu'un qui ne connaît rien à la data science, comment résumeriez-vous l'histoire qu'il raconte en une seule phrase ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Bravo, c\'est la bonne réponse !';
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white');
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white');
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

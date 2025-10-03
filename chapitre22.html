@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre 22: Feature Engineering</title>
+    <!-- Intégration de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Intégration de MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Style personnalisé pour le corps du texte */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Style pour les titres avec un dégradé */
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        /* Style pour les blocs de code */
+        pre code {
+            background-color: #1E293B; /* gray-800 */
+            color: #E2E8F0; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Styles pour la coloration syntaxique du Python */
+        .code-keyword { color: #C586C0; } /* Magenta for keywords like import, from */
+        .code-function { color: #DCDCAA; } /* Yellow for function names */
+        .code-string { color: #CE9178; } /* Orange for strings */
+        .code-comment { color: #6A9955; font-style: italic; } /* Green and italic for comments */
+        .code-number { color: #B5CEA8; } /* Light green/blue for numbers */
+        .code-builtin { color: #569CD6; } /* Blue for built-in functions like print */
+        .code-operator { color: #d4d4d4; } /* Default color for operators */
+        .code-variable { color: #9CDCFE; } /* Light blue for variables */
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight gradient-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
+                Chapitre 22. Feature Engineering - L'ingrédient secret des meilleurs modèles
+            </h1>
+        </header>
+
+        <main class="space-y-10">
+
+            <section class="bg-gray-800/50 p-6 rounded-lg border border-gray-700 shadow-lg">
+                <p class="text-lg md:text-xl text-justify leading-relaxed">
+                    Si un projet de data science était une compétition culinaire, les algorithmes seraient les robots de cuisine sophistiqués. Ils sont puissants, mais ne feront jamais un plat mémorable avec des ingrédients fades. Les meilleurs modèles viennent rarement des algorithmes les plus complexes, mais presque toujours des meilleures "features". Le feature engineering est l'art de transformer vos données brutes pour créer des variables plus pertinentes. C'est là que votre intuition et votre connaissance du domaine font toute la différence.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">L'art de créer de l'information</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-8">
+                   <p class="text-justify text-lg">Le principe est simple : "Meilleurs ingrédients en entrée, meilleur plat en sortie". Le feature engineering consiste à utiliser votre connaissance du domaine pour extraire de la valeur de vos données. Explorons les trois grandes familles de techniques.</p>
+                   
+                   <div class="bg-gray-900/50 p-6 rounded-lg">
+                       <h3 class="text-2xl font-bold text-blue-300 mb-3">1. Création et Extraction de Features</h3>
+                       <p class="mb-4 text-justify">C'est ici que la créativité entre en jeu. On combine ou on décompose des variables existantes pour révéler des informations cachées.</p>
+                       <div class="space-y-4">
+                           <div>
+                               <h4 class="font-semibold text-xl text-white">Créer des variables d'interaction</h4>
+                               <p class="my-2 text-justify">L'idée est que l'effet combiné de deux variables peut être plus puissant que leur somme. Sur le Titanic, voyager seul ou en grande famille avait un impact différent sur la survie. Combiner `SibSp` (frères/sœurs/époux) et `Parch` (parents/enfants) en une seule variable `FamilySize` est donc très pertinent.</p>
+                               <pre><code><span class="code-comment"># df est notre DataFrame du Titanic</span>
+<span class="code-variable">df</span>[<span class="code-string">'FamilySize'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'SibSp'</span>] <span class="code-operator">+</span> <span class="code-variable">df</span>[<span class="code-string">'Parch'</span>] <span class="code-operator">+</span> <span class="code-number">1</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>[[<span class="code-string">'SibSp'</span>, <span class="code-string">'Parch'</span>, <span class="code-string">'FamilySize'</span>]].<span class="code-function">head</span>())</code></pre>
+                           </div>
+                           <div>
+                               <h4 class="font-semibold text-xl text-white">Extraire des informations de données complexes</h4>
+                               <p class="my-2 text-justify">Une simple chaîne de caractères peut cacher des trésors. La colonne `Name` est unique pour chaque passager, mais le titre (`Mr.`, `Miss.`, `Master.`, etc.) qu'elle contient est une excellente approximation de l'âge, du sexe et du statut social.</p>
+                               <pre><code><span class="code-comment"># On utilise une expression régulière pour extraire le titre</span>
+<span class="code-variable">df</span>[<span class="code-string">'Title'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Name'</span>].<span class="code-function">str.extract</span>(<span class="code-string">' ([A-Za-z]+)\.'</span>, <span class="code-variable">expand</span><span class="code-operator">=</span><span class="code-constant">False</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>[<span class="code-string">'Title'</span>].<span class="code-function">value_counts</span>())</code></pre>
+                           </div>
+                       </div>
+                   </div>
+
+                   <div class="bg-gray-900/50 p-6 rounded-lg">
+                       <h3 class="text-2xl font-bold text-blue-300 mb-3">2. Transformation de Features</h3>
+                       <p class="mb-4 text-justify">On modifie la distribution ou la nature d'une variable pour la rendre plus digeste pour le modèle.</p>
+                       <div class="space-y-4">
+                           <div>
+                               <h4 class="font-semibold text-xl text-white">Discrétisation (Binning)</h4>
+                               <p class="my-2 text-justify">Plutôt que de traiter l'âge comme un continuum, on peut le regrouper en catégories. Cela permet au modèle de capturer des paliers et des effets non-linéaires (par ex: la règle "les femmes et les enfants d'abord" s'applique à un groupe d'âge, pas à un âge précis).</p>
+                               <pre><code><span class="code-variable">bins</span> <span class="code-operator">=</span> [<span class="code-number">0</span>, <span class="code-number">12</span>, <span class="code-number">18</span>, <span class="code-number">60</span>, <span class="code-number">100</span>]
+<span class="code-variable">labels</span> <span class="code-operator">=</span> [<span class="code-string">'Enfant'</span>, <span class="code-string">'Ado'</span>, <span class="code-string">'Adulte'</span>, <span class="code-string">'Senior'</span>]
+<span class="code-variable">df</span>[<span class="code-string">'AgeGroup'</span>] <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">cut</span>(<span class="code-variable">df</span>[<span class="code-string">'Age'</span>], <span class="code-variable">bins</span><span class="code-operator">=</span><span class="code-variable">bins</span>, <span class="code-variable">labels</span><span class="code-operator">=</span><span class="code-variable">labels</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>[<span class="code-string">'AgeGroup'</span>].<span class="code-function">value_counts</span>())</code></pre>
+                           </div>
+                       </div>
+                   </div>
+
+                   <div class="bg-gray-900/50 p-6 rounded-lg">
+                        <h3 class="text-2xl font-bold text-blue-300 mb-3">3. Encodage de Features</h3>
+                        <p class="mb-4 text-justify">Les modèles de machine learning sont des êtres mathématiques : ils ne comprennent que les nombres. L'encodage est le processus de traduction de nos variables catégorielles (texte) en un format numérique.</p>
+                        <div>
+                            <h4 class="font-semibold text-xl text-white">One-Hot Encoding</h4>
+                            <p class="my-2 text-justify">C'est la méthode la plus fiable. Au lieu d'assigner une valeur arbitraire (ex: S=0, C=1, Q=2), qui pourrait laisser croire au modèle qu'il existe une relation d'ordre (Q > C > S), le One-Hot Encoding crée de nouvelles colonnes pour chaque catégorie. Chaque colonne est binaire (0 ou 1), indiquant simplement la présence ou l'absence de la catégorie.</p>
+                             <pre><code><span class="code-comment"># Avant Encodage</span>
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">head</span>())
+
+<span class="code-comment"># Après One-Hot Encoding</span>
+<span class="code-variable">df_encoded</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">get_dummies</span>(<span class="code-variable">df</span>, <span class="code-variable">columns</span><span class="code-operator">=</span>[<span class="code-string">'Embarked'</span>], <span class="code-variable">prefix</span><span class="code-operator">=</span><span class="code-string">'Embarked'</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df_encoded</span>[[<span class="code-string">'Embarked_C'</span>, <span class="code-string">'Embarked_Q'</span>, <span class="code-string">'Embarked_S'</span>]].<span class="code-function">head</span>())</code></pre>
+                        </div>
+                   </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Enrichir le dataset du Titanic</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-4">
+                    <p>Appliquons concrètement ces idées pour transformer notre jeu de données. Chaque étape est commentée pour expliquer la logique.</p>
+                    <pre><code><span class="code-keyword">import</span> <span class="code-variable">pandas</span> <span class="code-keyword">as</span> <span class="code-variable">pd</span>
+<span class="code-keyword">import</span> <span class="code-variable">numpy</span> <span class="code-keyword">as</span> <span class="code-variable">np</span>
+
+<span class="code-comment"># === 1. CHARGEMENT ET NETTOYAGE DE BASE ===</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">read_csv</span>(<span class="code-string">'train.csv'</span>)
+<span class="code-comment"># Remplacer les âges manquants par la médiane (plus robuste aux outliers que la moyenne)</span>
+<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">fillna</span>(<span class="code-variable">df</span>[<span class="code-string">'Age'</span>].<span class="code-function">median</span>(), <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-constant">True</span>)
+<span class="code-comment"># Remplacer les ports d'embarquement manquants par le plus fréquent</span>
+<span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">fillna</span>(<span class="code-variable">df</span>[<span class="code-string">'Embarked'</span>].<span class="code-function">mode</span>()[<span class="code-number">0</span>], <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-constant">True</span>)
+<span class="code-comment"># La colonne 'Cabin' a trop de valeurs manquantes, on la supprime</span>
+<span class="code-variable">df</span>.<span class="code-function">drop</span>(<span class="code-string">'Cabin'</span>, <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>, <span class="code-variable">inplace</span><span class="code-operator">=</span><span class="code-constant">True</span>)
+
+<span class="code-comment"># === 2. CRÉATION DE FEATURES ===</span>
+<span class="code-comment"># Création de 'FamilySize' : l'intuition est que la taille de la famille est plus pertinente que ses composantes. Le +1 inclut la personne elle-même.</span>
+<span class="code-variable">df</span>[<span class="code-string">'FamilySize'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'SibSp'</span>] <span class="code-operator">+</span> <span class="code-variable">df</span>[<span class="code-string">'Parch'</span>] <span class="code-operator">+</span> <span class="code-number">1</span>
+<span class="code-comment"># Création de 'IsAlone' : une variable binaire simple pour capturer l'effet "voyager seul".</span>
+<span class="code-variable">df</span>[<span class="code-string">'IsAlone'</span>] <span class="code-operator">=</span> <span class="code-number">0</span>
+<span class="code-variable">df</span>.<span class="code-function">loc</span>[<span class="code-variable">df</span>[<span class="code-string">'FamilySize'</span>] <span class="code-operator">==</span> <span class="code-number">1</span>, <span class="code-string">'IsAlone'</span>] <span class="code-operator">=</span> <span class="code-number">1</span>
+
+<span class="code-comment"># === 3. ENCODAGE DE FEATURES ===</span>
+<span class="code-comment"># Encoder 'Sex' : transformation simple en 0/1 car c'est une variable binaire.</span>
+<span class="code-variable">df</span>[<span class="code-string">'Sex'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Sex'</span>].<span class="code-function">map</span>({<span class="code-string">'male'</span>: <span class="code-number">0</span>, <span class="code-string">'female'</span>: <span class="code-number">1</span>})
+<span class="code-comment"># One-Hot Encoding pour 'Embarked' pour éviter de créer une relation d'ordre artificielle.</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">get_dummies</span>(<span class="code-variable">df</span>, <span class="code-variable">columns</span><span class="code-operator">=</span>[<span class="code-string">'Embarked'</span>], <span class="code-variable">prefix</span><span class="code-operator">=</span><span class="code-string">'Embarked'</span>)
+
+<span class="code-comment"># === 4. TRANSFORMATION DE FEATURES ===</span>
+<span class="code-comment"># Discrétiser 'Age' en catégories (Binning).</span>
+<span class="code-variable">bins</span> <span class="code-operator">=</span> [<span class="code-number">0</span>, <span class="code-number">12</span>, <span class="code-number">18</span>, <span class="code-number">60</span>, <span class="code-number">100</span>]
+<span class="code-variable">labels</span> <span class="code-operator">=</span> [<span class="code-string">'Enfant'</span>, <span class="code-string">'Ado'</span>, <span class="code-string">'Adulte'</span>, <span class="code-string">'Senior'</span>]
+<span class="code-variable">df</span>[<span class="code-string">'AgeGroup'</span>] <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">cut</span>(<span class="code-variable">df</span>[<span class="code-string">'Age'</span>], <span class="code-variable">bins</span><span class="code-operator">=</span><span class="code-variable">bins</span>, <span class="code-variable">labels</span><span class="code-operator">=</span><span class="code-variable">labels</span>)
+<span class="code-comment"># On encode ensuite cette nouvelle variable catégorielle.</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">get_dummies</span>(<span class="code-variable">df</span>, <span class="code-variable">columns</span><span class="code-operator">=</span>[<span class="code-string">'AgeGroup'</span>], <span class="code-variable">prefix</span><span class="code-operator">=</span><span class="code-string">'Age'</span>)
+
+<span class="code-comment"># Afficher les premières lignes du DataFrame transformé</span>
+<span class="code-builtin">print</span>(<span class="code-string">"Aperçu du DataFrame après Feature Engineering :"</span>)
+<span class="code-builtin">print</span>(<span class="code-variable">df</span>.<span class="code-function">head</span>())</code></pre>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Challenge : Mesurer l'impact d'une feature</h2>
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-4">
+                    <h3 class="font-bold text-cyan-300">Votre mission :</h3>
+                    <ul class="list-decimal list-inside pl-4 mt-2 space-y-1">
+                        <li>Créez la feature 'Title' en extrayant le titre de chaque passager (`Mr`, `Miss`, etc.) depuis la colonne 'Name'.</li>
+                        <li>Simplifiez ces titres en regroupant les plus rares.</li>
+                        <li>Encodez cette nouvelle colonne avec `pd.get_dummies`.</li>
+                        <li>Entraînez un `RandomForestClassifier` SANS cette feature et notez son score (avec validation croisée `cv=5`).</li>
+                        <li>Entraînez un second `RandomForestClassifier` AVEC la feature 'Title' et comparez les scores.</li>
+                    </ul>
+                    <details class="bg-gray-900/50 p-4 rounded-md cursor-pointer">
+                        <summary class="font-bold text-cyan-300">Cliquez ici pour voir la solution et l'interprétation</summary>
+                        <div class="mt-4">
+                            <pre><code><span class="code-keyword">from</span> <span class="code-variable">sklearn.ensemble</span> <span class="code-keyword">import</span> <span class="code-variable">RandomForestClassifier</span>
+<span class="code-keyword">from</span> <span class="code-variable">sklearn.model_selection</span> <span class="code-keyword">import</span> <span class="code-variable">cross_val_score</span>
+
+<span class="code-comment"># 1 & 2. Extraire et simplifier les titres</span>
+<span class="code-variable">df</span>[<span class="code-string">'Title'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Name'</span>].<span class="code-function">str.extract</span>(<span class="code-string">' ([A-Za-z]+)\.'</span>, <span class="code-variable">expand</span><span class="code-operator">=</span><span class="code-constant">False</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Title'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Title'</span>].<span class="code-function">replace</span>([<span class="code-string">'Lady'</span>, <span class="code-string">'Countess'</span>,<span class="code-string">'Capt'</span>, <span class="code-string">'Col'</span>,<span class="code-string">'Don'</span>, <span class="code-string">'Dr'</span>, <span class="code-string">'Major'</span>, <span class="code-string">'Rev'</span>, <span class="code-string">'Sir'</span>, <span class="code-string">'Jonkheer'</span>, <span class="code-string">'Dona'</span>], <span class="code-string">'Rare'</span>)
+<span class="code-variable">df</span>[<span class="code-string">'Title'</span>] <span class="code-operator">=</span> <span class="code-variable">df</span>[<span class="code-string">'Title'</span>].<span class="code-function">replace</span>(<span class="code-string">'Mlle'</span>, <span class="code-string">'Miss'</span>).<span class="code-function">replace</span>(<span class="code-string">'Ms'</span>, <span class="code-string">'Miss'</span>).<span class="code-function">replace</span>(<span class="code-string">'Mme'</span>, <span class="code-string">'Mrs'</span>)
+
+<span class="code-comment"># 3. Encoder 'Title'</span>
+<span class="code-variable">df</span> <span class="code-operator">=</span> <span class="code-variable">pd</span>.<span class="code-function">get_dummies</span>(<span class="code-variable">df</span>, <span class="code-variable">columns</span><span class="code-operator">=</span>[<span class="code-string">'Title'</span>], <span class="code-variable">prefix</span><span class="code-operator">=</span><span class="code-string">'Title'</span>)
+<span class="code-variable">df_model</span> <span class="code-operator">=</span> <span class="code-variable">df</span>.<span class="code-function">drop</span>([<span class="code-string">'Name'</span>, <span class="code-string">'Ticket'</span>, <span class="code-string">'PassengerId'</span>, <span class="code-string">'SibSp'</span>, <span class="code-string">'Parch'</span>], <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>)
+
+<span class="code-comment"># 4. Modèle SANS 'Title'</span>
+<span class="code-variable">features_sans_title</span> <span class="code-operator">=</span> [<span class="code-variable">col</span> <span class="code-keyword">for</span> <span class="code-variable">col</span> <span class="code-keyword">in</span> <span class="code-variable">df_model</span>.<span class="code-variable">columns</span> <span class="code-keyword">if</span> <span class="code-keyword">not</span> <span class="code-variable">col</span>.<span class="code-function">startswith</span>(<span class="code-string">'Title_'</span>) <span class="code-keyword">and</span> <span class="code-variable">col</span> <span class="code-operator">!=</span> <span class="code-string">'Survived'</span>]
+<span class="code-variable">X_sans_title</span> <span class="code-operator">=</span> <span class="code-variable">df_model</span>[<span class="code-variable">features_sans_title</span>]
+<span class="code-variable">y</span> <span class="code-operator">=</span> <span class="code-variable">df_model</span>[<span class="code-string">'Survived'</span>]
+<span class="code-variable">model_sans_title</span> <span class="code-operator">=</span> <span class="code-function">RandomForestClassifier</span>(<span class="code-variable">n_estimators</span><span class="code-operator">=</span><span class="code-number">100</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+<span class="code-variable">scores_sans_title</span> <span class="code-operator">=</span> <span class="code-function">cross_val_score</span>(<span class="code-variable">model_sans_title</span>, <span class="code-variable">X_sans_title</span>, <span class="code-variable">y</span>, <span class="code-variable">cv</span><span class="code-operator">=</span><span class="code-number">5</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Score moyen SANS 'Title' : {np.mean(scores_sans_title):.4f}"</span>)
+
+<span class="code-comment"># 5. Modèle AVEC 'Title'</span>
+<span class="code-variable">X_avec_title</span> <span class="code-operator">=</span> <span class="code-variable">df_model</span>.<span class="code-function">drop</span>(<span class="code-string">'Survived'</span>, <span class="code-variable">axis</span><span class="code-operator">=</span><span class="code-number">1</span>)
+<span class="code-variable">model_avec_title</span> <span class="code-operator">=</span> <span class="code-function">RandomForestClassifier</span>(<span class="code-variable">n_estimators</span><span class="code-operator">=</span><span class="code-number">100</span>, <span class="code-variable">random_state</span><span class="code-operator">=</span><span class="code-number">42</span>)
+<span class="code-variable">scores_avec_title</span> <span class="code-operator">=</span> <span class="code-function">cross_val_score</span>(<span class="code-variable">model_avec_title</span>, <span class="code-variable">X_avec_title</span>, <span class="code-variable">y</span>, <span class="code-variable">cv</span><span class="code-operator">=</span><span class="code-number">5</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Score moyen AVEC 'Title' : {np.mean(scores_avec_title):.4f}"</span>)</code></pre>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Testez vos connaissances !</h2>
+                <div class="space-y-8">
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">1. Qu'est-ce que le "feature engineering" ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Choisir le meilleur algorithme de machine learning.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) L'art de créer de nouvelles variables pertinentes à partir des données brutes.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) La visualisation des données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Le processus d'évaluation d'un modèle.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">2. Créer une variable `FamilySize` en additionnant `SibSp` et `Parch` est un exemple de :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Encodage</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Discrétisation</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Création de feature</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Transformation mathématique</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">3. À quoi sert le One-Hot Encoding ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                             <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) À gérer les valeurs manquantes.</button>
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) À transformer des variables catégorielles en format numérique.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) À réduire la dimensionnalité des données.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) À normaliser les variables numériques.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">4. Transformer l'âge numérique en groupes comme 'Enfant', 'Adulte', 'Senior' s'appelle :</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Extraction de feature</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Encodage</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) One-Hot Encoding</button>
+                             <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Discrétisation (Binning)</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                    <div class="quiz-question bg-gray-800 p-6 rounded-lg border border-gray-700">
+                        <p class="font-bold text-lg mb-4">5. Pourquoi extraire le 'Titre' de la colonne 'Name' est-il une bonne idée ?</p>
+                        <div class="options grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button data-correct="true" class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">a) Parce que le titre contient des informations implicites sur le sexe, l'âge et le statut social.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">b) Parce que les noms de famille sont très importants pour la prédiction.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">c) Pour augmenter le nombre de colonnes dans le dataset.</button>
+                            <button class="quiz-option w-full text-left p-3 rounded-md bg-gray-700 hover:bg-gray-600 transition">d) Parce que les prénoms sont corrélés avec la survie.</button>
+                        </div>
+                        <div class="feedback hidden mt-4 p-3 rounded-md text-white"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-cyan-400 border-b-2 border-cyan-400/30 pb-2 mb-6">Questions pour approfondir</h2>
+                 <div class="space-y-4 text-lg">
+                    <p><strong>1. La créativité avant tout :</strong> En regardant les données du Titanic, quelle autre feature créative pourriez-vous imaginer ? (Par exemple, en utilisant la colonne 'Ticket').</p>
+                    <p><strong>2. Le danger de l'encodage :</strong> Au lieu du One-Hot Encoding, on aurait pu remplacer 'S', 'C', 'Q' par 0, 1, 2 (Label Encoding). Pourquoi est-ce souvent une mauvaise idée pour les algorithmes linéaires ?</p>
+                    <p><strong>3. L'automatisation :</strong> Il existe des bibliothèques (comme `feature-engine` ou `autofeat`) qui tentent d'automatiser le feature engineering. Quels sont, selon vous, les avantages et les limites d'une telle approche par rapport à une approche manuelle basée sur la connaissance du domaine ?</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-700">
+            <p class="text-gray-500">
+                La Data Science de A à Z pour les lycéens
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.feedback');
+                let hasAnswered = false;
+
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (hasAnswered) return;
+                        hasAnswered = true;
+
+                        options.forEach(opt => {
+                            opt.disabled = true;
+                            opt.classList.remove('hover:bg-gray-600');
+                        });
+
+                        const isCorrect = option.getAttribute('data-correct') === 'true';
+                        
+                        if (isCorrect) {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            feedback.textContent = "Bravo, c'est la bonne réponse !";
+                            feedback.classList.add('bg-green-500/30', 'border', 'border-green-500');
+                        } else {
+                            option.classList.remove('bg-gray-700');
+                            option.classList.add('bg-red-500', 'text-white', 'border', 'border-red-400');
+                            
+                            const correctOption = question.querySelector('[data-correct="true"]');
+                            correctOption.classList.remove('bg-gray-700');
+                            correctOption.classList.add('bg-green-500', 'text-white', 'border', 'border-green-400');
+                            
+                            feedback.textContent = 'Dommage. La bonne réponse est mise en surbrillance en vert.';
+                            feedback.classList.add('bg-red-500/30', 'border', 'border-red-500');
+                        }
+                        feedback.classList.remove('hidden');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
